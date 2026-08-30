@@ -24,6 +24,9 @@ coroutines:
   # one. Everywhere else the rule stays on, because a ViewModel reaching for Dispatchers.IO
   # directly instead of injecting it is exactly the defect it exists to catch.
   InjectDispatcher:
+    # A test that asserts which dispatcher a binding hands back has to name it; that is the
+    # assertion, not a hardcoded dependency. Production code stays covered.
+    excludes: ['**/test/**', '**/androidTest/**']
     ignoreAnnotated:
       - Provides
 
@@ -44,6 +47,10 @@ style:
       # dagger.hilt.InstallIn, so an auto-import here silently does nothing.
       - value: 'com.android.dialer.inject.InstallIn'
         reason: 'Use dagger.hilt.InstallIn'
+      # Same trap, same package: the legacy qualifier shares its simple name with Hilt's, so an
+      # auto-import here binds against a graph new code never reads.
+      - value: 'com.android.dialer.inject.ApplicationContext'
+        reason: 'Use dagger.hilt.android.qualifiers.ApplicationContext'
   MagicNumber:
     ignoreCompanionObjectPropertyDeclaration: true
     ignorePropertyDeclaration: true
