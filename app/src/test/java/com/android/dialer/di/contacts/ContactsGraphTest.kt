@@ -5,6 +5,14 @@ import com.android.dialer.data.contacts.repository.ContactNameOrderSource
 import com.android.dialer.data.contacts.repository.ContactsRepository
 import com.android.dialer.data.contacts.repository.ContactsRepositoryImpl
 import com.android.dialer.data.contacts.repository.LegacyContactNameOrderSource
+import com.android.dialer.domain.contacts.usecase.BuildContactLookupUri
+import com.android.dialer.domain.contacts.usecase.BuildContactLookupUriImpl
+import com.android.dialer.domain.contacts.usecase.GetDeniedContactsPermissions
+import com.android.dialer.domain.contacts.usecase.GetDeniedContactsPermissionsImpl
+import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGranted
+import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrantedImpl
+import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrants
+import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrantsImpl
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -35,6 +43,14 @@ class ContactsGraphTest {
         fun contactsRepository(): ContactsRepository
 
         fun contactNameOrderSource(): ContactNameOrderSource
+
+        fun isReadContactsPermissionGranted(): IsReadContactsPermissionGranted
+
+        fun getDeniedContactsPermissions(): GetDeniedContactsPermissions
+
+        fun observeContactsPermissionGrants(): ObserveContactsPermissionGrants
+
+        fun buildContactLookupUri(): BuildContactLookupUri
     }
 
     @get:Rule
@@ -51,5 +67,24 @@ class ContactsGraphTest {
 
         assertTrue(entryPoint.contactsRepository() is ContactsRepositoryImpl)
         assertTrue(entryPoint.contactNameOrderSource() is LegacyContactNameOrderSource)
+    }
+
+    @Test
+    fun graphResolvesEveryContactsUseCase() {
+        hiltRule.inject()
+
+        val entryPoint = EntryPointAccessors.fromApplication(
+            RuntimeEnvironment.getApplication(),
+            ContactsTestEntryPoint::class.java,
+        )
+
+        assertTrue(
+            entryPoint.isReadContactsPermissionGranted() is IsReadContactsPermissionGrantedImpl,
+        )
+        assertTrue(entryPoint.getDeniedContactsPermissions() is GetDeniedContactsPermissionsImpl)
+        assertTrue(
+            entryPoint.observeContactsPermissionGrants() is ObserveContactsPermissionGrantsImpl,
+        )
+        assertTrue(entryPoint.buildContactLookupUri() is BuildContactLookupUriImpl)
     }
 }

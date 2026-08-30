@@ -4,6 +4,14 @@ import com.android.dialer.data.contacts.repository.ContactNameOrderSource
 import com.android.dialer.data.contacts.repository.ContactsRepository
 import com.android.dialer.data.contacts.repository.ContactsRepositoryImpl
 import com.android.dialer.data.contacts.repository.LegacyContactNameOrderSource
+import com.android.dialer.domain.contacts.usecase.BuildContactLookupUri
+import com.android.dialer.domain.contacts.usecase.BuildContactLookupUriImpl
+import com.android.dialer.domain.contacts.usecase.GetDeniedContactsPermissions
+import com.android.dialer.domain.contacts.usecase.GetDeniedContactsPermissionsImpl
+import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGranted
+import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrantedImpl
+import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrants
+import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrantsImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Reusable
@@ -23,4 +31,28 @@ internal abstract class ContactsBindsModule {
     abstract fun bindContactNameOrderSource(
         impl: LegacyContactNameOrderSource,
     ): ContactNameOrderSource
+
+    @Binds
+    @Reusable
+    abstract fun bindIsReadContactsPermissionGranted(
+        impl: IsReadContactsPermissionGrantedImpl,
+    ): IsReadContactsPermissionGranted
+
+    @Binds
+    @Reusable
+    abstract fun bindGetDeniedContactsPermissions(
+        impl: GetDeniedContactsPermissionsImpl,
+    ): GetDeniedContactsPermissions
+
+    @Binds
+    @Reusable
+    abstract fun bindObserveContactsPermissionGrants(
+        impl: ObserveContactsPermissionGrantsImpl,
+    ): ObserveContactsPermissionGrants
+
+    @Binds
+    @Reusable
+    abstract fun bindBuildContactLookupUri(
+        impl: BuildContactLookupUriImpl,
+    ): BuildContactLookupUri
 }
