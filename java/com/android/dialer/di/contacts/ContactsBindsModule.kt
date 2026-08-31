@@ -12,6 +12,8 @@ import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrante
 import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrantedImpl
 import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrants
 import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrantsImpl
+import com.android.dialer.ui.contacts.screen.mapper.ContactsUiStateMapper
+import com.android.dialer.ui.contacts.screen.mapper.ContactsUiStateMapperImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Reusable
@@ -55,4 +57,10 @@ internal abstract class ContactsBindsModule {
     abstract fun bindBuildContactLookupUri(
         impl: BuildContactLookupUriImpl,
     ): BuildContactLookupUri
+
+    @Binds
+    @Reusable
+    abstract fun bindContactsUiStateMapper(
+        impl: ContactsUiStateMapperImpl,
+    ): ContactsUiStateMapper
 }

@@ -13,6 +13,8 @@ import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrante
 import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrantedImpl
 import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrants
 import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrantsImpl
+import com.android.dialer.ui.contacts.screen.mapper.ContactsUiStateMapper
+import com.android.dialer.ui.contacts.screen.mapper.ContactsUiStateMapperImpl
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -51,6 +53,8 @@ class ContactsGraphTest {
         fun observeContactsPermissionGrants(): ObserveContactsPermissionGrants
 
         fun buildContactLookupUri(): BuildContactLookupUri
+
+        fun contactsUiStateMapper(): ContactsUiStateMapper
     }
 
     @get:Rule
@@ -86,5 +90,6 @@ class ContactsGraphTest {
             entryPoint.observeContactsPermissionGrants() is ObserveContactsPermissionGrantsImpl,
         )
         assertTrue(entryPoint.buildContactLookupUri() is BuildContactLookupUriImpl)
+        assertTrue(entryPoint.contactsUiStateMapper() is ContactsUiStateMapperImpl)
     }
 }
