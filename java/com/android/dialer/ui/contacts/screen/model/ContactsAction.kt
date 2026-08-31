@@ -13,6 +13,8 @@ internal sealed interface ContactsAction {
 
     data object GrantPermissionClicked : ContactsAction
 
+    data object ScreenResumed : ContactsAction
+
     data class FilterChanged(
         val filter: String,
     ) : ContactsAction

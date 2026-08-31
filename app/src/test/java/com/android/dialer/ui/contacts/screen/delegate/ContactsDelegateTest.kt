@@ -75,9 +75,9 @@ class ContactsDelegateTest {
         index = ContactsIndex.EMPTY,
     )
 
-    private fun TestScope.boundDelegate(showsAddContactRow: Boolean = true): ContactsDelegateImpl {
+    private fun TestScope.boundDelegate(): ContactsDelegateImpl {
         val delegate = newDelegate()
-        delegate.bind(scope = backgroundScope, showsAddContactRow = showsAddContactRow)
+        delegate.bind(scope = backgroundScope)
         runCurrent()
 
         return delegate
@@ -96,7 +96,7 @@ class ContactsDelegateTest {
         repository.snapshots.tryEmit(snapshotOf("Ada"))
 
         val delegate = boundDelegate()
-        delegate.bind(scope = backgroundScope, showsAddContactRow = true)
+        delegate.bind(scope = backgroundScope)
         runCurrent()
 
         assertEquals(1, repository.subscriptionCount)
@@ -128,15 +128,6 @@ class ContactsDelegateTest {
         val delegate = boundDelegate()
 
         assertEquals(listOf("Ada", "Grace"), delegate.names())
-    }
-
-    @Test
-    fun passesTheAddContactRowFlagIntoTheState() = runTest {
-        repository.snapshots.tryEmit(snapshotOf("Ada"))
-
-        val delegate = boundDelegate(showsAddContactRow = false)
-
-        assertEquals(false, (delegate.state.value as ContactsUiState.Loaded).showsAddContactRow)
     }
 
     @Test

@@ -14,7 +14,6 @@ internal sealed interface ContactsUiState {
 
     data class Loaded(
         val rows: ImmutableList<ContactRowUiModel>,
-        val showsAddContactRow: Boolean,
     ) : ContactsUiState
 }
 

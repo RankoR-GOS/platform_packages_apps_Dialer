@@ -32,7 +32,7 @@ internal interface ContactsDelegate {
 
     val state: StateFlow<ContactsUiState>
 
-    fun bind(scope: CoroutineScope, showsAddContactRow: Boolean)
+    fun bind(scope: CoroutineScope)
 
     fun refresh()
 
@@ -57,18 +57,13 @@ internal class ContactsDelegateImpl @Inject constructor(
 
     private var isBound = false
 
-    override fun bind(scope: CoroutineScope, showsAddContactRow: Boolean) {
+    override fun bind(scope: CoroutineScope) {
         if (isBound) return
         isBound = true
 
         scope.launch(defaultDispatcher) {
             combine(filter, reloadSignals()) { currentFilter, _ -> currentFilter }
-                .flatMapLatest { currentFilter ->
-                    contactsState(
-                        filter = currentFilter,
-                        showsAddContactRow = showsAddContactRow,
-                    )
-                }
+                .flatMapLatest { currentFilter -> contactsState(filter = currentFilter) }
                 .collect { newState -> mutableState.value = newState }
         }
     }
@@ -81,19 +76,14 @@ internal class ContactsDelegateImpl @Inject constructor(
         this.filter.value = filter
     }
 
-    private fun contactsState(
-        filter: String,
-        showsAddContactRow: Boolean,
-    ): Flow<ContactsUiState> =
+    private fun contactsState(filter: String): Flow<ContactsUiState> =
         when {
             !isReadContactsPermissionGranted() -> flowOf(ContactsUiState.PermissionRequired)
 
             else ->
                 repository
                     .observeContacts(query = ContactsQuery(filter = filter))
-                    .map { snapshot ->
-                        mapper.map(snapshot = snapshot, showsAddContactRow = showsAddContactRow)
-                    }
+                    .map { snapshot -> mapper.map(snapshot = snapshot) }
         }
 
     private fun reloadSignals(): Flow<Any> =

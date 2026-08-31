@@ -8,15 +8,12 @@ import javax.inject.Inject
 import kotlinx.collections.immutable.toPersistentList
 
 internal interface ContactsUiStateMapper {
-    fun map(snapshot: ContactsSnapshot, showsAddContactRow: Boolean): ContactsUiState
+    fun map(snapshot: ContactsSnapshot): ContactsUiState
 }
 
 internal class ContactsUiStateMapperImpl @Inject constructor() : ContactsUiStateMapper {
 
-    override fun map(
-        snapshot: ContactsSnapshot,
-        showsAddContactRow: Boolean,
-    ): ContactsUiState {
+    override fun map(snapshot: ContactsSnapshot): ContactsUiState {
         if (snapshot.contacts.isEmpty()) {
             return ContactsUiState.Empty
         }
@@ -38,10 +35,7 @@ internal class ContactsUiStateMapperImpl @Inject constructor() : ContactsUiState
             )
         }
 
-        return ContactsUiState.Loaded(
-            rows = rows.toPersistentList(),
-            showsAddContactRow = showsAddContactRow,
-        )
+        return ContactsUiState.Loaded(rows = rows.toPersistentList())
     }
 
     private fun sectionLabels(rowCount: Int, index: ContactsIndex): List<String> {

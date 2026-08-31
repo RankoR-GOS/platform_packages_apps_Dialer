@@ -8,7 +8,6 @@ import com.android.dialer.ui.contacts.screen.model.ContactsUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ContactsUiStateMapperTest {
@@ -45,7 +44,7 @@ class ContactsUiStateMapperTest {
 
     @Test
     fun mapsAnEmptySnapshotToTheEmptyState() {
-        val state = mapper.map(snapshot = ContactsSnapshot.EMPTY, showsAddContactRow = true)
+        val state = mapper.map(snapshot = ContactsSnapshot.EMPTY)
 
         assertEquals(ContactsUiState.Empty, state)
     }
@@ -68,7 +67,7 @@ class ContactsUiStateMapperTest {
             ),
         )
 
-        val row = loadedRows(mapper.map(snapshot, showsAddContactRow = false)).single()
+        val row = loadedRows(mapper.map(snapshot)).single()
 
         assertEquals(
             ContactRowUiModel(
@@ -92,7 +91,6 @@ class ContactsUiStateMapperTest {
                 titles = listOf("A", "G", "L"),
                 counts = listOf(2, 1, 2),
             ),
-            showsAddContactRow = true,
         )
 
         assertEquals(
@@ -117,22 +115,12 @@ class ContactsUiStateMapperTest {
                 titles = listOf("A", "G", "A"),
                 counts = listOf(1, 1, 1),
             ),
-            showsAddContactRow = true,
         )
 
         assertEquals(
             listOf("A" to true, "G" to true, "A" to true),
             labelsAndStarts(state),
         )
-    }
-
-    @Test
-    fun passesTheAddContactRowFlagThrough() {
-        val withRow = mapper.map(snapshot(names = listOf("Ada")), showsAddContactRow = true)
-        val withoutRow = mapper.map(snapshot(names = listOf("Ada")), showsAddContactRow = false)
-
-        assertTrue((withRow as ContactsUiState.Loaded).showsAddContactRow)
-        assertTrue(!(withoutRow as ContactsUiState.Loaded).showsAddContactRow)
     }
 
     // --- the provider disagreeing with itself --------------------------------------------
@@ -145,7 +133,6 @@ class ContactsUiStateMapperTest {
                 titles = listOf("A"),
                 counts = listOf(1),
             ),
-            showsAddContactRow = true,
         )
 
         assertEquals(
@@ -163,7 +150,6 @@ class ContactsUiStateMapperTest {
                 titles = listOf("A", "G", "L"),
                 counts = listOf(5, 5, 5),
             ),
-            showsAddContactRow = true,
         )
 
         assertEquals(listOf("A" to true, "A" to false), labelsAndStarts(state))
@@ -177,7 +163,6 @@ class ContactsUiStateMapperTest {
                 titles = listOf("A", "G"),
                 counts = listOf(1),
             ),
-            showsAddContactRow = true,
         )
 
         assertEquals(listOf("A" to true, "" to false), labelsAndStarts(state))
@@ -191,7 +176,6 @@ class ContactsUiStateMapperTest {
                 titles = listOf("A", "G"),
                 counts = listOf(-3, 2),
             ),
-            showsAddContactRow = true,
         )
 
         assertEquals(listOf("G" to true, "G" to false), labelsAndStarts(state))
@@ -201,7 +185,6 @@ class ContactsUiStateMapperTest {
     fun leavesEveryRowUnlabelledWhenTheIndexIsMissing() {
         val state = mapper.map(
             snapshot = snapshot(names = listOf("Ada", "Grace")),
-            showsAddContactRow = true,
         )
 
         assertEquals(listOf("" to false, "" to false), labelsAndStarts(state))
