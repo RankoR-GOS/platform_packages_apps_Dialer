@@ -13,6 +13,8 @@ import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrante
 import com.android.dialer.domain.contacts.usecase.IsReadContactsPermissionGrantedImpl
 import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrants
 import com.android.dialer.domain.contacts.usecase.ObserveContactsPermissionGrantsImpl
+import com.android.dialer.ui.contacts.screen.delegate.ContactsDelegate
+import com.android.dialer.ui.contacts.screen.delegate.ContactsDelegateImpl
 import com.android.dialer.ui.contacts.screen.mapper.ContactsUiStateMapper
 import com.android.dialer.ui.contacts.screen.mapper.ContactsUiStateMapperImpl
 import dagger.hilt.EntryPoint
@@ -22,6 +24,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.components.SingletonComponent
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -55,6 +58,8 @@ class ContactsGraphTest {
         fun buildContactLookupUri(): BuildContactLookupUri
 
         fun contactsUiStateMapper(): ContactsUiStateMapper
+
+        fun contactsDelegate(): ContactsDelegate
     }
 
     @get:Rule
@@ -91,5 +96,18 @@ class ContactsGraphTest {
         )
         assertTrue(entryPoint.buildContactLookupUri() is BuildContactLookupUriImpl)
         assertTrue(entryPoint.contactsUiStateMapper() is ContactsUiStateMapperImpl)
+        assertTrue(entryPoint.contactsDelegate() is ContactsDelegateImpl)
+    }
+
+    @Test
+    fun graphHandsOutAFreshDelegatePerRequest() {
+        hiltRule.inject()
+
+        val entryPoint = EntryPointAccessors.fromApplication(
+            RuntimeEnvironment.getApplication(),
+            ContactsTestEntryPoint::class.java,
+        )
+
+        assertNotSame(entryPoint.contactsDelegate(), entryPoint.contactsDelegate())
     }
 }
