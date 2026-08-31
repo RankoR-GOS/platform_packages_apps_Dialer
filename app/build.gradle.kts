@@ -200,6 +200,7 @@ dependencies {
     ksp(libs.dagger.compiler)
     ksp(libs.hilt.compiler)
 
+    implementation(libs.coil.compose)
     implementation(libs.commons.io)
     implementation(libs.error.prone.annotations)
     implementation(libs.glide)
