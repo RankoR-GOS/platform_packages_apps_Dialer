@@ -32,8 +32,10 @@ import com.android.dialer.main.MainActivityPeer;
 import com.android.dialer.main.impl.bottomnav.BottomNavBar.TabIndex;
 import com.android.dialer.util.TransactionSafeActivity;
 import com.android.dialer.util.ViewUtil;
+import dagger.hilt.android.AndroidEntryPoint;
 
 /** This is the main activity for dialer. It hosts favorites, call log, search, dialpad, etc... */
+@AndroidEntryPoint
 // TODO(calderwoodra): Do not extend TransactionSafeActivity after new SpeedDial is launched
 public class MainActivity extends TransactionSafeActivity
     implements MainActivityPeer.PeerSupplier,

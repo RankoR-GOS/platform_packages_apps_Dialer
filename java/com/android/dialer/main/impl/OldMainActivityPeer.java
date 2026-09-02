@@ -82,9 +82,8 @@ import com.android.dialer.common.concurrent.ThreadUtil;
 import com.android.dialer.common.concurrent.UiListener;
 import com.android.dialer.configprovider.ConfigProviderComponent;
 import com.android.dialer.constants.ActivityRequestCodes;
-import com.android.dialer.contactsfragment.ContactsFragment.Header;
 import com.android.dialer.contactsfragment.ContactsFragment.OnContactSelectedListener;
-import com.android.dialer.contactsfragment.ContactsFragment;
+import com.android.dialer.ui.contacts.ContactsHostFragment;
 import com.android.dialer.database.CallLogQueryHandler;
 import com.android.dialer.database.Database;
 import com.android.dialer.dialpadview.DialpadFragment.DialpadListener;
@@ -1483,9 +1482,10 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
       }
       Logger.get(activity).logScreenView(ScreenEvent.Type.MAIN_CONTACTS, activity);
       selectedTab = TabIndex.CONTACTS;
-      Fragment fragment = fragmentManager.findFragmentByTag(CONTACTS_TAG);
-      showFragment(
-          fragment == null ? ContactsFragment.newInstance(Header.ADD_CONTACT) : fragment,
+      androidx.fragment.app.Fragment supportFragment =
+          supportFragmentManager.findFragmentByTag(CONTACTS_TAG);
+      showSupportFragment(
+          supportFragment == null ? ContactsHostFragment.newInstance() : supportFragment,
           CONTACTS_TAG);
       fab.show();
     }
