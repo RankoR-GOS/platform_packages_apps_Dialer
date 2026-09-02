@@ -63,6 +63,8 @@ internal fun ContactsFastScroller(
         else -> rememberListScrollProgress(listState = listState)
     }
 
+    val totalItems by remember { derivedStateOf { listState.layoutInfo.totalItemsCount } }
+
     Box(
         modifier = modifier
             .fillMaxHeight()
@@ -89,7 +91,7 @@ internal fun ContactsFastScroller(
                 label = fastScrollerLabel(
                     rows = rows,
                     progress = progress,
-                    totalItems = listState.layoutInfo.totalItemsCount,
+                    totalItems = totalItems,
                     hasAddContactRow = hasAddContactRow,
                 ),
                 offsetY = thumbOffset,
