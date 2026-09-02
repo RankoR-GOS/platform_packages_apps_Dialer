@@ -2,9 +2,9 @@ package com.android.dialer.ui.contacts.component
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.R
@@ -44,7 +44,9 @@ class AddContactRowTest {
 
         val label = composeRule.activity.getString(R.string.all_contacts_empty_add_contact_action)
 
-        composeRule.onNodeWithText(label).assertIsDisplayed()
+        composeRule
+            .onNodeWithTag(CONTACTS_ADD_CONTACT_ROW_TEST_TAG)
+            .assertTextContains(label)
     }
 
     @Test

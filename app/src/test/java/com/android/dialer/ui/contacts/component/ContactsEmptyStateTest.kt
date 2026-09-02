@@ -2,12 +2,13 @@ package com.android.dialer.ui.contacts.component
 
 import android.os.Build
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.android.dialer.testing.robolectricComposeActivityRule
 import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_ACTION_TEST_TAG
+import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_TEST_TAG
 import com.android.dialer.ui.core.DialerTheme
 import org.junit.Assert.assertEquals
@@ -56,14 +57,15 @@ class ContactsEmptyStateTest {
 
     @Test
     fun showsTheMessageAndActionItWasGiven() {
-        render(
-            message = "To see your contacts, turn on the Contacts permission.",
-            actionLabel = "Turn on"
-        )
+        val message = "To see your contacts, turn on the Contacts permission."
+        render(message = message, actionLabel = "Turn on")
 
-        composeRule.onNodeWithText("To see your contacts, turn on the Contacts permission.")
-            .assertIsDisplayed()
-        composeRule.onNodeWithText("Turn on").assertIsDisplayed()
+        composeRule
+            .onNodeWithTag(CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG, useUnmergedTree = true)
+            .assertTextEquals(message)
+        composeRule
+            .onNodeWithTag(CONTACTS_EMPTY_STATE_ACTION_TEST_TAG)
+            .assertTextEquals("Turn on")
     }
 
     @Test

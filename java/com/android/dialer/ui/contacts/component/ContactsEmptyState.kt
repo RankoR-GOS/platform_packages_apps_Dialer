@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_ACTION_TEST_TAG
+import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_TEST_TAG
 import com.android.dialer.ui.core.DialerPreviewTheme
 
@@ -55,7 +56,9 @@ internal fun ContactsEmptyState(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = EmptyStateSpacing),
+            modifier = Modifier
+                .padding(top = EmptyStateSpacing)
+                .testTag(CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG),
         )
 
         TextButton(

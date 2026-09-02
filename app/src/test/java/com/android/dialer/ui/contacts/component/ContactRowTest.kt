@@ -4,10 +4,10 @@ import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.android.dialer.testing.robolectricComposeActivityRule
 import com.android.dialer.ui.contacts.common.contactAvatarTestTag
@@ -76,9 +76,11 @@ class ContactRowTest {
 
     @Test
     fun rowShowsTheDisplayName() {
-        render(row(displayName = "Grace Hopper"))
+        render(row(id = 4L, displayName = "Grace Hopper"))
 
-        composeRule.onNodeWithText("Grace Hopper").assertIsDisplayed()
+        composeRule
+            .onNodeWithTag(contactRowTestTag(contactId = 4L))
+            .assertTextContains("Grace Hopper")
     }
 
     @Test

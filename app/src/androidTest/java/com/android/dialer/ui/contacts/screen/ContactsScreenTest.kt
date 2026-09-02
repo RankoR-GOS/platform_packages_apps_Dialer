@@ -2,15 +2,16 @@ package com.android.dialer.ui.contacts.screen
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.R
 import com.android.dialer.ui.contacts.common.CONTACTS_ADD_CONTACT_ROW_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_ACTION_TEST_TAG
+import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_EMPTY_STATE_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_LIST_TEST_TAG
 import com.android.dialer.ui.contacts.common.contactRowTestTag
@@ -104,8 +105,12 @@ class ContactsScreenTest {
         composeRule.runOnIdle { screenModel.mutableState.value = State.PermissionRequired }
 
         composeRule.onNodeWithTag(CONTACTS_EMPTY_STATE_TEST_TAG).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.permission_no_contacts)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.permission_single_turn_on)).assertIsDisplayed()
+        composeRule
+            .onNodeWithTag(CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG, useUnmergedTree = true)
+            .assertTextEquals(string(R.string.permission_no_contacts))
+        composeRule
+            .onNodeWithTag(CONTACTS_EMPTY_STATE_ACTION_TEST_TAG)
+            .assertTextEquals(string(R.string.permission_single_turn_on))
     }
 
     @Test
@@ -114,7 +119,9 @@ class ContactsScreenTest {
         composeRule.runOnIdle { screenModel.mutableState.value = State.Empty }
 
         composeRule.onNodeWithTag(CONTACTS_EMPTY_STATE_TEST_TAG).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.all_contacts_empty)).assertIsDisplayed()
+        composeRule
+            .onNodeWithTag(CONTACTS_EMPTY_STATE_MESSAGE_TEST_TAG, useUnmergedTree = true)
+            .assertTextEquals(string(R.string.all_contacts_empty))
     }
 
     @Test
