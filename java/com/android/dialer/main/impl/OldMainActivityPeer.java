@@ -1513,13 +1513,11 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
       LogUtil.enterBlock("MainBottomNavBarBottomNavTabListener.showFragment");
       Fragment oldSpeedDial = fragmentManager.findFragmentByTag(SPEED_DIAL_TAG);
       Fragment oldCallLog = fragmentManager.findFragmentByTag(CALL_LOG_TAG);
-      Fragment contacts = fragmentManager.findFragmentByTag(CONTACTS_TAG);
       Fragment oldVoicemail = fragmentManager.findFragmentByTag(VOICEMAIL_TAG);
 
       FragmentTransaction transaction = fragmentManager.beginTransaction();
       boolean fragmentShown = showIfEqualElseHide(transaction, fragment, oldSpeedDial);
       fragmentShown |= showIfEqualElseHide(transaction, fragment, oldCallLog);
-      fragmentShown |= showIfEqualElseHide(transaction, fragment, contacts);
       fragmentShown |= showIfEqualElseHide(transaction, fragment, oldVoicemail);
 
       if (!fragmentShown && fragment != null) {
@@ -1537,6 +1535,8 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
           supportFragmentManager.findFragmentByTag(SPEED_DIAL_TAG);
       androidx.fragment.app.Fragment newCallLog =
           supportFragmentManager.findFragmentByTag(CALL_LOG_TAG);
+      androidx.fragment.app.Fragment contacts =
+          supportFragmentManager.findFragmentByTag(CONTACTS_TAG);
       androidx.fragment.app.Fragment newVoicemail =
           supportFragmentManager.findFragmentByTag(VOICEMAIL_TAG);
 
@@ -1546,6 +1546,8 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
           showIfEqualElseHideSupport(supportTransaction, supportFragment, speedDial);
       supportFragmentShown |=
           showIfEqualElseHideSupport(supportTransaction, supportFragment, newCallLog);
+      supportFragmentShown |=
+          showIfEqualElseHideSupport(supportTransaction, supportFragment, contacts);
       supportFragmentShown |=
           showIfEqualElseHideSupport(supportTransaction, supportFragment, newVoicemail);
 
