@@ -8,7 +8,10 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performTouchInput
 import com.android.dialer.testing.robolectricComposeActivityRule
+import com.android.dialer.ui.contacts.common.CONTACTS_FAST_SCROLLER_LABEL_TEST_TAG
+import com.android.dialer.ui.contacts.common.CONTACTS_FAST_SCROLLER_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_LIST_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_PINNED_SECTION_TEST_TAG
 import com.android.dialer.ui.contacts.common.contactRowTestTag
@@ -126,9 +129,62 @@ class ContactsListTest {
         assertEquals(0, pinnedLabelCount())
     }
 
-    private fun pinnedLabelCount(): Int =
-        composeRule
-            .onAllNodesWithTag(CONTACTS_PINNED_SECTION_TEST_TAG, useUnmergedTree = true)
-            .fetchSemanticsNodes()
-            .size
+    // --- fast scroller ---------------------------------------------------------------------
+
+    private fun longList() = List(size = 60) { index ->
+        row(
+            id = index.toLong(),
+            name = "Contact $index",
+            label = if (index < 30) "A" else "M",
+            isStart = index == 0 || index == 30,
+        )
+    }
+
+    @Test
+    fun fastScrollerStaysHiddenWhileTheWholeListFits() {
+        render()
+
+        assertEquals(0, nodeCount(CONTACTS_FAST_SCROLLER_TEST_TAG))
+    }
+
+    @Test
+    fun fastScrollerAppearsOnceTheListOutgrowsTheScreen() {
+        render(rows = longList())
+
+        composeRule.onNodeWithTag(CONTACTS_FAST_SCROLLER_TEST_TAG).assertIsDisplayed()
+    }
+
+    @Test
+    fun bubbleShowsOnlyWhileTheScrollerIsHeld() {
+        render(rows = longList())
+
+        assertEquals(0, nodeCount(CONTACTS_FAST_SCROLLER_LABEL_TEST_TAG))
+
+        composeRule.onNodeWithTag(CONTACTS_FAST_SCROLLER_TEST_TAG).performTouchInput {
+            down(centerLeft)
+        }
+        assertEquals(1, nodeCount(CONTACTS_FAST_SCROLLER_LABEL_TEST_TAG))
+
+        composeRule.onNodeWithTag(CONTACTS_FAST_SCROLLER_TEST_TAG).performTouchInput { up() }
+        assertEquals(0, nodeCount(CONTACTS_FAST_SCROLLER_LABEL_TEST_TAG))
+    }
+
+    @Test
+    fun draggingTheScrollerMovesTheList() {
+        render(rows = longList())
+        val firstRowTag = contactRowTestTag(contactId = 0L)
+        composeRule.onNodeWithTag(firstRowTag).assertIsDisplayed()
+
+        composeRule.onNodeWithTag(CONTACTS_FAST_SCROLLER_TEST_TAG).performTouchInput {
+            down(bottomLeft)
+            up()
+        }
+
+        assertEquals(0, nodeCount(firstRowTag))
+    }
+
+    private fun pinnedLabelCount(): Int = nodeCount(CONTACTS_PINNED_SECTION_TEST_TAG)
+
+    private fun nodeCount(tag: String): Int =
+        composeRule.onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().size
 }

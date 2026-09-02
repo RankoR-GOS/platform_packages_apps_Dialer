@@ -2,12 +2,16 @@ package com.android.dialer.ui.contacts.component
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.ui.contacts.common.CONTACTS_ADD_CONTACT_ROW_TEST_TAG
+import com.android.dialer.ui.contacts.common.CONTACTS_FAST_SCROLLER_LABEL_TEST_TAG
+import com.android.dialer.ui.contacts.common.CONTACTS_FAST_SCROLLER_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_LIST_TEST_TAG
 import com.android.dialer.ui.contacts.common.CONTACTS_PINNED_SECTION_TEST_TAG
 import com.android.dialer.ui.contacts.common.contactRowTestTag
@@ -81,5 +85,27 @@ class ContactsListWithAddRowTest {
         composeRule
             .onNodeWithTag(CONTACTS_PINNED_SECTION_TEST_TAG, useUnmergedTree = true)
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun fastScrollerBubbleLabelsTheContactUnderTheThumb() {
+        val rows = List(size = 60) { index ->
+            row(
+                id = index.toLong(),
+                label = if (index < 30) "A" else "M",
+                isStart = index == 0 || index == 30,
+            )
+        }
+        render(rows)
+
+        composeRule.onNodeWithTag(CONTACTS_FAST_SCROLLER_TEST_TAG).performTouchInput {
+            down(bottomLeft)
+        }
+
+        composeRule
+            .onNodeWithTag(CONTACTS_FAST_SCROLLER_LABEL_TEST_TAG, useUnmergedTree = true)
+            .assertTextEquals("M")
+
+        composeRule.onNodeWithTag(CONTACTS_FAST_SCROLLER_TEST_TAG).performTouchInput { up() }
     }
 }

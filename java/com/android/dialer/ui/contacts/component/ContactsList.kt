@@ -63,6 +63,13 @@ internal fun ContactsList(
             listState = listState,
             hasAddContactRow = showsAddContactRow,
         )
+
+        ContactsFastScroller(
+            listState = listState,
+            rows = rows,
+            hasAddContactRow = showsAddContactRow,
+            modifier = Modifier.align(Alignment.CenterEnd),
+        )
     }
 }
 
