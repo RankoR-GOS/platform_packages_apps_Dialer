@@ -144,8 +144,14 @@ jobs:
             21
           cache: gradle
 
-      - name: Run unit tests
-        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace --console=plain
+      # Thresholds are a floor set at the level the suite actually reaches, not an aspiration.
+      # Raising one later is easy; a threshold that fails on day one just gets switched off.
+      - name: Run unit tests and coverage gate
+        run: >
+          ./gradlew :app:jacocoUnitTestVerification
+          -PunitTestMinCoverage=70
+          -PunitTestMinBranchCoverage=60
+          --no-daemon --stacktrace --console=plain
 
       - name: Upload unit test reports
         if: failure()
@@ -155,6 +161,7 @@ jobs:
           path: |
             app/build/reports/tests/testDebugUnitTest/
             app/build/test-results/testDebugUnitTest/
+            app/build/reports/jacoco/jacocoUnitTestReport/
           if-no-files-found: ignore
 
   instrumented-tests:
@@ -215,7 +222,11 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace --console=plain
+          script: >
+            ./gradlew :app:connectedDebugAndroidTest :app:jacocoAndroidTestVerification
+            -PandroidTestMinCoverage=80
+            -PandroidTestMinBranchCoverage=50
+            --no-daemon --stacktrace --console=plain
 
       - name: Upload instrumented test reports
         if: failure()
@@ -225,4 +236,5 @@ jobs:
           path: |
             app/build/reports/androidTests/connected/
             app/build/outputs/androidTest-results/connected/
+            app/build/reports/jacoco/jacocoAndroidTestReport/
           if-no-files-found: ignore
