@@ -2,6 +2,7 @@
 # Build tooling
 agp = "9.3.1"
 detekt = "2.0.0-alpha.6"
+jacoco = "0.8.14"
 kotlin = "2.4.10"
 ksp = "2.3.11"
 #noinspection UnusedVersionCatalogEntry
@@ -15,6 +16,7 @@ androidx-hilt = "1.4.0"
 appcompat = "1.7.1"
 auto-value = "1.11.0"
 cardview = "1.0.0"
+coil = "3.4.0"
 collection = "1.5.0"
 commons-io = "2.20.0"
 compose-bom = "2026.08.00"
@@ -73,6 +75,7 @@ ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 androidx-collection = { module = "androidx.collection:collection", version.ref = "collection" }
 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
@@ -98,6 +101,7 @@ androidx-legacy-support-v13 = { module = "androidx.legacy:legacy-support-v13", v
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacy-support-v4" }
 
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 

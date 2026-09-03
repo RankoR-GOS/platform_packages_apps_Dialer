@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Debug-only host for instrumented fragment tests. It has to live in the app under test
+             rather than the test APK, so it runs in the app's process and Hilt can process its
+             @AndroidEntryPoint. Same arrangement androidx ui-test-manifest uses. -->
+        <activity
+            android:name="com.android.dialer.ui.contacts.ContactsHostFragmentTestActivity"
+            android:exported="false"
+            android:theme="@style/Dialer.ThemeBase.NoActionBar" />
+    </application>
+</manifest>
