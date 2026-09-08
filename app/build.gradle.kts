@@ -1,5 +1,6 @@
 import com.google.protobuf.gradle.proto
 import dev.detekt.gradle.Detekt
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -10,20 +11,16 @@ plugins {
     alias(libs.plugins.protobuf)
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+// One JVM for the whole build: javac, Kotlin, KSP, lint and Robolectric. jvmToolchain() sets the
+// Java toolchain as well. 21 is the floor - Robolectric needs it to build a sandbox for recent
+// Android SDKs, and lint's own detectors call SequencedCollection methods that do not exist on 17.
+// The bytecode level is pinned separately in jvmTarget and compileOptions, so it does not drift
+// with whichever JDK runs the build.
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
-}
-
-// Robolectric refuses to build a sandbox for Android SDK 36 on anything below Java 21, so the
-// tests need a newer launcher than the toolchain the app compiles against.
-tasks.withType<Test>().configureEach {
-    javaLauncher.set(
-        javaToolchains.launcherFor {
-            languageVersion.set(JavaLanguageVersion.of(21))
-        },
-    )
 }
 
 detekt {
@@ -50,6 +47,15 @@ android {
     compileSdk = 37
     buildToolsVersion = "37.0.0"
     namespace = "com.android.dialer"
+
+    // Deliberately below the toolchain: the JDK that runs the build is a host detail, the bytecode
+    // level is an output contract. 17 is a choice, not a floor: Soong built these sources at 1.8
+    // and they still compile there, but javac 21 flags 8 as obsolete. The other GrapheneOS apps
+    // build with 17.
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
     buildFeatures {
         aidl = true
