@@ -1,13 +1,16 @@
 package com.android.dialer.ui.recents.screen
 
+import android.content.ClipData
+import android.content.ClipDescription
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.PersistableBundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.android.dialer.callintent.CallInitiationType
 import com.android.dialer.callintent.CallIntentBuilder
-import com.android.dialer.clipboard.ClipboardUtils
 import com.android.dialer.precall.PreCall
 import com.android.dialer.ui.recents.model.RecentsEffect
 import com.android.dialer.util.DialerUtils
@@ -53,7 +56,13 @@ internal class RecentsEffectHandlerImpl(
     }
 
     private fun copyNumber(number: String) {
-        ClipboardUtils.copyText(context, null, number, true)
+        val clip = ClipData.newPlainText(null, number).apply {
+            description.extras = PersistableBundle().apply {
+                putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+            }
+        }
+
+        context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(clip)
     }
 
     private fun startActivity(intent: Intent) {
