@@ -56,7 +56,10 @@ internal class RecentsItemsTest {
         composeTestRule.onNodeWithTag(testTag = callButtonTag(id = 1L)).performClick()
 
         composeTestRule.runOnIdle {
-            assertEquals(listOf(Event.CallClicked(number = NUMBER)), emittedEvents)
+            assertEquals(
+                listOf(Event.CallClicked(entryId = entryId(1L), number = NUMBER)),
+                emittedEvents
+            )
         }
     }
 
@@ -67,7 +70,10 @@ internal class RecentsItemsTest {
         composeTestRule.onNodeWithTag(testTag = callButtonTag(id = 1L)).performClick()
 
         composeTestRule.runOnIdle {
-            assertEquals(listOf(Event.VideoCallClicked(number = NUMBER)), emittedEvents)
+            assertEquals(
+                listOf(Event.VideoCallClicked(entryId = entryId(1L), number = NUMBER)),
+                emittedEvents
+            )
         }
     }
 

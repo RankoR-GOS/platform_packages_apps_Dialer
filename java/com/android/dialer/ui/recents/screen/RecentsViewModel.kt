@@ -71,6 +71,7 @@ internal class RecentsViewModel @Inject constructor(
             is Action.MessageClicked -> emitEffect(Effect.SendMessage(number = action.number))
             is Action.AddContactClicked -> emitEffect(Effect.AddContact(number = action.number))
             is Action.CopyNumberClicked -> emitEffect(Effect.CopyNumber(number = action.number))
+            is Action.EntryViewed -> markRead(entryIds = action.entryIds)
             is Action.DeleteConfirmed -> delete(entryIds = action.entryIds)
             Action.ClearHistoryConfirmed -> clearHistory()
         }
@@ -82,6 +83,12 @@ internal class RecentsViewModel @Inject constructor(
                 emit(currentTimeProvider.currentTimeMillis())
                 delay(MINUTE_MILLIS)
             }
+        }
+    }
+
+    private fun markRead(entryIds: List<CallLogEntryId>) {
+        viewModelScope.launch(defaultDispatcher) {
+            repository.markRead(entryIds = entryIds)
         }
     }
 

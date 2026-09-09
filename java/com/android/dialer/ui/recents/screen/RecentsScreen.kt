@@ -113,6 +113,7 @@ internal fun RecentsScreen(
                 onItemEvent = { event ->
                     handleItemEvent(
                         event = event,
+                        content = uiState.content,
                         onAction = screenModel::onAction,
                         onOpenSheet = { entryId -> sheetTargetId = entryId.value },
                     )
@@ -166,15 +167,31 @@ internal fun RecentsEffects(
 
 internal fun handleItemEvent(
     event: RecentsItemEvent,
+    content: RecentsContentUiState,
     onAction: (Action) -> Unit,
     onOpenSheet: (CallLogEntryId) -> Unit,
 ) {
     when (event) {
-        is RecentsItemEvent.Clicked -> onOpenSheet(event.entryId)
-        is RecentsItemEvent.CallClicked -> onAction(Action.CallBackClicked(number = event.number))
-        is RecentsItemEvent.VideoCallClicked -> onAction(
-            Action.VideoCallClicked(number = event.number),
-        )
+        is RecentsItemEvent.Clicked -> {
+            content.markViewed(entryId = event.entryId, onAction = onAction)
+            onOpenSheet(event.entryId)
+        }
+        is RecentsItemEvent.CallClicked -> {
+            content.markViewed(entryId = event.entryId, onAction = onAction)
+            onAction(Action.CallBackClicked(number = event.number))
+        }
+        is RecentsItemEvent.VideoCallClicked -> {
+            content.markViewed(entryId = event.entryId, onAction = onAction)
+            onAction(Action.VideoCallClicked(number = event.number))
+        }
+    }
+}
+
+private fun RecentsContentUiState.markViewed(entryId: CallLogEntryId, onAction: (Action) -> Unit) {
+    val item = entryOrNull(entryId = entryId.value) ?: return
+
+    if (item.isUnreadMissedCall) {
+        onAction(Action.EntryViewed(entryIds = item.groupedEntryIds))
     }
 }
 

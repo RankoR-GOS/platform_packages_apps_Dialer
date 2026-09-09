@@ -20,13 +20,19 @@ internal class RecentsScreenWiringTest {
     fun itemEvents_openTheSheetForATapAndDispatchTheCallActionsWithTheNumber() {
         val actions = mutableListOf<Action>()
         val openedSheets = mutableListOf<CallLogEntryId>()
+        val content = entries(recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER))
 
         listOf(
             RecentsItemEvent.Clicked(entryId = ENTRY_ID),
-            RecentsItemEvent.CallClicked(number = NUMBER),
-            RecentsItemEvent.VideoCallClicked(number = NUMBER),
+            RecentsItemEvent.CallClicked(entryId = ENTRY_ID, number = NUMBER),
+            RecentsItemEvent.VideoCallClicked(entryId = ENTRY_ID, number = NUMBER),
         ).forEach { event ->
-            handleItemEvent(event = event, onAction = actions::add, onOpenSheet = openedSheets::add)
+            handleItemEvent(
+                event = event,
+                content = content,
+                onAction = actions::add,
+                onOpenSheet = openedSheets::add,
+            )
         }
 
         assertEquals(listOf(ENTRY_ID), openedSheets)
@@ -34,6 +40,37 @@ internal class RecentsScreenWiringTest {
             listOf(
                 Action.CallBackClicked(number = NUMBER),
                 Action.VideoCallClicked(number = NUMBER),
+            ),
+            actions,
+        )
+    }
+
+    @Test
+    fun itemEvents_onAnUnreadMissedRow_markTheGroupViewedBeforeTheAction() {
+        val actions = mutableListOf<Action>()
+        val groupIds = persistentListOf(ENTRY_ID, CallLogEntryId(value = 6L))
+        val unread = recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER)
+            .copy(isUnreadMissedCall = true, groupedEntryIds = groupIds)
+        val content = entries(unread)
+
+        handleItemEvent(
+            event = RecentsItemEvent.Clicked(entryId = ENTRY_ID),
+            content = content,
+            onAction = actions::add,
+            onOpenSheet = {},
+        )
+        handleItemEvent(
+            event = RecentsItemEvent.CallClicked(entryId = ENTRY_ID, number = NUMBER),
+            content = content,
+            onAction = actions::add,
+            onOpenSheet = {},
+        )
+
+        assertEquals(
+            listOf(
+                Action.EntryViewed(entryIds = groupIds),
+                Action.EntryViewed(entryIds = groupIds),
+                Action.CallBackClicked(number = NUMBER),
             ),
             actions,
         )

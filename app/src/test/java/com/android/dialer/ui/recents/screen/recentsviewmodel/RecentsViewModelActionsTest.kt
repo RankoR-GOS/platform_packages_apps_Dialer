@@ -74,6 +74,42 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
+    fun entryViewed_marksEveryCallOfTheGroupReadAndRaisesNothing() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            coEvery { repository.markRead(GROUP_IDS) } returns RecentsWriteResult.Completed
+            val viewModel = createViewModel()
+
+            viewModel.effects.test {
+                viewModel.onAction(Action.EntryViewed(entryIds = GROUP_IDS))
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+            coVerify(exactly = 1) { repository.markRead(listOf(ENTRY_ID, OLDER_ENTRY_ID)) }
+        }
+    }
+
+    @Test
+    fun entryViewed_whenTheWriteFails_raisesNothing() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            coEvery { repository.markRead(any()) } returns
+                RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage)
+            val viewModel = createViewModel()
+
+            viewModel.effects.test {
+                viewModel.onAction(Action.EntryViewed(entryIds = GROUP_IDS))
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
     fun deleteConfirmed_deletesEveryEntryInTheGroupAndRaisesNothing() {
         runTest(
             context = mainDispatcherRule.testDispatcher,

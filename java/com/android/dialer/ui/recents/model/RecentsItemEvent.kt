@@ -13,11 +13,13 @@ internal sealed interface RecentsItemEvent {
 
     @Immutable
     data class CallClicked(
+        val entryId: CallLogEntryId,
         val number: String,
     ) : RecentsItemEvent
 
     @Immutable
     data class VideoCallClicked(
+        val entryId: CallLogEntryId,
         val number: String,
     ) : RecentsItemEvent
 }

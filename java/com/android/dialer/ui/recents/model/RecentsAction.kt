@@ -31,6 +31,10 @@ internal sealed interface RecentsAction {
         val number: String,
     ) : RecentsAction
 
+    data class EntryViewed(
+        val entryIds: ImmutableList<CallLogEntryId>,
+    ) : RecentsAction
+
     data class DeleteConfirmed(
         val entryIds: ImmutableList<CallLogEntryId>,
     ) : RecentsAction
