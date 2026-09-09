@@ -1,14 +1,12 @@
 package com.android.dialer.di.recents
 
 import android.os.Build
-import android.provider.Settings
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatterImpl
 import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.contact.ContactLookupImpl
 import com.android.dialer.data.recents.repository.RecentsRepository
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
-import com.android.dialer.data.recents.repository.SyntheticRecentsRepository
 import com.android.dialer.domain.recents.usecase.CanPlaceCall
 import com.android.dialer.domain.recents.usecase.CanPlaceCallImpl
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCalls
@@ -34,8 +32,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.components.SingletonComponent
-import org.junit.After
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -60,9 +56,6 @@ internal class RecentsGraphTest {
     internal interface RecentsTestEntryPoint {
 
         fun recentsRepository(): RecentsRepository
-
-        @SyntheticCallLog
-        fun syntheticRecentsRepository(): RecentsRepository
 
         fun isCallLogPermissionGranted(): IsCallLogPermissionGranted
 
@@ -101,11 +94,6 @@ internal class RecentsGraphTest {
         )
     }
 
-    @After
-    fun tearDown() {
-        selectScenario(name = null)
-    }
-
     @Test
     fun graph_resolvesTheRepositoryToTheSystemImplementation() {
         assertTrue(entryPoint.recentsRepository() is RecentsRepositoryImpl)
@@ -133,60 +121,5 @@ internal class RecentsGraphTest {
         assertTrue(entryPoint.phoneNumberFormatter() is PhoneNumberFormatterImpl)
         assertTrue(entryPoint.recentsItemUiMapper() is RecentsItemUiMapperImpl)
         assertTrue(entryPoint.recentsUiStateMapper() is RecentsUiStateMapperImpl)
-    }
-
-    @Test
-    fun graph_reachesTheSyntheticRepositoryOnlyThroughItsQualifier() {
-        assertTrue(entryPoint.syntheticRecentsRepository() is SyntheticRecentsRepository)
-        assertFalse(entryPoint.recentsRepository() is SyntheticRecentsRepository)
-    }
-
-    @Test
-    fun graph_returnsTheSameSyntheticRepositoryOnEveryLookup() {
-        assertSame(
-            entryPoint.syntheticRecentsRepository(),
-            entryPoint.syntheticRecentsRepository(),
-        )
-    }
-
-    @Test
-    fun debugRecentsRepository_withNoScenarioSelected_returnsTheSystemRepository() {
-        selectScenario(name = null)
-
-        val repository = debugRecentsRepository(context = RuntimeEnvironment.getApplication())
-
-        assertTrue(repository is RecentsRepositoryImpl)
-    }
-
-    @Test
-    fun debugRecentsRepository_withAScenarioSelected_returnsTheSyntheticRepository() {
-        selectScenario(name = HOSTILE_SCENARIO_NAME)
-
-        val repository = debugRecentsRepository(context = RuntimeEnvironment.getApplication())
-
-        assertSame(entryPoint.syntheticRecentsRepository(), repository)
-    }
-
-    @Test
-    fun debugRecentsRepository_withAnUnknownScenarioName_returnsTheSystemRepository() {
-        selectScenario(name = UNKNOWN_SCENARIO_NAME)
-
-        val repository = debugRecentsRepository(context = RuntimeEnvironment.getApplication())
-
-        assertTrue(repository is RecentsRepositoryImpl)
-    }
-
-    private fun selectScenario(name: String?) {
-        Settings.Global.putString(
-            RuntimeEnvironment.getApplication().contentResolver,
-            SETTING_NAME,
-            name,
-        )
-    }
-
-    private companion object {
-        private const val SETTING_NAME = "dialer_recents_synthetic_call_log"
-        private const val HOSTILE_SCENARIO_NAME = "hostile"
-        private const val UNKNOWN_SCENARIO_NAME = "nonsense"
     }
 }
