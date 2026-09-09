@@ -11,6 +11,45 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
+private const val SEED_NOW_MILLIS = 1_806_240_000_000L
+
+private const val AGE_ONE_MINUTE = 60_000L
+private const val AGE_TWO_MINUTES = 120_000L
+private const val AGE_THREE_MINUTES = 180_000L
+private const val AGE_ONE_HOUR = 3_600_000L
+private const val AGE_TWO_HOURS = 7_200_000L
+private const val AGE_ONE_DAY = 86_400_000L
+private const val AGE_YESTERDAY = 90_000_000L
+private const val AGE_TWO_DAYS = 180_000_000L
+private const val AGE_LAST_WEEK = 600_000_000L
+
+private const val DURATION_SHORT = 95L
+private const val DURATION_LONG = 340L
+private const val DURATION_EMERGENCY = 12L
+private const val DURATION_ABSURD = 999_999L
+private const val DURATION_NEGATIVE = -1L
+
+private const val MISSED_NUMBER = "+18765550111"
+private const val LOCAL_NUMBER = "+18765550100"
+private const val REJECTED_NUMBER = "+18765550199"
+private const val EMERGENCY_NUMBER = "911"
+private const val THIRTY_DIGIT_NUMBER = "123456789012345678901234567890"
+private const val VANITY_NUMBER = "1-800-FLOWERS"
+
+private const val GEOCODED_LOCATION = "Kingston, Jamaica"
+private const val CONTACT_NAME = "Ada Lovelace"
+private const val LONG_CONTACT_NAME =
+    "Maximilian Bartholomew Fitzgerald-Whitcombe of Montego Bay and Ocho Rios"
+private const val EMOJI_CONTACT_NAME = "Grace 🎉🇯🇲"
+
+private const val ARABIC_CONTACT_NAME = "محمد عبد"
+private const val CJK_CONTACT_NAME = "山田太郎"
+private const val BLANK_CONTACT_NAME = "  "
+
+private const val UNKNOWN_CALL_TYPE = 99
+private const val HOSTILE_RUN_SIZE = 100
+private const val HOSTILE_RUN_FIRST_ID = 301L
+
 internal enum class SyntheticCallLogScenario {
 
     Populated,
@@ -277,42 +316,3 @@ private fun entry(
         isRead = isRead,
     )
 }
-
-private const val SEED_NOW_MILLIS = 1_806_240_000_000L
-
-private const val AGE_ONE_MINUTE = 60_000L
-private const val AGE_TWO_MINUTES = 120_000L
-private const val AGE_THREE_MINUTES = 180_000L
-private const val AGE_ONE_HOUR = 3_600_000L
-private const val AGE_TWO_HOURS = 7_200_000L
-private const val AGE_ONE_DAY = 86_400_000L
-private const val AGE_YESTERDAY = 90_000_000L
-private const val AGE_TWO_DAYS = 180_000_000L
-private const val AGE_LAST_WEEK = 600_000_000L
-
-private const val DURATION_SHORT = 95L
-private const val DURATION_LONG = 340L
-private const val DURATION_EMERGENCY = 12L
-private const val DURATION_ABSURD = 999_999L
-private const val DURATION_NEGATIVE = -1L
-
-private const val MISSED_NUMBER = "+18765550111"
-private const val LOCAL_NUMBER = "+18765550100"
-private const val REJECTED_NUMBER = "+18765550199"
-private const val EMERGENCY_NUMBER = "911"
-private const val THIRTY_DIGIT_NUMBER = "123456789012345678901234567890"
-private const val VANITY_NUMBER = "1-800-FLOWERS"
-
-private const val GEOCODED_LOCATION = "Kingston, Jamaica"
-private const val CONTACT_NAME = "Ada Lovelace"
-private const val LONG_CONTACT_NAME =
-    "Maximilian Bartholomew Fitzgerald-Whitcombe of Montego Bay and Ocho Rios"
-private const val EMOJI_CONTACT_NAME = "Grace 🎉🇯🇲"
-
-private const val ARABIC_CONTACT_NAME = "محمد عبد"
-private const val CJK_CONTACT_NAME = "山田太郎"
-private const val BLANK_CONTACT_NAME = "  "
-
-private const val UNKNOWN_CALL_TYPE = 99
-private const val HOSTILE_RUN_SIZE = 100
-private const val HOSTILE_RUN_FIRST_ID = 301L

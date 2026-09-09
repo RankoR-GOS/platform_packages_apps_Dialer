@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.android.dialer.ui.common.components.safeDrawingContentPadding
 import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.RECENTS_LIST_TEST_TAG
+import com.android.dialer.ui.recents.common.RecentsFabBottomReserve
 import com.android.dialer.ui.recents.common.previewRecentsListItems
 import com.android.dialer.ui.recents.model.RecentsItemEvent
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
@@ -36,7 +37,6 @@ private val ItemPlacementSpec = spring(
 
 private val ListVerticalSpacing = 2.dp
 private val ListContentPadding = 8.dp
-internal val RecentsFabBottomReserve = 88.dp
 
 @Composable
 internal fun RecentsItems(

@@ -33,8 +33,8 @@ import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.core.CollectEvents
 import com.android.dialer.ui.recents.common.RECENTS_SCREEN_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SNACKBAR_TEST_TAG
+import com.android.dialer.ui.recents.common.RecentsFabBottomReserve
 import com.android.dialer.ui.recents.component.RecentsActionsSheet
-import com.android.dialer.ui.recents.component.RecentsFabBottomReserve
 import com.android.dialer.ui.recents.model.RecentsAction as Action
 import com.android.dialer.ui.recents.model.RecentsContentUiState
 import com.android.dialer.ui.recents.model.RecentsEffect as Effect

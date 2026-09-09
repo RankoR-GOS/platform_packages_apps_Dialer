@@ -12,6 +12,7 @@ import com.android.dialer.ui.recents.model.RecentsListItemUiModel
 import com.android.dialer.ui.recents.model.RecentsUiState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 internal interface RecentsUiStateMapper {
@@ -49,20 +50,25 @@ internal class RecentsUiStateMapperImpl @Inject constructor(
         }
     }
 
-    private fun listItems(entries: List<CallLogEntry>, nowMillis: Long) = buildList {
+    private fun listItems(
+        entries: List<CallLogEntry>,
+        nowMillis: Long,
+    ): ImmutableList<RecentsListItemUiModel> {
         var currentDay: Day? = null
 
-        entries.forEach { entry ->
-            val day = entry.day(nowMillis = nowMillis)
+        return buildList {
+            entries.forEach { entry ->
+                val day = entry.day(nowMillis = nowMillis)
 
-            if (day != currentDay) {
-                add(RecentsListItemUiModel.DayHeader(key = day.name, label = day.label()))
-                currentDay = day
+                if (day != currentDay) {
+                    add(RecentsListItemUiModel.DayHeader(key = day.name, label = day.label()))
+                    currentDay = day
+                }
+
+                add(RecentsListItemUiModel.Entry(item = itemUiMapper.map(entry, nowMillis)))
             }
-
-            add(RecentsListItemUiModel.Entry(item = itemUiMapper.map(entry, nowMillis)))
-        }
-    }.toImmutableList()
+        }.toImmutableList()
+    }
 
     private fun CallLogEntry.day(nowMillis: Long): Day {
         return when {

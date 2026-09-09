@@ -28,14 +28,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
+import com.android.dialer.ui.recents.common.ItemAvatarSize
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
-
-internal val ItemAvatarSize = 48.dp
 
 private val AvatarGlyphSize = 24.dp
 
