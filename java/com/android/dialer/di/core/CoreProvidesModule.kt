@@ -3,6 +3,7 @@ package com.android.dialer.di.core
 import android.content.ContentResolver
 import android.content.Context
 import android.telephony.TelephonyManager
+import com.android.dialer.util.core.CurrentTimeProvider
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -46,5 +47,11 @@ internal class CoreProvidesModule {
         context: Context,
     ): TelephonyManager? {
         return context.getSystemService(TelephonyManager::class.java)
+    }
+
+    @Provides
+    @Reusable
+    fun provideCurrentTimeProvider(): CurrentTimeProvider {
+        return CurrentTimeProvider { System.currentTimeMillis() }
     }
 }

@@ -3,6 +3,7 @@ package com.android.dialer.di.core
 import android.content.ContentResolver
 import android.os.Build
 import android.telephony.TelephonyManager
+import com.android.dialer.util.core.CurrentTimeProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -13,6 +14,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +44,8 @@ internal class CoreGraphTest {
         fun contentResolver(): ContentResolver
 
         fun telephonyManager(): TelephonyManager?
+
+        fun currentTimeProvider(): CurrentTimeProvider
     }
 
     @get:Rule
@@ -76,5 +80,12 @@ internal class CoreGraphTest {
             application.getSystemService(TelephonyManager::class.java),
             entryPoint.telephonyManager(),
         )
+    }
+
+    @Test
+    fun graph_resolvesACurrentTimeProviderThatReadsTheWallClock() {
+        val before = System.currentTimeMillis()
+
+        assertTrue(entryPoint.currentTimeProvider().currentTimeMillis() >= before)
     }
 }

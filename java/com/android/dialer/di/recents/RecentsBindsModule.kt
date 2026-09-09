@@ -14,6 +14,8 @@ import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatterImpl
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapper
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapperImpl
+import com.android.dialer.ui.recents.mapper.RecentsUiStateMapper
+import com.android.dialer.ui.recents.mapper.RecentsUiStateMapperImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Reusable
@@ -65,4 +67,10 @@ internal abstract class RecentsBindsModule {
     abstract fun bindRecentsItemUiMapper(
         impl: RecentsItemUiMapperImpl,
     ): RecentsItemUiMapper
+
+    @Binds
+    @Reusable
+    abstract fun bindRecentsUiStateMapper(
+        impl: RecentsUiStateMapperImpl,
+    ): RecentsUiStateMapper
 }

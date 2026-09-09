@@ -3,7 +3,12 @@ package com.android.dialer.testutil
 import android.provider.CallLog.Calls
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallLogEntryId
+import com.android.dialer.data.recents.model.CallLogSnapshot
 import com.android.dialer.data.recents.model.CallType
+import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
+import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
+import com.android.dialer.ui.recents.model.RecentsItemUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 internal fun callLogEntry(
     id: Long,
@@ -36,5 +41,35 @@ internal fun callLogEntry(
         callType = callType,
         isRead = isRead,
         groupedCallCount = groupedCallCount,
+    )
+}
+
+internal fun callLogSnapshot(
+    vararg entries: CallLogEntry,
+    isPermissionGranted: Boolean = true,
+): CallLogSnapshot {
+    return CallLogSnapshot(
+        entries = entries.toList().toImmutableList(),
+        isPermissionGranted = isPermissionGranted,
+    )
+}
+
+internal fun recentsItemUiModel(
+    id: Long,
+    primaryText: String = "Caller $id",
+    number: String = "+1555000$id",
+): RecentsItemUiModel {
+    return RecentsItemUiModel(
+        entryId = CallLogEntryId(value = id),
+        primaryText = primaryText,
+        secondaryText = "Kingston, Jamaica • 5 min ago",
+        contentDescription = "1 answered call from $primaryText",
+        avatar = RecentsAvatarUiModel(photoUri = null, letter = 'C', lookupUri = null),
+        callTypeIcon = RecentsCallTypeIcon.Incoming,
+        groupedCallCountLabel = null,
+        number = number,
+        isUnreadMissedCall = false,
+        canCallBack = true,
+        canVideoCall = false,
     )
 }

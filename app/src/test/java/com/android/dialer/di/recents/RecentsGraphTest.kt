@@ -19,6 +19,8 @@ import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatterImpl
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapper
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapperImpl
+import com.android.dialer.ui.recents.mapper.RecentsUiStateMapper
+import com.android.dialer.ui.recents.mapper.RecentsUiStateMapperImpl
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -69,6 +71,8 @@ internal class RecentsGraphTest {
         fun phoneNumberFormatter(): PhoneNumberFormatter
 
         fun recentsItemUiMapper(): RecentsItemUiMapper
+
+        fun recentsUiStateMapper(): RecentsUiStateMapper
     }
 
     @get:Rule
@@ -108,6 +112,7 @@ internal class RecentsGraphTest {
         assertTrue(entryPoint.relativeTimestampFormatter() is RelativeTimestampFormatterImpl)
         assertTrue(entryPoint.phoneNumberFormatter() is PhoneNumberFormatterImpl)
         assertTrue(entryPoint.recentsItemUiMapper() is RecentsItemUiMapperImpl)
+        assertTrue(entryPoint.recentsUiStateMapper() is RecentsUiStateMapperImpl)
     }
 
     @Test
