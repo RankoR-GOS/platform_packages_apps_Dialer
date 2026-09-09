@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
@@ -17,6 +20,13 @@ internal fun horizontalSafeDrawingInsets(): PaddingValues {
     return WindowInsets.safeDrawing
         .only(sides = WindowInsetsSides.Horizontal)
         .asPaddingValues()
+}
+
+@Composable
+internal fun bottomBarInsets(): WindowInsets {
+    return WindowInsets.systemBars
+        .union(insets = WindowInsets.displayCutout)
+        .only(sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
 }
 
 @Composable

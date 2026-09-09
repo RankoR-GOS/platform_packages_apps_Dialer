@@ -7,6 +7,7 @@ import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.domain.recents.usecase.CanPlaceCall
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
+import com.android.dialer.domain.recents.usecase.IsPermissionGranted
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.testutil.TEST_TIMESTAMP_MILLIS
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapperImpl
@@ -24,6 +25,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
     protected val relativeTimestampFormatter = mockk<RelativeTimestampFormatter>()
     protected val canPlaceCall = mockk<CanPlaceCall>()
     protected val isEmergencyNumber = mockk<IsEmergencyNumber>()
+    protected val isPermissionGranted = mockk<IsPermissionGranted>()
 
     @Before
     fun setUp() {
@@ -41,6 +43,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
         every { relativeTimestampFormatter(any(), NOW_MILLIS, false) } returns LONG_TIME
         every { canPlaceCall(any(), any()) } returns true
         every { isEmergencyNumber(any()) } returns false
+        every { isPermissionGranted(any()) } returns true
     }
 
     protected fun map(entry: CallLogEntry): RecentsItemUiModel {
@@ -58,6 +61,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
             relativeTimestampFormatter = relativeTimestampFormatter,
             canPlaceCall = canPlaceCall,
             isEmergencyNumber = isEmergencyNumber,
+            isPermissionGranted = isPermissionGranted,
         )
     }
 

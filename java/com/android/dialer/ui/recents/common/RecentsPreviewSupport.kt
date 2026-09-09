@@ -1,6 +1,7 @@
 package com.android.dialer.ui.recents.common
 
 import com.android.dialer.data.recents.model.CallLogEntryId
+import com.android.dialer.ui.recents.model.RecentsActionLabelsUiModel
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
@@ -15,6 +16,7 @@ internal fun previewRecentsItem(
     entryId: CallLogEntryId,
     primaryText: String,
     secondaryText: String = "Kingston, Jamaica • 10:24",
+    displayNumber: String = "+1 555-000${entryId.value}",
     contentDescription: String = "1 answered call from $primaryText; 10:24",
     clickActionLabel: String = "expand menu",
     callActionLabel: String? = "Call $primaryText",
@@ -29,11 +31,14 @@ internal fun previewRecentsItem(
     isUnreadMissedCall: Boolean = false,
     canCallBack: Boolean = true,
     canVideoCall: Boolean = false,
+    canMessage: Boolean = canCallBack,
+    canAddContact: Boolean = canCallBack,
 ): RecentsItemUiModel {
     return RecentsItemUiModel(
         entryId = entryId,
         primaryText = primaryText,
         secondaryText = secondaryText,
+        displayNumber = displayNumber,
         contentDescription = contentDescription,
         clickActionLabel = clickActionLabel,
         callActionLabel = callActionLabel,
@@ -44,6 +49,8 @@ internal fun previewRecentsItem(
         isUnreadMissedCall = isUnreadMissedCall,
         canCallBack = canCallBack,
         canVideoCall = canVideoCall,
+        canMessage = canMessage,
+        canAddContact = canAddContact,
     )
 }
 
@@ -94,4 +101,17 @@ internal fun previewRecentsListItems(): ImmutableList<RecentsListItemUiModel> {
         add(RecentsListItemUiModel.DayHeader(key = "Older", label = "Older"))
         older.forEach { item -> add(RecentsListItemUiModel.Entry(item = item)) }
     }.toImmutableList()
+}
+
+internal fun previewActionLabels(): RecentsActionLabelsUiModel {
+    return RecentsActionLabelsUiModel(
+        call = "Voice call",
+        videoCall = "Video call",
+        message = "Message",
+        addContact = "Add contact",
+        block = "Block",
+        copyNumber = "Copy number",
+        callDetails = "Call details",
+        delete = "Delete",
+    )
 }

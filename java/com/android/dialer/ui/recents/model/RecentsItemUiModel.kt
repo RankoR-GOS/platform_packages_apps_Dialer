@@ -8,6 +8,7 @@ internal data class RecentsItemUiModel(
     val entryId: CallLogEntryId,
     val primaryText: String,
     val secondaryText: String,
+    val displayNumber: String,
     val contentDescription: String,
     val clickActionLabel: String,
     val callActionLabel: String?,
@@ -18,6 +19,8 @@ internal data class RecentsItemUiModel(
     val isUnreadMissedCall: Boolean,
     val canCallBack: Boolean,
     val canVideoCall: Boolean,
+    val canMessage: Boolean,
+    val canAddContact: Boolean,
 )
 
 @Immutable

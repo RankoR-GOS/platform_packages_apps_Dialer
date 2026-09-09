@@ -6,6 +6,7 @@ import com.android.dialer.calllogutils.CallLogDates
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallLogSnapshot
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCalls
+import com.android.dialer.ui.recents.model.RecentsActionLabelsUiModel
 import com.android.dialer.ui.recents.model.RecentsContentUiState
 import com.android.dialer.ui.recents.model.RecentsListItemUiModel
 import com.android.dialer.ui.recents.model.RecentsUiState
@@ -24,7 +25,10 @@ internal class RecentsUiStateMapperImpl @Inject constructor(
 ) : RecentsUiStateMapper {
 
     override fun map(snapshot: CallLogSnapshot, nowMillis: Long): RecentsUiState {
-        return RecentsUiState(content = snapshot.toContent(nowMillis = nowMillis))
+        return RecentsUiState(
+            content = snapshot.toContent(nowMillis = nowMillis),
+            actionLabels = actionLabels(),
+        )
     }
 
     private fun CallLogSnapshot.toContent(nowMillis: Long): RecentsContentUiState {
@@ -68,6 +72,19 @@ internal class RecentsUiStateMapperImpl @Inject constructor(
                 else -> Day.Older
             }
         }
+    }
+
+    private fun actionLabels(): RecentsActionLabelsUiModel {
+        return RecentsActionLabelsUiModel(
+            call = context.getString(R.string.voice_call),
+            videoCall = context.getString(R.string.video_call),
+            message = context.getString(R.string.send_a_message),
+            addContact = context.getString(R.string.add_to_contacts),
+            block = context.getString(R.string.block_number),
+            copyNumber = context.getString(R.string.copy_number),
+            callDetails = context.getString(R.string.call_details_menu_label),
+            delete = context.getString(R.string.delete),
+        )
     }
 
     private fun Day.label(): String {

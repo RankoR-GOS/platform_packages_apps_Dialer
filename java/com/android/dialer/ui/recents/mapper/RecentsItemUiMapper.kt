@@ -1,5 +1,6 @@
 package com.android.dialer.ui.recents.mapper
 
+import android.Manifest
 import android.content.Context
 import android.provider.CallLog
 import android.text.TextUtils
@@ -9,6 +10,7 @@ import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.domain.recents.usecase.CanPlaceCall
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
+import com.android.dialer.domain.recents.usecase.IsPermissionGranted
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
@@ -27,6 +29,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     private val relativeTimestampFormatter: RelativeTimestampFormatter,
     private val canPlaceCall: CanPlaceCall,
     private val isEmergencyNumber: IsEmergencyNumber,
+    private val isPermissionGranted: IsPermissionGranted,
 ) : RecentsItemUiMapper {
 
     override fun map(entry: CallLogEntry, nowMillis: Long): RecentsItemUiModel {
@@ -51,6 +54,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
                 isEmergency = isEmergency,
                 isAbbreviated = true,
             ).joinToString(separator = SECONDARY_TEXT_SEPARATOR),
+            displayNumber = displayNumber,
             contentDescription = entry.contentDescription(
                 spokenPrimaryText = spokenPrimaryText,
                 nowMillis = nowMillis,
@@ -69,6 +73,13 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,
             canVideoCall = canCall && entry.isVideoCall,
+            canMessage = canCall &&
+                !isEmergency &&
+                isPermissionGranted(Manifest.permission.SEND_SMS),
+            canAddContact = canCall &&
+                !isEmergency &&
+                entry.lookupUri == null &&
+                isPermissionGranted(Manifest.permission.WRITE_CONTACTS),
         )
     }
 

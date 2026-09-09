@@ -63,6 +63,7 @@ internal fun recentsItemUiModel(
         entryId = CallLogEntryId(value = id),
         primaryText = primaryText,
         secondaryText = "Kingston, Jamaica • 5 min ago",
+        displayNumber = number,
         contentDescription = "1 answered call from $primaryText",
         clickActionLabel = "expand menu",
         callActionLabel = "Call $primaryText",
@@ -73,5 +74,7 @@ internal fun recentsItemUiModel(
         isUnreadMissedCall = false,
         canCallBack = true,
         canVideoCall = false,
+        canMessage = true,
+        canAddContact = true,
     )
 }

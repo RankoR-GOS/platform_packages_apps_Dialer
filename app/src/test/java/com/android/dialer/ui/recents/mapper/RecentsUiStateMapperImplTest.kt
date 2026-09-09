@@ -111,6 +111,20 @@ internal class RecentsUiStateMapperImplTest {
     }
 
     @Test
+    fun map_resolvesTheSheetLabelsFromTheLegacyStrings() {
+        val labels = createMapper().map(callLogSnapshot(), NOW_MILLIS).actionLabels
+
+        assertEquals("string-${R.string.voice_call}", labels.call)
+        assertEquals("string-${R.string.video_call}", labels.videoCall)
+        assertEquals("string-${R.string.send_a_message}", labels.message)
+        assertEquals("string-${R.string.add_to_contacts}", labels.addContact)
+        assertEquals("string-${R.string.block_number}", labels.block)
+        assertEquals("string-${R.string.copy_number}", labels.copyNumber)
+        assertEquals("string-${R.string.call_details_menu_label}", labels.callDetails)
+        assertEquals("string-${R.string.delete}", labels.delete)
+    }
+
+    @Test
     fun map_withAFutureTimestamp_filesItUnderToday() {
         val snapshot = callLogSnapshot(
             callLogEntry(id = 2L, timestampMillis = NOW_MILLIS + DAY_MILLIS),

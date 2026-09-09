@@ -10,6 +10,8 @@ import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGrantedImpl
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumberImpl
+import com.android.dialer.domain.recents.usecase.IsPermissionGranted
+import com.android.dialer.domain.recents.usecase.IsPermissionGrantedImpl
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatterImpl
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapper
@@ -55,6 +57,12 @@ internal abstract class RecentsBindsModule {
     abstract fun bindIsEmergencyNumber(
         impl: IsEmergencyNumberImpl,
     ): IsEmergencyNumber
+
+    @Binds
+    @Reusable
+    abstract fun bindIsPermissionGranted(
+        impl: IsPermissionGrantedImpl,
+    ): IsPermissionGranted
 
     @Binds
     @Reusable
