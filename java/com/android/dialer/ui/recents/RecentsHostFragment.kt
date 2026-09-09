@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.android.dialer.app.calllog.CallLogFragment
+import com.android.dialer.common.FragmentUtils
 import com.android.dialer.ui.core.DialerTheme
 import com.android.dialer.ui.recents.screen.RecentsRoute
 import com.android.dialer.ui.recents.screen.RecentsViewModel
@@ -28,10 +30,17 @@ class RecentsHostFragment : Fragment() {
             )
             setContent {
                 DialerTheme(darkTheme = isNightMode()) {
-                    RecentsRoute(screenModel = hiltViewModel<RecentsViewModel>())
+                    RecentsRoute(
+                        screenModel = hiltViewModel<RecentsViewModel>(),
+                        onShowDialpad = ::showDialpad,
+                    )
                 }
             }
         }
+    }
+
+    private fun showDialpad() {
+        FragmentUtils.getParentUnsafe(this, CallLogFragment.HostInterface::class.java).showDialpad()
     }
 
     private fun isNightMode(): Boolean {

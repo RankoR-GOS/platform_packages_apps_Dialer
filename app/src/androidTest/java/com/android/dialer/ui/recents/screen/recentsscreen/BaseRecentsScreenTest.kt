@@ -34,6 +34,7 @@ internal abstract class BaseRecentsScreenTest {
     protected val screenModel = mockk<RecentsScreenModel>()
     protected val effectHandler = mockk<RecentsEffectHandler>(relaxed = true)
     protected var permissionRequests = 0
+    protected var dialpadRequests = 0
 
     @Before
     fun stubScreenModel() {
@@ -51,6 +52,7 @@ internal abstract class BaseRecentsScreenTest {
                     screenModel = screenModel,
                     effectHandler = effectHandler,
                     onRequestPermission = { permissionRequests++ },
+                    onShowDialpad = { dialpadRequests++ },
                 )
             }
         }

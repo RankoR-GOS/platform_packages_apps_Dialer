@@ -51,7 +51,10 @@ internal class RecentsEffectHandlerImpl(
             is RecentsEffect.EditNumberBeforeCall -> startActivity(
                 intent = Intent(Intent.ACTION_DIAL, CallUtil.getCallUri(effect.number)),
             )
-            RecentsEffect.RequestCallLogPermission, RecentsEffect.WriteFailed -> Unit
+            RecentsEffect.RequestCallLogPermission,
+            RecentsEffect.ShowDialpad,
+            RecentsEffect.WriteFailed,
+            -> Unit
         }
     }
 

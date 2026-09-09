@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.data.recents.model.CallLogEntryId
+import com.android.dialer.ui.recents.common.RECENTS_EMPTY_ACTION_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_PERMISSION_ACTION_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_ADD_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_TEST_TAG
@@ -139,6 +140,24 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
         }
         composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
             .assertCountEquals(expectedSize = 0)
+    }
+
+    @Test
+    fun emptyAction_click_dispatchesMakeCallClicked() {
+        setContent(
+            state = uiState.value.copy(
+                content = RecentsContentUiState.Empty(
+                    message = "Your call history is empty",
+                    actionLabel = "Make a call",
+                ),
+            ),
+        )
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_EMPTY_ACTION_TEST_TAG).performClick()
+
+        composeTestRule.runOnIdle {
+            verify(exactly = 1) { screenModel.onAction(Action.MakeCallClicked) }
+        }
     }
 
     @Test

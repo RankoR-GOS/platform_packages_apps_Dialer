@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.android.dialer.testutil.RobolectricComposeActivityRule
 import com.android.dialer.ui.core.DialerTheme
+import com.android.dialer.ui.recents.common.RECENTS_EMPTY_ACTION_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_EMPTY_STATE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_LIST_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_PERMISSION_ACTION_TEST_TAG
@@ -32,6 +33,7 @@ internal class RecentsContentTest {
     val composeTestRule = createComposeRule()
 
     private var grantPermissionClicks = 0
+    private var makeCallClicks = 0
 
     @Test
     fun content_whenLoading_rendersNothing() {
@@ -43,6 +45,22 @@ internal class RecentsContentTest {
             RECENTS_PERMISSION_STATE_TEST_TAG,
         ).forEach { tag ->
             composeTestRule.onAllNodesWithTag(testTag = tag).assertCountEquals(expectedSize = 0)
+        }
+    }
+
+    @Test
+    fun emptyState_actionClick_asksForTheDialpad() {
+        setContent(
+            content = RecentsContentUiState.Empty(
+                message = "Your call history is empty",
+                actionLabel = "Make a call",
+            ),
+        )
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_EMPTY_ACTION_TEST_TAG).performClick()
+
+        composeTestRule.runOnIdle {
+            assertEquals(1, makeCallClicks)
         }
     }
 
@@ -70,6 +88,7 @@ internal class RecentsContentTest {
                     listState = rememberLazyListState(),
                     onItemEvent = {},
                     onGrantPermissionClick = { grantPermissionClicks++ },
+                    onMakeCallClick = { makeCallClicks++ },
                 )
             }
         }

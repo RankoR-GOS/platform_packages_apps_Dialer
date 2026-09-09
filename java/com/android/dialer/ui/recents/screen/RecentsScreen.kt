@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun RecentsRoute(
     screenModel: RecentsScreenModel,
+    onShowDialpad: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -68,6 +69,7 @@ internal fun RecentsRoute(
         screenModel = screenModel,
         effectHandler = rememberRecentsEffectHandler(),
         onRequestPermission = { permissionLauncher.launch(deniedPhonePermissions(context)) },
+        onShowDialpad = onShowDialpad,
         modifier = modifier,
     )
 }
@@ -77,6 +79,7 @@ internal fun RecentsScreen(
     screenModel: RecentsScreenModel,
     effectHandler: RecentsEffectHandler,
     onRequestPermission: () -> Unit,
+    onShowDialpad: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by screenModel.uiState.collectAsStateWithLifecycle()
@@ -93,6 +96,7 @@ internal fun RecentsScreen(
         effects = screenModel.effects,
         effectHandler = effectHandler,
         onRequestPermission = onRequestPermission,
+        onShowDialpad = onShowDialpad,
         onWriteFailure = {
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(message = uiState.writeFailedMessage)
@@ -119,15 +123,12 @@ internal fun RecentsScreen(
                     )
                 },
                 onGrantPermissionClick = { screenModel.onAction(Action.GrantPermissionClicked) },
+                onMakeCallClick = { screenModel.onAction(Action.MakeCallClicked) },
             )
 
-            SnackbarHost(
+            RecentsSnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier
-                    .align(alignment = Alignment.BottomCenter)
-                    .padding(bottom = RecentsFabBottomReserve)
-                    .testTag(tag = RECENTS_SNACKBAR_TEST_TAG)
-                    .semantics { liveRegion = LiveRegionMode.Polite },
+                modifier = Modifier.align(alignment = Alignment.BottomCenter),
             )
         }
     }
@@ -146,15 +147,28 @@ internal fun RecentsScreen(
 }
 
 @Composable
+private fun RecentsSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
+    SnackbarHost(
+        hostState = hostState,
+        modifier = modifier
+            .padding(bottom = RecentsFabBottomReserve)
+            .testTag(tag = RECENTS_SNACKBAR_TEST_TAG)
+            .semantics { liveRegion = LiveRegionMode.Polite },
+    )
+}
+
+@Composable
 internal fun RecentsEffects(
     effects: Flow<Effect>,
     effectHandler: RecentsEffectHandler,
     onRequestPermission: () -> Unit,
+    onShowDialpad: () -> Unit,
     onWriteFailure: () -> Unit,
 ) {
     CollectEvents(events = effects) { effect ->
         when (effect) {
             Effect.RequestCallLogPermission -> onRequestPermission()
+            Effect.ShowDialpad -> onShowDialpad()
             Effect.WriteFailed -> onWriteFailure()
             is Effect.PlaceCall,
             is Effect.PlaceVideoCall,

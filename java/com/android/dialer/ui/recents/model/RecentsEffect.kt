@@ -4,6 +4,8 @@ internal sealed interface RecentsEffect {
 
     data object RequestCallLogPermission : RecentsEffect
 
+    data object ShowDialpad : RecentsEffect
+
     data class PlaceCall(
         val number: String,
     ) : RecentsEffect

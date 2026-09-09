@@ -63,7 +63,10 @@ internal class RecentsUiStateMapperImplTest {
         val state = createMapper().map(callLogSnapshot(), NOW_MILLIS)
 
         assertEquals(
-            RecentsContentUiState.Empty(message = "string-${R.string.call_log_all_empty}"),
+            RecentsContentUiState.Empty(
+                message = "string-${R.string.call_log_all_empty}",
+                actionLabel = "string-${R.string.call_log_all_empty_action}",
+            ),
             state.content,
         )
     }

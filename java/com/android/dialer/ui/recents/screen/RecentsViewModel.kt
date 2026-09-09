@@ -66,6 +66,7 @@ internal class RecentsViewModel @Inject constructor(
         when (action) {
             Action.ScreenResumed, Action.CallLogPermissionGranted -> repository.refresh()
             Action.GrantPermissionClicked -> emitEffect(Effect.RequestCallLogPermission)
+            Action.MakeCallClicked -> emitEffect(Effect.ShowDialpad)
             is Action.CallBackClicked -> emitEffect(Effect.PlaceCall(number = action.number))
             is Action.VideoCallClicked -> emitEffect(Effect.PlaceVideoCall(number = action.number))
             is Action.MessageClicked -> emitEffect(Effect.SendMessage(number = action.number))

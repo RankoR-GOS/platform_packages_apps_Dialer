@@ -113,6 +113,7 @@ internal class RecentsStateRestorationTest {
                     screenModel = screenModel,
                     effectHandler = mockk(relaxed = true),
                     onRequestPermission = {},
+                    onShowDialpad = {},
                 )
             }
         }

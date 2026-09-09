@@ -9,6 +9,8 @@ internal sealed interface RecentsAction {
 
     data object GrantPermissionClicked : RecentsAction
 
+    data object MakeCallClicked : RecentsAction
+
     data object CallLogPermissionGranted : RecentsAction
 
     data class CallBackClicked(

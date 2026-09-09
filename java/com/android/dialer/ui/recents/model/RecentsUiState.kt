@@ -25,6 +25,7 @@ internal sealed interface RecentsContentUiState {
     @Immutable
     data class Empty(
         val message: String,
+        val actionLabel: String,
     ) : RecentsContentUiState
 
     @Immutable

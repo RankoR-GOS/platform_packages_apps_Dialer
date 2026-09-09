@@ -42,6 +42,7 @@ internal class RecentsUiStateMapperImpl @Inject constructor(
 
             entries.isEmpty() -> RecentsContentUiState.Empty(
                 message = context.getString(R.string.call_log_all_empty),
+                actionLabel = context.getString(R.string.call_log_all_empty_action),
             )
 
             else -> RecentsContentUiState.Entries(

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.android.dialer.ui.core.DialerPreviewTheme
+import com.android.dialer.ui.recents.common.RECENTS_EMPTY_ACTION_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_EMPTY_STATE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_PERMISSION_ACTION_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_PERMISSION_STATE_TEST_TAG
@@ -25,6 +26,7 @@ internal fun RecentsContent(
     listState: LazyListState,
     onItemEvent: (RecentsItemEvent) -> Unit,
     onGrantPermissionClick: () -> Unit,
+    onMakeCallClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (content) {
@@ -34,6 +36,9 @@ internal fun RecentsContent(
             message = content.message,
             icon = Icons.Outlined.History,
             modifier = modifier.testTag(tag = RECENTS_EMPTY_STATE_TEST_TAG),
+            actionLabel = content.actionLabel,
+            actionTestTag = RECENTS_EMPTY_ACTION_TEST_TAG,
+            onActionClick = onMakeCallClick,
         )
 
         is RecentsContentUiState.PermissionRequired -> RecentsStatusMessage(
@@ -63,6 +68,7 @@ private fun RecentsContentEntriesPreview() {
             listState = rememberLazyListState(),
             onItemEvent = {},
             onGrantPermissionClick = {},
+            onMakeCallClick = {},
         )
     }
 }
@@ -79,6 +85,7 @@ private fun RecentsContentPermissionPreview() {
             listState = rememberLazyListState(),
             onItemEvent = {},
             onGrantPermissionClick = {},
+            onMakeCallClick = {},
         )
     }
 }

@@ -46,6 +46,11 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
+    fun makeCallClicked_emitsShowDialpad() {
+        assertEffect(Action.MakeCallClicked, Effect.ShowDialpad)
+    }
+
+    @Test
     fun callBackClicked_emitsPlaceCallWithThatNumber() {
         assertEffect(Action.CallBackClicked(number = NUMBER), Effect.PlaceCall(number = NUMBER))
     }

@@ -47,7 +47,10 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
             context = mainDispatcherRule.testDispatcher,
         ) {
             val laterState = RecentsUiState(
-                content = RecentsContentUiState.Empty(message = "a minute later"),
+                content = RecentsContentUiState.Empty(
+                    message = "a minute later",
+                    actionLabel = "call",
+                ),
             )
             every { currentTimeProvider.currentTimeMillis() } returnsMany listOf(
                 NOW_MILLIS,

@@ -28,6 +28,7 @@ internal class RecentsEffectsTest {
     private val effects = Channel<Effect>(capacity = Channel.BUFFERED)
     private val effectHandler = mockk<RecentsEffectHandler>(relaxed = true)
     private var permissionRequests = 0
+    private var dialpadRequests = 0
     private var writeFailures = 0
 
     @Test
@@ -38,6 +39,18 @@ internal class RecentsEffectsTest {
 
         composeTestRule.runOnIdle {
             assertEquals(1, permissionRequests)
+            verify(exactly = 0) { effectHandler.handle(any()) }
+        }
+    }
+
+    @Test
+    fun showDialpad_isInterceptedByTheScreen() {
+        setContent()
+
+        effects.trySend(Effect.ShowDialpad)
+
+        composeTestRule.runOnIdle {
+            assertEquals(1, dialpadRequests)
             verify(exactly = 0) { effectHandler.handle(any()) }
         }
     }
@@ -72,6 +85,7 @@ internal class RecentsEffectsTest {
                 effects = effects.receiveAsFlow(),
                 effectHandler = effectHandler,
                 onRequestPermission = { permissionRequests++ },
+                onShowDialpad = { dialpadRequests++ },
                 onWriteFailure = { writeFailures++ },
             )
         }

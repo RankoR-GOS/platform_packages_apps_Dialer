@@ -51,7 +51,7 @@ internal abstract class BaseRecentsViewModelTest {
         const val STOP_TIMEOUT_MILLIS = 5_000L
         val SNAPSHOT: CallLogSnapshot = callLogSnapshot(callLogEntry(id = 1L))
         val MAPPED_STATE = RecentsUiState(
-            content = RecentsContentUiState.Empty(message = "mapped"),
+            content = RecentsContentUiState.Empty(message = "mapped", actionLabel = "call"),
         )
     }
 }

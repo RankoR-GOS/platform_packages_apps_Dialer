@@ -5,6 +5,7 @@ import com.android.dialer.data.recents.model.CallLogEntryId
 internal const val RECENTS_SCREEN_TEST_TAG = "recents_screen"
 internal const val RECENTS_SNACKBAR_TEST_TAG = "recents_snackbar"
 internal const val RECENTS_EMPTY_STATE_TEST_TAG = "recents_empty_state"
+internal const val RECENTS_EMPTY_ACTION_TEST_TAG = "recents_empty_action"
 internal const val RECENTS_PERMISSION_STATE_TEST_TAG = "recents_permission_state"
 internal const val RECENTS_PERMISSION_ACTION_TEST_TAG = "recents_permission_action"
 internal const val RECENTS_LIST_TEST_TAG = "recents_list"
