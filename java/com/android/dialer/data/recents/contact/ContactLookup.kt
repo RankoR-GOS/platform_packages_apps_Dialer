@@ -2,6 +2,9 @@ package com.android.dialer.data.recents.contact
 
 import android.content.ContentResolver
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabaseCorruptException
+import android.database.sqlite.SQLiteDiskIOException
+import android.database.sqlite.SQLiteFullException
 import android.net.Uri
 import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.PhoneLookup
@@ -9,23 +12,30 @@ import android.telephony.PhoneNumberUtils
 import com.android.dialer.common.LogUtil
 import javax.inject.Inject
 
-internal data class ContactLookupResult(
-    val name: String?,
-    val photoUri: String?,
-    val lookupUri: String?,
-)
+internal sealed interface ContactLookupResult {
+
+    data class Found(
+        val name: String?,
+        val photoUri: String?,
+        val lookupUri: String?,
+    ) : ContactLookupResult
+
+    data object None : ContactLookupResult
+
+    data object Unavailable : ContactLookupResult
+}
 
 internal fun interface ContactLookup {
-    operator fun invoke(number: String): ContactLookupResult?
+    operator fun invoke(number: String): ContactLookupResult
 }
 
 internal class ContactLookupImpl @Inject constructor(
     private val contentResolver: ContentResolver,
 ) : ContactLookup {
 
-    override fun invoke(number: String): ContactLookupResult? {
+    override fun invoke(number: String): ContactLookupResult {
         if (number.isBlank()) {
-            return null
+            return ContactLookupResult.Unavailable
         }
 
         val uri = Uri.withAppendedPath(
@@ -35,19 +45,30 @@ internal class ContactLookupImpl @Inject constructor(
 
         return try {
             contentResolver.query(uri, PHONE_LOOKUP_PROJECTION, null, null, null)
-                ?.use { cursor -> cursor.firstContactOrNull(number = number) }
+                ?.use { cursor -> cursor.firstContact(number = number) }
+                ?: ContactLookupResult.Unavailable
         } catch (_: SecurityException) {
-            LogUtil.e(TAG, "ContactLookupImpl.invoke: contacts permission revoked")
-            null
+            unavailable(reason = "contacts permission revoked")
         } catch (_: IllegalArgumentException) {
-            LogUtil.e(TAG, "ContactLookupImpl.invoke: provider rejected the lookup")
-            null
+            unavailable(reason = "provider rejected the lookup")
+        } catch (_: SQLiteDiskIOException) {
+            unavailable(reason = "contacts disk read failed")
+        } catch (_: SQLiteFullException) {
+            unavailable(reason = "contacts disk full")
+        } catch (_: SQLiteDatabaseCorruptException) {
+            unavailable(reason = "contacts database corrupt")
         }
     }
 
-    private fun Cursor.firstContactOrNull(number: String): ContactLookupResult? {
+    private fun unavailable(reason: String): ContactLookupResult {
+        LogUtil.e(TAG, "ContactLookupImpl.invoke: $reason")
+
+        return ContactLookupResult.Unavailable
+    }
+
+    private fun Cursor.firstContact(number: String): ContactLookupResult {
         if (!moveToFirst()) {
-            return null
+            return ContactLookupResult.None
         }
 
         val lookupKey = getString(LOOKUP_KEY_INDEX)?.takeIf { it.isNotBlank() }
@@ -55,7 +76,7 @@ internal class ContactLookupImpl @Inject constructor(
             Contacts.getLookupUri(getLong(CONTACT_ID_INDEX), key)?.toString()
         }
 
-        return ContactLookupResult(
+        return ContactLookupResult.Found(
             name = getString(DISPLAY_NAME_INDEX)?.takeIf { name -> name.isContactName(number) },
             photoUri = getString(PHOTO_URI_INDEX)?.takeIf { it.isNotBlank() },
             lookupUri = lookupUri,

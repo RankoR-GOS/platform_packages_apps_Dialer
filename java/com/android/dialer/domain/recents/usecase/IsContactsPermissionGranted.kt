@@ -5,16 +5,16 @@ import com.android.dialer.util.PermissionsUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-internal fun interface IsCallLogPermissionGranted {
+internal fun interface IsContactsPermissionGranted {
     operator fun invoke(): Boolean
 }
 
-internal class IsCallLogPermissionGrantedImpl @Inject constructor(
+internal class IsContactsPermissionGrantedImpl @Inject constructor(
     @param:ApplicationContext
     private val context: Context,
-) : IsCallLogPermissionGranted {
+) : IsContactsPermissionGranted {
 
     override fun invoke(): Boolean {
-        return PermissionsUtil.hasCallLogReadPermissions(context)
+        return PermissionsUtil.hasContactsReadPermissions(context)
     }
 }

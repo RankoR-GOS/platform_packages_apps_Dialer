@@ -2,6 +2,9 @@ package com.android.dialer.data.recents.contact
 
 import android.content.ContentResolver
 import android.database.MatrixCursor
+import android.database.sqlite.SQLiteDatabaseCorruptException
+import android.database.sqlite.SQLiteDiskIOException
+import android.database.sqlite.SQLiteFullException
 import android.net.Uri
 import android.os.Build
 import android.provider.ContactsContract.PhoneLookup
@@ -10,7 +13,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,9 +35,14 @@ internal class ContactLookupImplTest {
 
         val result = lookup(NUMBER)
 
-        assertEquals("Ada Lovelace", result?.name)
-        assertEquals(PHOTO, result?.photoUri)
-        assertEquals("content://com.android.contacts/contacts/lookup/k42/42", result?.lookupUri)
+        assertEquals(
+            ContactLookupResult.Found(
+                name = "Ada Lovelace",
+                photoUri = PHOTO,
+                lookupUri = "content://com.android.contacts/contacts/lookup/k42/42",
+            ),
+            result,
+        )
         assertEquals(
             Uri.withAppendedPath(PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI, Uri.encode(NUMBER)),
             capturedUris.single(),
@@ -47,26 +54,43 @@ internal class ContactLookupImplTest {
         every { contentResolver.query(any(), any(), null, null, null) } returns
             phoneLookupCursor(contactId = 7L, name = "+1 876-555-0201", photoUri = null, key = "k7")
 
-        val result = lookup(NUMBER)
-
-        assertNull(result?.name)
-        assertEquals("content://com.android.contacts/contacts/lookup/k7/7", result?.lookupUri)
+        assertEquals(
+            ContactLookupResult.Found(
+                name = null,
+                photoUri = null,
+                lookupUri = "content://com.android.contacts/contacts/lookup/k7/7",
+            ),
+            lookup(NUMBER),
+        )
     }
 
     @Test
-    fun invoke_withNoMatchingContact_returnsNull() {
+    fun invoke_withNoMatchingContact_returnsNone() {
         every { contentResolver.query(any(), any(), null, null, null) } returns
             MatrixCursor(ContactLookupImpl.PHONE_LOOKUP_PROJECTION)
 
-        assertNull(lookup(NUMBER))
+        assertEquals(ContactLookupResult.None, lookup(NUMBER))
     }
 
     @Test
-    fun invoke_whenTheProviderRefusesTheLookup_returnsNull() {
+    fun invoke_whenTheProviderRefusesTheLookup_returnsUnavailable() {
         every { contentResolver.query(any(), any(), null, null, null) } throws
             SecurityException("no contacts permission")
 
-        assertNull(lookup(NUMBER))
+        assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
+    }
+
+    @Test
+    fun invoke_whenTheContactsDatabaseFails_returnsUnavailable() {
+        listOf(
+            SQLiteDiskIOException(),
+            SQLiteFullException(),
+            SQLiteDatabaseCorruptException(),
+        ).forEach { failure ->
+            every { contentResolver.query(any(), any(), null, null, null) } throws failure
+
+            assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
+        }
     }
 
     @Test
@@ -90,7 +114,7 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_withABlankNumber_doesNotQuery() {
-        assertNull(lookup(" "))
+        assertEquals(ContactLookupResult.Unavailable, lookup(" "))
 
         verify(exactly = 0) { contentResolver.query(any(), any(), null, null, null) }
     }

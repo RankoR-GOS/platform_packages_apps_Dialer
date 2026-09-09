@@ -150,11 +150,72 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
         }
     }
 
+    @Test
+    fun observeSnapshot_whenTheContactIsGone_dropsTheCachedColumns() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(
+                rows = listOf(
+                    callLogRow(
+                        id = 1L,
+                        number = NUMBER,
+                        cachedName = "Old",
+                        cachedPhotoUri = "content://com.android.contacts/contacts/9/photo",
+                        cachedLookupUri = "content://com.android.contacts/contacts/lookup/k9/9",
+                    ),
+                ),
+            )
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ContactLookupResult.None
+
+            createRepository(isContactsGranted = true)
+                .observeSnapshot(filter = CallLogFilter.All)
+                .test {
+                    assertEquals("Old", awaitItem().entries.single().cachedName)
+
+                    val forgotten = awaitItem().entries.single()
+
+                    assertNull(forgotten.cachedName)
+                    assertNull(forgotten.photoUri)
+                    assertNull(forgotten.lookupUri)
+                    cancelAndIgnoreRemainingEvents()
+                }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenTheLookupIsUnavailable_keepsTheCachedColumnsAndAsksAgain() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(
+                rows = listOf(callLogRow(id = 1L, number = NUMBER, cachedName = "Old")),
+            )
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ContactLookupResult.Unavailable
+            val repository = createRepository(isContactsGranted = true)
+
+            repository.observeSnapshot(filter = CallLogFilter.All).test {
+                assertEquals("Old", awaitItem().entries.single().cachedName)
+
+                repository.refresh()
+
+                assertEquals("Old", awaitItem().entries.single().cachedName)
+                advanceUntilIdle()
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(exactly = 2) { contactLookup(NUMBER) }
+        }
+    }
+
     private fun unnamedRow(id: Long) = callLogRow(id = id, number = NUMBER, cachedName = null)
 
     private companion object {
         const val NUMBER = "+18765550201"
-        val ADA = ContactLookupResult(
+        val ADA = ContactLookupResult.Found(
             name = "Ada Lovelace",
             photoUri = "content://com.android.contacts/contacts/42/photo",
             lookupUri = "content://com.android.contacts/contacts/lookup/k42/42",

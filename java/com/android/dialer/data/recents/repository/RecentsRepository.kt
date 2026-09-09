@@ -188,19 +188,31 @@ internal class RecentsRepositoryImpl @Inject constructor(
     }
 
     private fun withContact(entry: CallLogEntry): CallLogEntry {
-        val contact = contactCache.getOrPut(entry.number) {
-            contactLookup(entry.number) ?: NO_CONTACT
+        val contact = contactCache[entry.number] ?: lookUp(number = entry.number)
+
+        return when (contact) {
+            is ContactLookupResult.Found -> entry.copy(
+                cachedName = contact.name,
+                photoUri = contact.photoUri,
+                lookupUri = contact.lookupUri,
+            )
+            ContactLookupResult.None -> entry.copy(
+                cachedName = null,
+                photoUri = null,
+                lookupUri = null,
+            )
+            ContactLookupResult.Unavailable -> entry
+        }
+    }
+
+    private fun lookUp(number: String): ContactLookupResult {
+        val result = contactLookup(number)
+
+        if (result != ContactLookupResult.Unavailable) {
+            contactCache[number] = result
         }
 
-        if (contact === NO_CONTACT) {
-            return entry
-        }
-
-        return entry.copy(
-            cachedName = contact.name ?: entry.cachedName,
-            photoUri = contact.photoUri ?: entry.photoUri,
-            lookupUri = contact.lookupUri ?: entry.lookupUri,
-        )
+        return result
     }
 
     private fun observeUri(uri: Uri): Flow<Unit> {
@@ -394,8 +406,6 @@ internal class RecentsRepositoryImpl @Inject constructor(
 
     internal companion object {
         private const val TAG = "RecentsRepositoryImpl"
-        private val NO_CONTACT = ContactLookupResult(name = null, photoUri = null, lookupUri = null)
-
         private const val CALL_LOG_LIMIT = 1_000
 
         private const val DUO_PACKAGE_PATTERN = "com.google.android.apps.tachyon%"

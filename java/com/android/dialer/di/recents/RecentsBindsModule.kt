@@ -27,13 +27,14 @@ import dagger.Module
 import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal abstract class RecentsBindsModule {
 
     @Binds
-    @Reusable
+    @Singleton
     abstract fun bindRecentsRepository(
         impl: RecentsRepositoryImpl,
     ): RecentsRepository
