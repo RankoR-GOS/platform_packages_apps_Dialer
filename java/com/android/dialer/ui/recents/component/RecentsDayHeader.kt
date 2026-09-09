@@ -15,7 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.RECENTS_DAY_HEADER_TEST_TAG
 
-private val DayHeaderHorizontalPadding = 16.dp
+private val DayHeaderHorizontalPadding = 8.dp
+private val PreviewListPadding = 8.dp
 private val DayHeaderTopPadding = 16.dp
 private val DayHeaderBottomPadding = 8.dp
 
@@ -47,6 +48,9 @@ internal fun RecentsDayHeader(
 @Composable
 private fun RecentsDayHeaderPreview() {
     DialerPreviewTheme {
-        RecentsDayHeader(label = "Today")
+        RecentsDayHeader(
+            label = "Today",
+            modifier = Modifier.padding(horizontal = PreviewListPadding),
+        )
     }
 }

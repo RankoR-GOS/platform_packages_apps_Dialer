@@ -4,8 +4,12 @@ import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
+import com.android.dialer.ui.recents.model.RecentsListItemUiModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+
+private const val OLDER_FROM = 4L
 
 internal fun previewRecentsItem(
     entryId: CallLogEntryId,
@@ -79,4 +83,15 @@ internal fun previewRecentsItems(): ImmutableList<RecentsItemUiModel> {
             canCallBack = false,
         ),
     )
+}
+
+internal fun previewRecentsListItems(): ImmutableList<RecentsListItemUiModel> {
+    val (today, older) = previewRecentsItems().partition { item -> item.entryId.value < OLDER_FROM }
+
+    return buildList {
+        add(RecentsListItemUiModel.DayHeader(key = "Today", label = "Today"))
+        today.forEach { item -> add(RecentsListItemUiModel.Entry(item = item)) }
+        add(RecentsListItemUiModel.DayHeader(key = "Older", label = "Older"))
+        older.forEach { item -> add(RecentsListItemUiModel.Entry(item = item)) }
+    }.toImmutableList()
 }

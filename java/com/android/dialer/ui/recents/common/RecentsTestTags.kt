@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.common
 
 import com.android.dialer.data.recents.model.CallLogEntryId
 
+internal const val RECENTS_LIST_TEST_TAG = "recents_list"
 internal const val RECENTS_DAY_HEADER_TEST_TAG = "recents_day_header"
 
 internal fun recentsItemTestTag(entryId: CallLogEntryId): String {
