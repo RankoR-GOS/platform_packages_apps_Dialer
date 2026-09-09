@@ -7,7 +7,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -27,7 +29,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.ItemAvatarSize
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.bumptech.glide.Glide
@@ -37,6 +41,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 
 private val AvatarGlyphSize = 24.dp
+private val AvatarPreviewSpacing = 8.dp
 
 @Composable
 internal fun RecentsItemAvatar(
@@ -124,5 +129,22 @@ private class ContactPhotoTarget(
 
     override fun onLoadCleared(placeholder: Drawable?) {
         photo.complete(null)
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun RecentsItemAvatarPreview() {
+    DialerPreviewTheme {
+        Row(horizontalArrangement = Arrangement.spacedBy(space = AvatarPreviewSpacing)) {
+            RecentsItemAvatar(
+                avatar = RecentsAvatarUiModel(photoUri = null, letter = 'A'),
+                colorSeed = "+15550001",
+            )
+            RecentsItemAvatar(
+                avatar = RecentsAvatarUiModel(photoUri = null, letter = null),
+                colorSeed = null,
+            )
+        }
     }
 }
