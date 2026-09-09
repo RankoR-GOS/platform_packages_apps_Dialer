@@ -34,6 +34,7 @@ internal fun previewRecentsItem(
     canVideoCall: Boolean = false,
     canMessage: Boolean = canCallBack,
     canAddContact: Boolean = canCallBack,
+    canEditNumberBeforeCall: Boolean = canCallBack,
 ): RecentsItemUiModel {
     return RecentsItemUiModel(
         entryId = entryId,
@@ -53,6 +54,7 @@ internal fun previewRecentsItem(
         canVideoCall = canVideoCall,
         canMessage = canMessage,
         canAddContact = canAddContact,
+        canEditNumberBeforeCall = canEditNumberBeforeCall,
     )
 }
 
@@ -110,9 +112,11 @@ internal fun previewActionLabels(): RecentsActionLabelsUiModel {
         call = "Voice call",
         videoCall = "Video call",
         message = "Message",
-        addContact = "Add contact",
-        block = "Block",
+        createContact = "Create new contact",
+        addContact = "Add to a contact",
         copyNumber = "Copy number",
+        editNumberBeforeCall = "Edit number before call",
+        block = "Block",
         callDetails = "Call details",
         delete = "Delete",
     )

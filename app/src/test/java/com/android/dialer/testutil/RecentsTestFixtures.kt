@@ -80,5 +80,6 @@ internal fun recentsItemUiModel(
         canVideoCall = false,
         canMessage = true,
         canAddContact = true,
+        canEditNumberBeforeCall = true,
     )
 }

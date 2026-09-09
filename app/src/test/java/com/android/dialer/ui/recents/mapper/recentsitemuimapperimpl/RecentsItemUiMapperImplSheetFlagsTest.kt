@@ -53,6 +53,19 @@ internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperIm
 
         assertFalse(model.canMessage)
         assertFalse(model.canAddContact)
+        assertFalse(model.canEditNumberBeforeCall)
+    }
+
+    @Test
+    fun map_withACallableNumber_allowsEditingItBeforeTheCall() {
+        assertTrue(map(callLogEntry(id = 1L)).canEditNumberBeforeCall)
+    }
+
+    @Test
+    fun map_withASipUri_doesNotAllowEditingItBeforeTheCall() {
+        val model = map(callLogEntry(id = 1L, number = "sip:ada@example.com"))
+
+        assertFalse(model.canEditNumberBeforeCall)
     }
 
     @Test

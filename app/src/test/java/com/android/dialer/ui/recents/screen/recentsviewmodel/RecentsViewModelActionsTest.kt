@@ -64,6 +64,14 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
+    fun createContactClicked_emitsCreateContactWithThatNumber() {
+        assertEffect(
+            Action.CreateContactClicked(number = NUMBER),
+            Effect.CreateContact(number = NUMBER),
+        )
+    }
+
+    @Test
     fun addContactClicked_emitsAddContactWithThatNumber() {
         assertEffect(Action.AddContactClicked(number = NUMBER), Effect.AddContact(number = NUMBER))
     }
@@ -71,6 +79,14 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     @Test
     fun copyNumberClicked_emitsCopyNumberWithThatNumber() {
         assertEffect(Action.CopyNumberClicked(number = NUMBER), Effect.CopyNumber(number = NUMBER))
+    }
+
+    @Test
+    fun editNumberBeforeCallClicked_emitsEditNumberBeforeCallWithThatNumber() {
+        assertEffect(
+            Action.EditNumberBeforeCallClicked(number = NUMBER),
+            Effect.EditNumberBeforeCall(number = NUMBER),
+        )
     }
 
     @Test

@@ -23,6 +23,7 @@ internal data class RecentsItemUiModel(
     val canVideoCall: Boolean,
     val canMessage: Boolean,
     val canAddContact: Boolean,
+    val canEditNumberBeforeCall: Boolean,
 ) {
 
     val isPrimaryTextTheNumber: Boolean

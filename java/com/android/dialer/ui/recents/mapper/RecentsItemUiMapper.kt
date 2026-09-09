@@ -12,6 +12,7 @@ import com.android.dialer.domain.recents.usecase.CanPlaceCall
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
 import com.android.dialer.domain.recents.usecase.IsPermissionGranted
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
+import com.android.dialer.phonenumberutil.PhoneNumberHelper
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
@@ -81,6 +82,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
                 !isEmergency &&
                 entry.lookupUri == null &&
                 isPermissionGranted(Manifest.permission.WRITE_CONTACTS),
+            canEditNumberBeforeCall = canCall && !PhoneNumberHelper.isUriNumber(entry.number),
         )
     }
 

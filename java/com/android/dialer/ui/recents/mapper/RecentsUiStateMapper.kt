@@ -80,9 +80,11 @@ internal class RecentsUiStateMapperImpl @Inject constructor(
             call = context.getString(R.string.voice_call),
             videoCall = context.getString(R.string.video_call),
             message = context.getString(R.string.send_a_message),
-            addContact = context.getString(R.string.add_to_contacts),
-            block = context.getString(R.string.block_number),
+            createContact = context.getString(R.string.search_shortcut_create_new_contact),
+            addContact = context.getString(R.string.search_shortcut_add_to_contact),
             copyNumber = context.getString(R.string.copy_number),
+            editNumberBeforeCall = context.getString(R.string.action_edit_number_before_call),
+            block = context.getString(R.string.block_number),
             callDetails = context.getString(R.string.call_details_menu_label),
             delete = context.getString(R.string.delete),
         )

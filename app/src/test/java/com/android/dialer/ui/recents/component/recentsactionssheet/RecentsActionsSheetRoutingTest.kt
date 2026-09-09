@@ -9,7 +9,9 @@ import com.android.dialer.ui.recents.common.RECENTS_SHEET_BLOCK_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_DETAILS_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_COPY_NUMBER_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_CREATE_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_DELETE_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_EDIT_NUMBER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_MESSAGE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_VIDEO_CALL_TEST_TAG
 import com.android.dialer.ui.recents.model.RecentsSheetAction as Action
@@ -47,6 +49,14 @@ internal class RecentsActionsSheetRoutingTest : BaseRecentsActionsSheetTest() {
     }
 
     @Test
+    fun createContact_click_emitsCreateContact() {
+        assertClickEmits(
+            tag = RECENTS_SHEET_CREATE_CONTACT_TEST_TAG,
+            expected = Action.CreateContact,
+        )
+    }
+
+    @Test
     fun addContact_click_emitsAddContact() {
         assertClickEmits(tag = RECENTS_SHEET_ADD_CONTACT_TEST_TAG, expected = Action.AddContact)
     }
@@ -54,6 +64,14 @@ internal class RecentsActionsSheetRoutingTest : BaseRecentsActionsSheetTest() {
     @Test
     fun copyNumber_click_emitsCopyNumber() {
         assertClickEmits(tag = RECENTS_SHEET_COPY_NUMBER_TEST_TAG, expected = Action.CopyNumber)
+    }
+
+    @Test
+    fun editNumberBeforeCall_click_emitsEditNumberBeforeCall() {
+        assertClickEmits(
+            tag = RECENTS_SHEET_EDIT_NUMBER_TEST_TAG,
+            expected = Action.EditNumberBeforeCall,
+        )
     }
 
     @Test

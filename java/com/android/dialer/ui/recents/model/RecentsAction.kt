@@ -23,11 +23,19 @@ internal sealed interface RecentsAction {
         val number: String,
     ) : RecentsAction
 
+    data class CreateContactClicked(
+        val number: String,
+    ) : RecentsAction
+
     data class AddContactClicked(
         val number: String,
     ) : RecentsAction
 
     data class CopyNumberClicked(
+        val number: String,
+    ) : RecentsAction
+
+    data class EditNumberBeforeCallClicked(
         val number: String,
     ) : RecentsAction
 

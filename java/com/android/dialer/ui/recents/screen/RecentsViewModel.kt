@@ -69,8 +69,14 @@ internal class RecentsViewModel @Inject constructor(
             is Action.CallBackClicked -> emitEffect(Effect.PlaceCall(number = action.number))
             is Action.VideoCallClicked -> emitEffect(Effect.PlaceVideoCall(number = action.number))
             is Action.MessageClicked -> emitEffect(Effect.SendMessage(number = action.number))
+            is Action.CreateContactClicked -> {
+                emitEffect(Effect.CreateContact(number = action.number))
+            }
             is Action.AddContactClicked -> emitEffect(Effect.AddContact(number = action.number))
             is Action.CopyNumberClicked -> emitEffect(Effect.CopyNumber(number = action.number))
+            is Action.EditNumberBeforeCallClicked -> {
+                emitEffect(Effect.EditNumberBeforeCall(number = action.number))
+            }
             is Action.EntryViewed -> markRead(entryIds = action.entryIds)
             is Action.DeleteConfirmed -> delete(entryIds = action.entryIds)
             Action.ClearHistoryConfirmed -> clearHistory()

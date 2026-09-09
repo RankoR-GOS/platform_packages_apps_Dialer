@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Dialpad
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.outlined.Info
@@ -46,7 +48,9 @@ import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_DETAILS_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CONTENT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_COPY_NUMBER_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_CREATE_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_DELETE_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_EDIT_NUMBER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_MESSAGE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_SUBTITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_TEST_TAG
@@ -117,6 +121,12 @@ internal fun RecentsActionsSheetContent(
             HorizontalDivider()
         }
 
+        RecentsSheetNumberActions(item = item, labels = labels, onAction = onAction)
+
+        if (item.canCallBack) {
+            HorizontalDivider()
+        }
+
         RecentsSheetEntryActions(item = item, labels = labels, onAction = onAction)
     }
 }
@@ -158,7 +168,7 @@ private fun RecentsSheetContactActions(
 }
 
 @Composable
-private fun RecentsSheetEntryActions(
+private fun RecentsSheetNumberActions(
     item: RecentsItemUiModel,
     labels: RecentsActionLabelsUiModel,
     onAction: (RecentsSheetAction) -> Unit,
@@ -167,6 +177,13 @@ private fun RecentsSheetEntryActions(
         if (item.canAddContact) {
             RecentsSheetActionRow(
                 icon = Icons.Filled.PersonAdd,
+                label = labels.createContact,
+                testTag = RECENTS_SHEET_CREATE_CONTACT_TEST_TAG,
+                onClick = { onAction(RecentsSheetAction.CreateContact) },
+            )
+
+            RecentsSheetActionRow(
+                icon = Icons.Filled.Person,
                 label = labels.addContact,
                 testTag = RECENTS_SHEET_ADD_CONTACT_TEST_TAG,
                 onClick = { onAction(RecentsSheetAction.AddContact) },
@@ -175,18 +192,38 @@ private fun RecentsSheetEntryActions(
 
         if (item.canCallBack) {
             RecentsSheetActionRow(
+                icon = Icons.Filled.ContentCopy,
+                label = labels.copyNumber,
+                testTag = RECENTS_SHEET_COPY_NUMBER_TEST_TAG,
+                onClick = { onAction(RecentsSheetAction.CopyNumber) },
+            )
+        }
+
+        if (item.canEditNumberBeforeCall) {
+            RecentsSheetActionRow(
+                icon = Icons.Filled.Dialpad,
+                label = labels.editNumberBeforeCall,
+                testTag = RECENTS_SHEET_EDIT_NUMBER_TEST_TAG,
+                onClick = { onAction(RecentsSheetAction.EditNumberBeforeCall) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecentsSheetEntryActions(
+    item: RecentsItemUiModel,
+    labels: RecentsActionLabelsUiModel,
+    onAction: (RecentsSheetAction) -> Unit,
+) {
+    Column {
+        if (item.canCallBack) {
+            RecentsSheetActionRow(
                 icon = Icons.Filled.Block,
                 label = labels.block,
                 testTag = RECENTS_SHEET_BLOCK_TEST_TAG,
                 onClick = {},
                 isEnabled = false,
-            )
-
-            RecentsSheetActionRow(
-                icon = Icons.Filled.ContentCopy,
-                label = labels.copyNumber,
-                testTag = RECENTS_SHEET_COPY_NUMBER_TEST_TAG,
-                onClick = { onAction(RecentsSheetAction.CopyNumber) },
             )
         }
 

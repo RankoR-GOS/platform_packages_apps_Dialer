@@ -7,6 +7,7 @@ import android.os.Build
 import android.provider.ContactsContract
 import androidx.activity.ComponentActivity
 import com.android.dialer.ui.recents.model.RecentsEffect
+import com.android.dialer.util.CallUtil
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -32,6 +33,25 @@ internal class RecentsEffectHandlerImplTest {
         val intent = shadowOf(activity).nextStartedActivity
         assertEquals(Intent.ACTION_SENDTO, intent.action)
         assertEquals("sms:$NUMBER", intent.dataString)
+    }
+
+    @Test
+    fun createContact_startsTheLegacyInsertIntentWithThatNumber() {
+        handler.handle(effect = RecentsEffect.CreateContact(number = NUMBER))
+
+        val intent = shadowOf(activity).nextStartedActivity
+        assertEquals(Intent.ACTION_INSERT, intent.action)
+        assertEquals(ContactsContract.Contacts.CONTENT_URI, intent.data)
+        assertEquals(NUMBER, intent.getStringExtra(ContactsContract.Intents.Insert.PHONE))
+    }
+
+    @Test
+    fun editNumberBeforeCall_startsTheDialIntentWithTheLegacyCallUri() {
+        handler.handle(effect = RecentsEffect.EditNumberBeforeCall(number = NUMBER))
+
+        val intent = shadowOf(activity).nextStartedActivity
+        assertEquals(Intent.ACTION_DIAL, intent.action)
+        assertEquals(CallUtil.getCallUri(NUMBER), intent.data)
     }
 
     @Test

@@ -13,6 +13,7 @@ import com.android.dialer.callintent.CallInitiationType
 import com.android.dialer.callintent.CallIntentBuilder
 import com.android.dialer.precall.PreCall
 import com.android.dialer.ui.recents.model.RecentsEffect
+import com.android.dialer.util.CallUtil
 import com.android.dialer.util.DialerUtils
 import com.android.dialer.util.IntentUtil
 
@@ -40,10 +41,16 @@ internal class RecentsEffectHandlerImpl(
             is RecentsEffect.SendMessage -> startActivity(
                 intent = IntentUtil.getSendSmsIntent(effect.number),
             )
+            is RecentsEffect.CreateContact -> startActivity(
+                intent = IntentUtil.getNewContactIntent(effect.number),
+            )
             is RecentsEffect.AddContact -> startActivity(
                 intent = IntentUtil.getAddToExistingContactIntent(effect.number),
             )
             is RecentsEffect.CopyNumber -> copyNumber(number = effect.number)
+            is RecentsEffect.EditNumberBeforeCall -> startActivity(
+                intent = Intent(Intent.ACTION_DIAL, CallUtil.getCallUri(effect.number)),
+            )
             RecentsEffect.RequestCallLogPermission, RecentsEffect.WriteFailed -> Unit
         }
     }

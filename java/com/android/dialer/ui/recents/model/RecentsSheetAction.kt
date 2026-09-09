@@ -15,10 +15,16 @@ internal sealed interface RecentsSheetAction {
     data object Message : RecentsSheetAction
 
     @Immutable
+    data object CreateContact : RecentsSheetAction
+
+    @Immutable
     data object AddContact : RecentsSheetAction
 
     @Immutable
     data object CopyNumber : RecentsSheetAction
+
+    @Immutable
+    data object EditNumberBeforeCall : RecentsSheetAction
 
     @Immutable
     data object Delete : RecentsSheetAction

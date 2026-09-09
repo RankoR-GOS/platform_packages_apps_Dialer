@@ -49,6 +49,7 @@ internal abstract class BaseRecentsActionsSheetTest {
         canVideoCall: Boolean = false,
         canMessage: Boolean = true,
         canAddContact: Boolean = true,
+        canEditNumberBeforeCall: Boolean = canCallBack,
     ): RecentsItemUiModel {
         return previewRecentsItem(
             entryId = CallLogEntryId(value = 7L),
@@ -58,6 +59,7 @@ internal abstract class BaseRecentsActionsSheetTest {
             canVideoCall = canVideoCall,
             canMessage = canMessage,
             canAddContact = canAddContact,
+            canEditNumberBeforeCall = canEditNumberBeforeCall,
         )
     }
 

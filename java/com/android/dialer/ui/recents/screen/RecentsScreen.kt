@@ -158,8 +158,10 @@ internal fun RecentsEffects(
             is Effect.PlaceCall,
             is Effect.PlaceVideoCall,
             is Effect.SendMessage,
+            is Effect.CreateContact,
             is Effect.AddContact,
             is Effect.CopyNumber,
+            is Effect.EditNumberBeforeCall,
             -> effectHandler.handle(effect = effect)
         }
     }
@@ -200,8 +202,12 @@ internal fun RecentsSheetAction.toAction(item: RecentsItemUiModel): Action {
         RecentsSheetAction.Call -> Action.CallBackClicked(number = item.number)
         RecentsSheetAction.VideoCall -> Action.VideoCallClicked(number = item.number)
         RecentsSheetAction.Message -> Action.MessageClicked(number = item.number)
+        RecentsSheetAction.CreateContact -> Action.CreateContactClicked(number = item.number)
         RecentsSheetAction.AddContact -> Action.AddContactClicked(number = item.number)
         RecentsSheetAction.CopyNumber -> Action.CopyNumberClicked(number = item.number)
+        RecentsSheetAction.EditNumberBeforeCall -> {
+            Action.EditNumberBeforeCallClicked(number = item.number)
+        }
         RecentsSheetAction.Delete -> Action.DeleteConfirmed(entryIds = item.groupedEntryIds)
     }
 }

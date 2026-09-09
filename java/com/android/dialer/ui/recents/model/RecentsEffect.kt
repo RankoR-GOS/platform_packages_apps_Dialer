@@ -16,11 +16,19 @@ internal sealed interface RecentsEffect {
         val number: String,
     ) : RecentsEffect
 
+    data class CreateContact(
+        val number: String,
+    ) : RecentsEffect
+
     data class AddContact(
         val number: String,
     ) : RecentsEffect
 
     data class CopyNumber(
+        val number: String,
+    ) : RecentsEffect
+
+    data class EditNumberBeforeCall(
         val number: String,
     ) : RecentsEffect
 

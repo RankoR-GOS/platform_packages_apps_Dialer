@@ -21,7 +21,9 @@ import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_DETAILS_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CONTENT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_COPY_NUMBER_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_CREATE_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_DELETE_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_EDIT_NUMBER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_MESSAGE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_SUBTITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_TITLE_TEST_TAG
@@ -94,9 +96,11 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
             RECENTS_SHEET_CALL_TEST_TAG,
             RECENTS_SHEET_VIDEO_CALL_TEST_TAG,
             RECENTS_SHEET_MESSAGE_TEST_TAG,
+            RECENTS_SHEET_CREATE_CONTACT_TEST_TAG,
             RECENTS_SHEET_ADD_CONTACT_TEST_TAG,
-            RECENTS_SHEET_BLOCK_TEST_TAG,
             RECENTS_SHEET_COPY_NUMBER_TEST_TAG,
+            RECENTS_SHEET_EDIT_NUMBER_TEST_TAG,
+            RECENTS_SHEET_BLOCK_TEST_TAG,
             RECENTS_SHEET_CALL_DETAILS_TEST_TAG,
             RECENTS_SHEET_DELETE_TEST_TAG,
         ).zipWithNext().forEach { (above, below) ->
@@ -118,9 +122,11 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
             RECENTS_SHEET_CALL_TEST_TAG,
             RECENTS_SHEET_VIDEO_CALL_TEST_TAG,
             RECENTS_SHEET_MESSAGE_TEST_TAG,
+            RECENTS_SHEET_CREATE_CONTACT_TEST_TAG,
             RECENTS_SHEET_ADD_CONTACT_TEST_TAG,
-            RECENTS_SHEET_BLOCK_TEST_TAG,
             RECENTS_SHEET_COPY_NUMBER_TEST_TAG,
+            RECENTS_SHEET_EDIT_NUMBER_TEST_TAG,
+            RECENTS_SHEET_BLOCK_TEST_TAG,
         ).forEach { tag ->
             composeTestRule.onAllNodesWithTag(testTag = tag).assertCountEquals(expectedSize = 0)
         }
@@ -146,11 +152,23 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     }
 
     @Test
-    fun sheet_whenTheNumberIsAContact_hidesAddContact() {
+    fun sheet_whenTheNumberIsAContact_hidesBothAddContactActions() {
         setContent(item = item(canAddContact = false))
 
+        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_CREATE_CONTACT_TEST_TAG)
+            .assertCountEquals(expectedSize = 0)
         composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_ADD_CONTACT_TEST_TAG)
             .assertCountEquals(expectedSize = 0)
+    }
+
+    @Test
+    fun sheet_whenTheNumberIsASipUri_hidesEditNumberBeforeCall() {
+        setContent(item = item(canEditNumberBeforeCall = false))
+
+        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_EDIT_NUMBER_TEST_TAG)
+            .assertCountEquals(expectedSize = 0)
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_COPY_NUMBER_TEST_TAG)
+            .assertIsDisplayed()
     }
 
     @Test
