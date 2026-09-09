@@ -76,7 +76,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             number = entry.number,
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,
-            canVideoCall = canCall && entry.isVideoCall,
+            canVideoCall = canCall && !isEmergency && entry.isVideoCall,
             canMessage = canCall &&
                 !isEmergency &&
                 isPermissionGranted(Manifest.permission.SEND_SMS),

@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.Manifest
 import android.os.Build
+import android.provider.CallLog.Calls
 import com.android.dialer.testutil.callLogEntry
 import io.mockk.every
 import org.junit.Assert.assertEquals
@@ -43,6 +44,16 @@ internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperIm
 
         assertFalse(model.canMessage)
         assertFalse(model.canAddContact)
+    }
+
+    @Test
+    fun map_withAnEmergencyVideoCall_allowsTheCallBackButNotAsVideo() {
+        every { isEmergencyNumber("911") } returns true
+
+        val model = map(callLogEntry(id = 1L, number = "911", features = Calls.FEATURES_VIDEO))
+
+        assertTrue(model.canCallBack)
+        assertFalse(model.canVideoCall)
     }
 
     @Test
