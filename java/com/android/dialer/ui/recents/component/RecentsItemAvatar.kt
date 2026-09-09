@@ -32,8 +32,8 @@ import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitCancellation
 
 internal val ItemAvatarSize = 48.dp
 
@@ -91,39 +91,39 @@ private fun rememberContactPhoto(photoUri: String?): ImageBitmap? {
     return produceState<ImageBitmap?>(initialValue = null, photoUri) {
         val uri = photoUri?.let(Uri::parse)
 
-        value = when {
-            uri == null || isInspectionMode -> null
-            uri.scheme != ContentResolver.SCHEME_CONTENT -> null
-            else -> loadContactPhoto(context = context, uri = uri, sizePx = sizePx)
+        value = null
+        if (uri == null || isInspectionMode || uri.scheme != ContentResolver.SCHEME_CONTENT) {
+            return@produceState
+        }
+
+        val requestManager = Glide.with(context)
+        val target = ContactPhotoTarget(sizePx = sizePx)
+
+        requestManager.asBitmap().load(uri).into(target)
+        try {
+            value = target.photo.await()
+            awaitCancellation()
+        } finally {
+            requestManager.clear(target)
         }
     }.value
 }
 
-private suspend fun loadContactPhoto(
-    context: Context,
-    uri: Uri,
+private class ContactPhotoTarget(
     sizePx: Int,
-): ImageBitmap? {
-    return suspendCancellableCoroutine { continuation ->
-        val target = object : CustomTarget<Bitmap>(sizePx, sizePx) {
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                if (continuation.isActive) {
-                    val owned = resource.copy(Bitmap.Config.ARGB_8888, false)
+) : CustomTarget<Bitmap>(sizePx, sizePx) {
 
-                    continuation.resume(owned?.asImageBitmap())
-                }
-            }
+    val photo = CompletableDeferred<ImageBitmap?>()
 
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                if (continuation.isActive) {
-                    continuation.resume(null)
-                }
-            }
+    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+        photo.complete(resource.asImageBitmap())
+    }
 
-            override fun onLoadCleared(placeholder: Drawable?) = Unit
-        }
+    override fun onLoadFailed(errorDrawable: Drawable?) {
+        photo.complete(null)
+    }
 
-        Glide.with(context).asBitmap().load(uri).into(target)
-        continuation.invokeOnCancellation { Glide.with(context).clear(target) }
+    override fun onLoadCleared(placeholder: Drawable?) {
+        photo.complete(null)
     }
 }
