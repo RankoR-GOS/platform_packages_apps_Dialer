@@ -1,6 +1,7 @@
 package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.os.Build
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.R
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.testutil.callLogEntry
@@ -56,16 +57,36 @@ internal class RecentsItemUiMapperImplDescriptionTest : BaseRecentsItemUiMapperI
             CallType.Voicemail,
             CallType.Unknown(rawType = UNKNOWN_RAW_TYPE),
         ).forEach { callType ->
-            val model = map(callLogEntry(id = 1L, cachedName = NAME, callType = callType))
+            val model = map(
+                callLogEntry(
+                    id = 1L,
+                    cachedName = NAME,
+                    callType = callType,
+                    numberType = Phone.TYPE_MOBILE,
+                ),
+            )
 
-            assertEquals("plurals-$plurals-1-$NAME; $LONG_TIME", model.contentDescription)
+            assertEquals(
+                "plurals-$plurals-1-$NAME; $MOBILE_LABEL, $LONG_TIME",
+                model.contentDescription,
+            )
         }
     }
 
     private fun assertSpokenAs(callType: CallType, plurals: Int) {
-        val model = map(callLogEntry(id = 1L, cachedName = NAME, callType = callType))
+        val model = map(
+            callLogEntry(
+                id = 1L,
+                cachedName = NAME,
+                callType = callType,
+                numberType = Phone.TYPE_MOBILE,
+            ),
+        )
 
-        assertEquals("plurals-$plurals-1-$NAME; $LONG_TIME", model.contentDescription)
+        assertEquals(
+            "plurals-$plurals-1-$NAME; $MOBILE_LABEL, $LONG_TIME",
+            model.contentDescription,
+        )
         verify(exactly = 1) { resources.getQuantityString(plurals, 1) }
     }
 

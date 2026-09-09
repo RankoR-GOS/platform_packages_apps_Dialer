@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabaseCorruptException
 import android.database.sqlite.SQLiteDiskIOException
 import android.database.sqlite.SQLiteFullException
 import android.net.Uri
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.PhoneLookup
 import android.telephony.PhoneNumberUtils
@@ -18,6 +19,8 @@ internal sealed interface ContactLookupResult {
         val name: String?,
         val photoUri: String?,
         val lookupUri: String?,
+        val numberType: Int,
+        val numberLabel: String?,
     ) : ContactLookupResult
 
     data object None : ContactLookupResult
@@ -80,6 +83,8 @@ internal class ContactLookupImpl @Inject constructor(
             name = getString(DISPLAY_NAME_INDEX)?.takeIf { name -> name.isContactName(number) },
             photoUri = getString(PHOTO_URI_INDEX)?.takeIf { it.isNotBlank() },
             lookupUri = lookupUri,
+            numberType = getInt(TYPE_INDEX),
+            numberLabel = getString(LABEL_INDEX)?.takeIf { it.isNotBlank() },
         )
     }
 
@@ -93,12 +98,16 @@ internal class ContactLookupImpl @Inject constructor(
         private const val DISPLAY_NAME_INDEX = 1
         private const val PHOTO_URI_INDEX = 2
         private const val LOOKUP_KEY_INDEX = 3
+        private const val TYPE_INDEX = 4
+        private const val LABEL_INDEX = 5
 
         internal val PHONE_LOOKUP_PROJECTION = arrayOf(
             PhoneLookup.CONTACT_ID,
             PhoneLookup.DISPLAY_NAME,
             PhoneLookup.PHOTO_URI,
             PhoneLookup.LOOKUP_KEY,
+            PhoneLookup.TYPE,
+            PhoneLookup.LABEL,
         )
     }
 }

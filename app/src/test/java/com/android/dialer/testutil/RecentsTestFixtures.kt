@@ -1,6 +1,7 @@
 package com.android.dialer.testutil
 
 import android.provider.CallLog.Calls
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.data.recents.model.CallLogSnapshot
@@ -20,6 +21,8 @@ internal fun callLogEntry(
     cachedName: String? = null,
     photoUri: String? = null,
     lookupUri: String? = null,
+    numberType: Int = Phone.TYPE_CUSTOM,
+    numberLabel: String? = null,
     timestampMillis: Long = TEST_TIMESTAMP_MILLIS + id,
     durationSeconds: Long = TEST_CALL_DURATION_SECONDS,
     features: Int = 0,
@@ -36,6 +39,8 @@ internal fun callLogEntry(
         cachedName = cachedName,
         photoUri = photoUri,
         lookupUri = lookupUri,
+        numberType = numberType,
+        numberLabel = numberLabel,
         timestampMillis = timestampMillis,
         durationSeconds = durationSeconds,
         features = features,

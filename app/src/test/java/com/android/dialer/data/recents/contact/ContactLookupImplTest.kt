@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDiskIOException
 import android.database.sqlite.SQLiteFullException
 import android.net.Uri
 import android.os.Build
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.PhoneLookup
 import io.mockk.every
 import io.mockk.mockk
@@ -28,10 +29,34 @@ internal class ContactLookupImplTest {
     private val lookup = ContactLookupImpl(contentResolver = contentResolver)
 
     @Test
+    fun invoke_withACustomLabel_returnsTheLabelWithTheCustomType() {
+        every { contentResolver.query(any(), any(), null, null, null) } returns
+            phoneLookupCursor(
+                contactId = 42L,
+                name = "Ada Lovelace",
+                photoUri = null,
+                key = "k42",
+                numberType = Phone.TYPE_CUSTOM,
+                numberLabel = "Studio",
+            )
+
+        val found = lookup(NUMBER) as ContactLookupResult.Found
+
+        assertEquals(Phone.TYPE_CUSTOM, found.numberType)
+        assertEquals("Studio", found.numberLabel)
+    }
+
+    @Test
     fun invoke_withAMatchingContact_returnsItsNamePhotoAndLookupUri() {
         val capturedUris = mutableListOf<Uri>()
         every { contentResolver.query(capture(capturedUris), any(), null, null, null) } returns
-            phoneLookupCursor(contactId = 42L, name = "Ada Lovelace", photoUri = PHOTO, key = "k42")
+            phoneLookupCursor(
+                contactId = 42L,
+                name = "Ada Lovelace",
+                photoUri = PHOTO,
+                key = "k42",
+                numberType = Phone.TYPE_MOBILE,
+            )
 
         val result = lookup(NUMBER)
 
@@ -40,6 +65,8 @@ internal class ContactLookupImplTest {
                 name = "Ada Lovelace",
                 photoUri = PHOTO,
                 lookupUri = "content://com.android.contacts/contacts/lookup/k42/42",
+                numberType = Phone.TYPE_MOBILE,
+                numberLabel = null,
             ),
             result,
         )
@@ -59,6 +86,8 @@ internal class ContactLookupImplTest {
                 name = null,
                 photoUri = null,
                 lookupUri = "content://com.android.contacts/contacts/lookup/k7/7",
+                numberType = Phone.TYPE_CUSTOM,
+                numberLabel = null,
             ),
             lookup(NUMBER),
         )
@@ -131,9 +160,11 @@ internal class ContactLookupImplTest {
         name: String,
         photoUri: String?,
         key: String,
+        numberType: Int = Phone.TYPE_CUSTOM,
+        numberLabel: String? = null,
     ): MatrixCursor {
         return MatrixCursor(ContactLookupImpl.PHONE_LOOKUP_PROJECTION).apply {
-            addRow(arrayOf<Any?>(contactId, name, photoUri, key))
+            addRow(arrayOf<Any?>(contactId, name, photoUri, key, numberType, numberLabel))
         }
     }
 

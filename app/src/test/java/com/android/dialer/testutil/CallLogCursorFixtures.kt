@@ -2,6 +2,7 @@ package com.android.dialer.testutil
 
 import android.database.MatrixCursor
 import android.provider.CallLog.Calls
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 
 internal const val TEST_TIMESTAMP_MILLIS = 1_806_240_000_000L
@@ -33,6 +34,8 @@ internal fun callLogRow(
     cachedName: String? = null,
     cachedPhotoUri: String? = null,
     cachedLookupUri: String? = null,
+    numberType: Int = Phone.TYPE_CUSTOM,
+    numberLabel: String? = null,
     isRead: Int = 1,
 ): TestCallLogRow {
     return TestCallLogRow(
@@ -48,6 +51,8 @@ internal fun callLogRow(
         cachedName = cachedName,
         cachedPhotoUri = cachedPhotoUri,
         cachedLookupUri = cachedLookupUri,
+        numberType = numberType,
+        numberLabel = numberLabel,
         isRead = isRead,
     )
 }
@@ -65,6 +70,8 @@ internal data class TestCallLogRow(
     val cachedName: String?,
     val cachedPhotoUri: String?,
     val cachedLookupUri: String?,
+    val numberType: Int,
+    val numberLabel: String?,
     val isRead: Int,
 ) {
 
@@ -82,6 +89,8 @@ internal data class TestCallLogRow(
             Calls.CACHED_NAME to cachedName,
             Calls.CACHED_PHOTO_URI to cachedPhotoUri,
             Calls.CACHED_LOOKUP_URI to cachedLookupUri,
+            Calls.CACHED_NUMBER_TYPE to numberType,
+            Calls.CACHED_NUMBER_LABEL to numberLabel,
             Calls.IS_READ to isRead,
         )
     }

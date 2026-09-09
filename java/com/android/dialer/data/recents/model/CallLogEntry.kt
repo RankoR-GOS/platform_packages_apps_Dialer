@@ -13,6 +13,8 @@ internal data class CallLogEntry(
     val cachedName: String?,
     val photoUri: String?,
     val lookupUri: String?,
+    val numberType: Int,
+    val numberLabel: String?,
     val timestampMillis: Long,
     val durationSeconds: Long,
     val features: Int,

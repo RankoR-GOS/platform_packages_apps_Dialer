@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.common.LogUtil
 import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.contact.ContactLookupResult
@@ -222,11 +223,15 @@ internal class RecentsRepositoryImpl @Inject constructor(
                 cachedName = contact.name,
                 photoUri = contact.photoUri,
                 lookupUri = contact.lookupUri,
+                numberType = contact.numberType,
+                numberLabel = contact.numberLabel,
             )
             ContactLookupResult.None -> entry.copy(
                 cachedName = null,
                 photoUri = null,
                 lookupUri = null,
+                numberType = Phone.TYPE_CUSTOM,
+                numberLabel = null,
             )
             ContactLookupResult.Unavailable -> entry
         }
@@ -319,6 +324,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
             nameIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NAME),
             photoUriIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_PHOTO_URI),
             lookupUriIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_LOOKUP_URI),
+            numberTypeIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NUMBER_TYPE),
+            numberLabelIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NUMBER_LABEL),
             isReadIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.IS_READ),
         )
 
@@ -343,6 +350,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
             cachedName = cursor.getString(columns.nameIndex)?.takeIf { it.isNotBlank() },
             photoUri = cursor.getString(columns.photoUriIndex)?.takeIf { it.isNotBlank() },
             lookupUri = cursor.getString(columns.lookupUriIndex)?.takeIf { it.isNotBlank() },
+            numberType = cursor.getInt(columns.numberTypeIndex),
+            numberLabel = cursor.getString(columns.numberLabelIndex)?.takeIf { it.isNotBlank() },
             timestampMillis = cursor.getLong(columns.dateIndex),
             durationSeconds = cursor.getLong(columns.durationIndex),
             features = cursor.getInt(columns.featuresIndex),
@@ -428,6 +437,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
         val nameIndex: Int,
         val photoUriIndex: Int,
         val lookupUriIndex: Int,
+        val numberTypeIndex: Int,
+        val numberLabelIndex: Int,
         val isReadIndex: Int,
     )
 
@@ -460,6 +471,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
             CallLog.Calls.CACHED_NAME,
             CallLog.Calls.CACHED_PHOTO_URI,
             CallLog.Calls.CACHED_LOOKUP_URI,
+            CallLog.Calls.CACHED_NUMBER_TYPE,
+            CallLog.Calls.CACHED_NUMBER_LABEL,
             CallLog.Calls.IS_READ,
         )
     }

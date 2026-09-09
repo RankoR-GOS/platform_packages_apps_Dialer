@@ -3,6 +3,7 @@ package com.android.dialer.ui.recents.mapper
 import android.Manifest
 import android.content.Context
 import android.provider.CallLog
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.text.TextUtils
 import com.android.dialer.R
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
@@ -132,7 +133,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isVideoCall -> context.getString(R.string.new_call_log_carrier_video)
             else -> null
         }
-        val descriptor = listOfNotNull(videoLabel, geocodedLocation.takeIf { cachedName == null })
+        val descriptor = listOfNotNull(videoLabel, typeLabelOrLocation())
             .joinToString(separator = DESCRIPTOR_SEPARATOR)
             .takeIf { it.isNotEmpty() }
 
@@ -140,6 +141,18 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isEmergency -> listOf(time)
             else -> listOfNotNull(descriptor, time)
         }
+    }
+
+    private fun CallLogEntry.typeLabelOrLocation(): String? {
+        val label = when {
+            cachedName == null && geocodedLocation != null -> geocodedLocation
+            numberType == Phone.TYPE_CUSTOM && numberLabel.isNullOrEmpty() -> null
+            else -> Phone.getTypeLabel(context.resources, numberType, numberLabel)
+                .toString()
+                .takeIf { it.isNotBlank() }
+        }
+
+        return label ?: displayNumber().takeIf { cachedName != null && it.isNotBlank() }
     }
 
     private fun CallLogEntry.contentDescription(

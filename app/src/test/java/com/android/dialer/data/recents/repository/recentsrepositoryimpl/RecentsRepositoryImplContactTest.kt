@@ -3,6 +3,7 @@ package com.android.dialer.data.recents.repository.recentsrepositoryimpl
 import android.os.Build
 import android.provider.CallLog
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import app.cash.turbine.test
 import com.android.dialer.data.recents.contact.ContactLookupResult
 import com.android.dialer.data.recents.model.CallLogFilter
@@ -44,6 +45,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
                     assertEquals("Ada Lovelace", enriched.cachedName)
                     assertEquals(ADA.photoUri, enriched.photoUri)
                     assertEquals(ADA.lookupUri, enriched.lookupUri)
+                    assertEquals(Phone.TYPE_MOBILE, enriched.numberType)
                     cancelAndIgnoreRemainingEvents()
                 }
         }
@@ -266,6 +268,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
                     assertNull(forgotten.cachedName)
                     assertNull(forgotten.photoUri)
                     assertNull(forgotten.lookupUri)
+                    assertEquals(Phone.TYPE_CUSTOM, forgotten.numberType)
                     cancelAndIgnoreRemainingEvents()
                 }
         }
@@ -309,6 +312,8 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             name = "Ada Lovelace",
             photoUri = "content://com.android.contacts/contacts/42/photo",
             lookupUri = "content://com.android.contacts/contacts/lookup/k42/42",
+            numberType = Phone.TYPE_MOBILE,
+            numberLabel = null,
         )
     }
 }

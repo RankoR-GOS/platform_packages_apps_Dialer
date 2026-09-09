@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.os.Build
 import android.provider.CallLog.Calls
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.R
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.testutil.callLogEntry
@@ -109,10 +110,50 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
     }
 
     @Test
-    fun map_withGeocodedLocationAndAContact_showsTheTimeAlone() {
-        val model = map(callLogEntry(id = 1L, geocodedLocation = LOCATION, cachedName = "Ada"))
+    fun map_withAContactAndAMobileNumber_showsTheTypeLabelInsteadOfThePlace() {
+        val entry = callLogEntry(
+            id = 1L,
+            geocodedLocation = LOCATION,
+            cachedName = "Ada",
+            numberType = Phone.TYPE_MOBILE,
+        )
 
-        assertEquals(SHORT_TIME, model.secondaryText)
+        assertEquals("$MOBILE_LABEL • $SHORT_TIME", map(entry).secondaryText)
+    }
+
+    @Test
+    fun map_withAContactAndACustomLabel_showsTheLabel() {
+        val entry = callLogEntry(
+            id = 1L,
+            cachedName = "Ada",
+            numberType = Phone.TYPE_CUSTOM,
+            numberLabel = "Studio",
+        )
+
+        assertEquals("Studio • $SHORT_TIME", map(entry).secondaryText)
+    }
+
+    @Test
+    fun map_withAContactAndNoTypeLabel_showsTheNumberAndTheTime() {
+        val entry = callLogEntry(
+            id = 1L,
+            number = "6502530000",
+            geocodedLocation = LOCATION,
+            cachedName = "Ada",
+        )
+
+        assertEquals("formatted 6502530000 • $SHORT_TIME", map(entry).secondaryText)
+    }
+
+    @Test
+    fun map_withAStrangerAndAMobileType_showsThePlaceNotTheLabel() {
+        val entry = callLogEntry(
+            id = 1L,
+            geocodedLocation = LOCATION,
+            numberType = Phone.TYPE_MOBILE,
+        )
+
+        assertEquals("$LOCATION • $SHORT_TIME", map(entry).secondaryText)
     }
 
     @Test
@@ -148,12 +189,13 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
             cachedName = "Ada",
             callType = CallType.Missed,
             groupedCallCount = 2,
+            numberType = Phone.TYPE_MOBILE,
         )
 
         val model = map(entry)
 
         val plurals = R.plurals.a11y_new_call_log_entry_missed_call
-        assertEquals("plurals-$plurals-2-Ada; $LONG_TIME", model.contentDescription)
+        assertEquals("plurals-$plurals-2-Ada; $MOBILE_LABEL, $LONG_TIME", model.contentDescription)
         verify(exactly = 1) { resources.getQuantityString(plurals, 2) }
     }
 

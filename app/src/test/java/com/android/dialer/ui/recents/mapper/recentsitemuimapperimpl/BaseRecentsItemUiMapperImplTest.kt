@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.content.Context
 import android.content.res.Resources
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.R
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.recents.model.CallLogEntry
@@ -35,6 +36,9 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
             "plurals-${firstArg<Int>()}-^1-^2"
         }
         every { resources.getText(any()) } returns "^1; ^2"
+        every {
+            resources.getText(Phone.getTypeLabelResource(Phone.TYPE_MOBILE))
+        } returns MOBILE_LABEL
         every { context.getText(any()) } answers { "text-${firstArg<Int>()} ^1" }
         every { phoneNumberFormatter.formatForDisplay(any()) } answers {
             "formatted ${firstArg<String>()}"
@@ -70,6 +74,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
         const val SHORT_TIME = "5 min ago"
         const val LONG_TIME = "5 minutes ago"
         const val LOCATION = "Kingston, Jamaica"
+        const val MOBILE_LABEL = "Mobile"
         val VIDEO_LABEL = "string-${R.string.new_call_log_carrier_video}"
     }
 }
