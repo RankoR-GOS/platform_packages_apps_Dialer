@@ -64,6 +64,8 @@ internal fun recentsItemUiModel(
         primaryText = primaryText,
         secondaryText = "Kingston, Jamaica • 5 min ago",
         contentDescription = "1 answered call from $primaryText",
+        clickActionLabel = "expand menu",
+        callActionLabel = "Call $primaryText",
         avatar = RecentsAvatarUiModel(photoUri = null, letter = 'C', lookupUri = null),
         callTypeIcon = RecentsCallTypeIcon.Incoming,
         groupedCallCountLabel = null,

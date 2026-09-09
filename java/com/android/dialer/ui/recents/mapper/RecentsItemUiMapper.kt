@@ -56,6 +56,8 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
                 nowMillis = nowMillis,
                 isEmergency = isEmergency,
             ),
+            clickActionLabel = context.getString(R.string.a11y_new_call_log_entry_tap_action),
+            callActionLabel = entry.callActionLabel(canCall = canCall, primaryText = primaryText),
             avatar = RecentsAvatarUiModel(
                 photoUri = entry.photoUri,
                 letter = initial?.uppercaseChar(),
@@ -148,6 +150,16 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             primaryDescription,
             secondaryDescription,
         ).toString()
+    }
+
+    private fun CallLogEntry.callActionLabel(canCall: Boolean, primaryText: String): String? {
+        val resId = when {
+            !canCall -> return null
+            isVideoCall -> R.string.description_video_call_action
+            else -> R.string.description_call_action
+        }
+
+        return TextUtils.expandTemplate(context.getText(resId), primaryText).toString()
     }
 
     private fun spokenDigits(number: String): String {

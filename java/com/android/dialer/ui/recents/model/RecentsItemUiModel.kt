@@ -9,6 +9,8 @@ internal data class RecentsItemUiModel(
     val primaryText: String,
     val secondaryText: String,
     val contentDescription: String,
+    val clickActionLabel: String,
+    val callActionLabel: String?,
     val avatar: RecentsAvatarUiModel,
     val callTypeIcon: RecentsCallTypeIcon,
     val groupedCallCountLabel: String?,

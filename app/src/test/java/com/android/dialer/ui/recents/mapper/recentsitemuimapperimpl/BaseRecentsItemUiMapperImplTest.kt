@@ -33,6 +33,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
             "plurals-${firstArg<Int>()}-^1-^2"
         }
         every { resources.getText(any()) } returns "^1; ^2"
+        every { context.getText(any()) } answers { "text-${firstArg<Int>()} ^1" }
         every { phoneNumberFormatter.formatForDisplay(any()) } answers {
             "formatted ${firstArg<String>()}"
         }
