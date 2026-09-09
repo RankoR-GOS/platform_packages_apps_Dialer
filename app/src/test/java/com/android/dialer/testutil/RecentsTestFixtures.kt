@@ -67,6 +67,7 @@ internal fun recentsItemUiModel(
         primaryText = primaryText,
         secondaryText = "Kingston, Jamaica • 5 min ago",
         displayNumber = number,
+        spokenDisplayNumber = number,
         contentDescription = "1 answered call from $primaryText",
         clickActionLabel = "expand menu",
         callActionLabel = "Call $primaryText",

@@ -170,7 +170,28 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
         )
     }
 
+    @Test
+    fun map_speaksTheDisplayNumberDigitByDigit() {
+        val entry = callLogEntry(id = 1L, number = RAW_NUMBER, formattedNumber = FORMATTED_NUMBER)
+
+        assertEquals(SPOKEN_NUMBER, map(entry).spokenDisplayNumber)
+    }
+
+    @Test
+    fun map_withASipAddress_speaksItAsWritten() {
+        val entry = callLogEntry(id = 1L, number = SIP_ADDRESS, formattedNumber = SIP_ADDRESS)
+
+        val model = map(entry)
+
+        assertEquals(SIP_ADDRESS, model.spokenDisplayNumber)
+        assertEquals(
+            "plurals-${R.plurals.a11y_new_call_log_entry_answered_call}-1-$SIP_ADDRESS; $LONG_TIME",
+            model.contentDescription,
+        )
+    }
+
     private companion object {
+        private const val SIP_ADDRESS = "sip:ada@example.com"
         private const val RAW_NUMBER = "6502530000"
         private const val FORMATTED_NUMBER = "(650) 253-0000"
         private const val SPOKEN_NUMBER = "6 5 0 2 5 3 0 0 0 0"

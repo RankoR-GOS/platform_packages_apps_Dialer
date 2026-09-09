@@ -2,7 +2,10 @@ package com.android.dialer.ui.recents.component.recentsactionssheet
 
 import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -54,6 +57,31 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
 
         composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
             .assertCountEquals(expectedSize = 0)
+    }
+
+    @Test
+    fun header_speaksTheSubtitleNumberDigitByDigit() {
+        setContent(item = item())
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
+            .assertContentDescriptionEquals(SPOKEN_NUMBER)
+    }
+
+    @Test
+    fun header_whenThePrimaryTextIsTheNumber_speaksTheTitleDigitByDigit() {
+        setContent(item = item(primaryText = DISPLAY_NUMBER))
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+            .assertContentDescriptionEquals(SPOKEN_NUMBER)
+    }
+
+    @Test
+    fun header_whenThePrimaryTextIsAName_speaksTheTitleAsWritten() {
+        val noDescription = SemanticsMatcher.keyNotDefined(SemanticsProperties.ContentDescription)
+        setContent(item = item())
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+            .assert(matcher = noDescription)
     }
 
     @Test

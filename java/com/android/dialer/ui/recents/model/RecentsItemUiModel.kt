@@ -10,6 +10,7 @@ internal data class RecentsItemUiModel(
     val primaryText: String,
     val secondaryText: String,
     val displayNumber: String,
+    val spokenDisplayNumber: String,
     val contentDescription: String,
     val clickActionLabel: String,
     val callActionLabel: String?,

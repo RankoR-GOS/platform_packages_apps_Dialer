@@ -40,8 +40,9 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isEmergency = isEmergency,
             displayNumber = displayNumber,
         )
+        val spokenDisplayNumber = spokenDigits(number = displayNumber)
         val spokenPrimaryText = when (primaryText) {
-            displayNumber -> spokenDigits(number = displayNumber)
+            displayNumber -> spokenDisplayNumber
             else -> primaryText
         }
         val canCall = canPlaceCall(number = entry.number, presentation = entry.numberPresentation)
@@ -56,6 +57,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
                 isAbbreviated = true,
             ).joinToString(separator = SECONDARY_TEXT_SEPARATOR),
             displayNumber = displayNumber,
+            spokenDisplayNumber = spokenDisplayNumber,
             contentDescription = entry.contentDescription(
                 spokenPrimaryText = spokenPrimaryText,
                 nowMillis = nowMillis,
@@ -177,7 +179,12 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     }
 
     private fun spokenDigits(number: String): String {
-        return number.filter { it.isDigit() || it == '+' }.map { it }.joinToString(separator = " ")
+        val digits = number.filter { it.isDigit() || it == '+' }
+
+        return when {
+            digits.isEmpty() -> number
+            else -> digits.map { it }.joinToString(separator = " ")
+        }
     }
 
     private fun CallType.toDescriptionPlurals(): Int {

@@ -35,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -261,10 +263,18 @@ private fun RecentsActionsSheetHeader(
             colorSeed = avatarColorSeed(number = item.number),
         )
 
+        val spokenNumber = Modifier.semantics { contentDescription = item.spokenDisplayNumber }
+        val titleSemantics = when {
+            item.isPrimaryTextTheNumber -> spokenNumber
+            else -> Modifier
+        }
+
         Column(modifier = Modifier.weight(weight = 1f)) {
             Text(
                 text = item.primaryText,
-                modifier = Modifier.testTag(tag = RECENTS_SHEET_TITLE_TEST_TAG),
+                modifier = Modifier
+                    .testTag(tag = RECENTS_SHEET_TITLE_TEST_TAG)
+                    .then(other = titleSemantics),
                 style = MaterialTheme.typography.titleMedium.copy(
                     textDirection = recentsItemTextDirection(
                         isNumber = item.isPrimaryTextTheNumber,
@@ -278,7 +288,9 @@ private fun RecentsActionsSheetHeader(
             if (item.displayNumber.isNotBlank() && !item.isPrimaryTextTheNumber) {
                 Text(
                     text = item.displayNumber,
-                    modifier = Modifier.testTag(tag = RECENTS_SHEET_SUBTITLE_TEST_TAG),
+                    modifier = Modifier
+                        .testTag(tag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
+                        .then(other = spokenNumber),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         textDirection = TextDirection.Ltr,
                     ),
