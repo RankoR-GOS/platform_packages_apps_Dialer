@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.ImmutableList
 internal data class RecentsUiState(
     val content: RecentsContentUiState = RecentsContentUiState.Loading,
     val actionLabels: RecentsActionLabelsUiModel = RecentsActionLabelsUiModel(),
+    val writeFailedMessage: String = "",
 )
 
 @Immutable

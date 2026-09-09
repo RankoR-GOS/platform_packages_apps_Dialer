@@ -28,6 +28,7 @@ internal class RecentsUiStateMapperImpl @Inject constructor(
         return RecentsUiState(
             content = snapshot.toContent(nowMillis = nowMillis),
             actionLabels = actionLabels(),
+            writeFailedMessage = context.getString(R.string.recents_write_failed),
         )
     }
 

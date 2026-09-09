@@ -707,4 +707,7 @@
   <!-- If a user deletes a call that has attachments (photo, message, ect) bundled with it, they need
         to be told that they need to go to the SMS app to delete the attachments. [CHAR LIMIT=NONE] -->
   <string name="multiple_ec_data_deleted">Calls deleted. View and delete attachments shared during calls in Messages.</string>
+
+  <!-- Snackbar shown on the Recents tab when a call log write (delete) fails. [CHAR LIMIT=40] -->
+  <string name="recents_write_failed" tools:ignore="MissingTranslation">Couldn\'t update call history</string>
 </resources>

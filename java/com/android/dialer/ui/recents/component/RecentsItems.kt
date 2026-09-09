@@ -36,7 +36,7 @@ private val ItemPlacementSpec = spring(
 
 private val ListVerticalSpacing = 2.dp
 private val ListContentPadding = 8.dp
-private val FabBottomReserve = 88.dp
+internal val RecentsFabBottomReserve = 88.dp
 
 @Composable
 internal fun RecentsItems(
@@ -52,7 +52,7 @@ internal fun RecentsItems(
         state = listState,
         contentPadding = safeDrawingContentPadding(
             top = ListContentPadding,
-            bottom = ListContentPadding + FabBottomReserve,
+            bottom = ListContentPadding + RecentsFabBottomReserve,
             horizontal = ListContentPadding,
         ),
         verticalArrangement = Arrangement.spacedBy(space = ListVerticalSpacing),

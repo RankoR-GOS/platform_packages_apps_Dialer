@@ -127,6 +127,13 @@ internal class RecentsUiStateMapperImplTest {
     }
 
     @Test
+    fun map_resolvesTheWriteFailedMessageFromTheNewString() {
+        val state = createMapper().map(callLogSnapshot(), NOW_MILLIS)
+
+        assertEquals("string-${R.string.recents_write_failed}", state.writeFailedMessage)
+    }
+
+    @Test
     fun map_withAFutureTimestamp_filesItUnderToday() {
         val snapshot = callLogSnapshot(
             callLogEntry(id = 2L, timestampMillis = NOW_MILLIS + DAY_MILLIS),
