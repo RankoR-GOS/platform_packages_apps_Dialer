@@ -64,20 +64,44 @@ internal class RecentsViewModel @Inject constructor(
 
     override fun onAction(action: Action) {
         when (action) {
+            is Action.LifecycleAction -> onLifecycleAction(action = action)
+            is Action.StatusAction -> onStatusAction(action = action)
+            is Action.NumberAction -> onNumberAction(action = action)
+            is Action.EntryAction -> onEntryAction(action = action)
+        }
+    }
+
+    private fun onLifecycleAction(action: Action.LifecycleAction) {
+        when (action) {
             Action.ScreenResumed, Action.CallLogPermissionGranted -> repository.refresh()
+        }
+    }
+
+    private fun onStatusAction(action: Action.StatusAction) {
+        when (action) {
             Action.GrantPermissionClicked -> emitEffect(Effect.RequestCallLogPermission)
             Action.MakeCallClicked -> emitEffect(Effect.ShowDialpad)
-            is Action.CallBackClicked -> emitEffect(Effect.PlaceCall(number = action.number))
-            is Action.VideoCallClicked -> emitEffect(Effect.PlaceVideoCall(number = action.number))
-            is Action.MessageClicked -> emitEffect(Effect.SendMessage(number = action.number))
-            is Action.CreateContactClicked -> {
-                emitEffect(Effect.CreateContact(number = action.number))
-            }
-            is Action.AddContactClicked -> emitEffect(Effect.AddContact(number = action.number))
-            is Action.CopyNumberClicked -> emitEffect(Effect.CopyNumber(number = action.number))
+        }
+    }
+
+    private fun onNumberAction(action: Action.NumberAction) {
+        val effect = when (action) {
+            is Action.CallBackClicked -> Effect.PlaceCall(number = action.number)
+            is Action.VideoCallClicked -> Effect.PlaceVideoCall(number = action.number)
+            is Action.MessageClicked -> Effect.SendMessage(number = action.number)
+            is Action.CreateContactClicked -> Effect.CreateContact(number = action.number)
+            is Action.AddContactClicked -> Effect.AddContact(number = action.number)
+            is Action.CopyNumberClicked -> Effect.CopyNumber(number = action.number)
             is Action.EditNumberBeforeCallClicked -> {
-                emitEffect(Effect.EditNumberBeforeCall(number = action.number))
+                Effect.EditNumberBeforeCall(number = action.number)
             }
+        }
+
+        emitEffect(effect)
+    }
+
+    private fun onEntryAction(action: Action.EntryAction) {
+        when (action) {
             is Action.EntryViewed -> markRead(entryIds = action.entryIds)
             is Action.DeleteConfirmed -> delete(entryIds = action.entryIds)
             Action.ClearHistoryConfirmed -> clearHistory()

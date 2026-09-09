@@ -5,49 +5,59 @@ import kotlinx.collections.immutable.ImmutableList
 
 internal sealed interface RecentsAction {
 
-    data object ScreenResumed : RecentsAction
+    sealed interface LifecycleAction : RecentsAction
 
-    data object GrantPermissionClicked : RecentsAction
+    sealed interface StatusAction : RecentsAction
 
-    data object MakeCallClicked : RecentsAction
+    sealed interface NumberAction : RecentsAction {
+        val number: String
+    }
 
-    data object CallLogPermissionGranted : RecentsAction
+    sealed interface EntryAction : RecentsAction
+
+    data object ScreenResumed : LifecycleAction
+
+    data object CallLogPermissionGranted : LifecycleAction
+
+    data object GrantPermissionClicked : StatusAction
+
+    data object MakeCallClicked : StatusAction
 
     data class CallBackClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class VideoCallClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class MessageClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class CreateContactClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class AddContactClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class CopyNumberClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class EditNumberBeforeCallClicked(
-        val number: String,
-    ) : RecentsAction
+        override val number: String,
+    ) : NumberAction
 
     data class EntryViewed(
         val entryIds: ImmutableList<CallLogEntryId>,
-    ) : RecentsAction
+    ) : EntryAction
 
     data class DeleteConfirmed(
         val entryIds: ImmutableList<CallLogEntryId>,
-    ) : RecentsAction
+    ) : EntryAction
 
-    data object ClearHistoryConfirmed : RecentsAction
+    data object ClearHistoryConfirmed : EntryAction
 }
