@@ -90,6 +90,7 @@ internal fun RecentsActionsSheet(
     labels: RecentsActionLabelsUiModel,
     onAction: (RecentsSheetAction) -> Unit,
     onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var shownTarget by remember { mutableStateOf(value = target) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -107,7 +108,7 @@ internal fun RecentsActionsSheet(
     val item = shownTarget ?: return
 
     ModalBottomSheet(
-        modifier = Modifier.testTag(tag = RECENTS_SHEET_TEST_TAG),
+        modifier = modifier.testTag(tag = RECENTS_SHEET_TEST_TAG),
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
