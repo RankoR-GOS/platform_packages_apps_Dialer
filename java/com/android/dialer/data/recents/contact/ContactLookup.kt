@@ -36,11 +36,11 @@ internal class ContactLookupImpl @Inject constructor(
         return try {
             contentResolver.query(uri, PHONE_LOOKUP_PROJECTION, null, null, null)
                 ?.use { cursor -> cursor.firstContactOrNull(number = number) }
-        } catch (e: SecurityException) {
-            LogUtil.e(TAG, "ContactLookupImpl.invoke: contacts permission revoked", e)
+        } catch (_: SecurityException) {
+            LogUtil.e(TAG, "ContactLookupImpl.invoke: contacts permission revoked")
             null
-        } catch (e: IllegalArgumentException) {
-            LogUtil.e(TAG, "ContactLookupImpl.invoke: provider rejected the lookup", e)
+        } catch (_: IllegalArgumentException) {
+            LogUtil.e(TAG, "ContactLookupImpl.invoke: provider rejected the lookup")
             null
         }
     }

@@ -9,11 +9,14 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.BAKLAVA])
@@ -67,6 +70,25 @@ internal class ContactLookupImplTest {
     }
 
     @Test
+    fun invoke_whenTheProviderRefusesOrRejectsTheLookup_logsWithoutTheNumber() {
+        listOf(
+            SecurityException("Permission Denial: reading uri $LOOKUP_URI from pid=1"),
+            IllegalArgumentException("Invalid URI $LOOKUP_URI"),
+        ).forEach { failure ->
+            ShadowLog.clear()
+            every { contentResolver.query(any(), any(), null, null, null) } throws failure
+
+            lookup(NUMBER)
+
+            val logged = ShadowLog.getLogs().joinToString { item ->
+                "${item.msg} ${item.throwable?.message.orEmpty()}"
+            }
+            assertTrue(logged.contains("ContactLookupImpl.invoke"))
+            assertFalse(logged.contains(NUMBER.removePrefix("+")))
+        }
+    }
+
+    @Test
     fun invoke_withABlankNumber_doesNotQuery() {
         assertNull(lookup(" "))
 
@@ -87,5 +109,6 @@ internal class ContactLookupImplTest {
     private companion object {
         const val NUMBER = "+18765550201"
         const val PHOTO = "content://com.android.contacts/contacts/42/photo"
+        const val LOOKUP_URI = "content://com.android.contacts/phone_lookup/%2B18765550201"
     }
 }
