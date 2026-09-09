@@ -108,7 +108,9 @@ private suspend fun loadContactPhoto(
         val target = object : CustomTarget<Bitmap>(sizePx, sizePx) {
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                 if (continuation.isActive) {
-                    continuation.resume(resource.asImageBitmap())
+                    val owned = resource.copy(Bitmap.Config.ARGB_8888, false)
+
+                    continuation.resume(owned?.asImageBitmap())
                 }
             }
 
