@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -18,7 +19,9 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.LayoutDirection
+import com.android.dialer.testutil.hasNoText
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_ADD_CONTACT_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_AVATAR_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_BLOCK_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_DETAILS_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_TEST_TAG
@@ -49,6 +52,16 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
             .assertTextEquals(PRIMARY_TEXT)
         composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
             .assertTextEquals(DISPLAY_NUMBER)
+    }
+
+    @Test
+    fun header_avatar_isPresentAndSilent() {
+        setContent(item = item())
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_AVATAR_TEST_TAG)
+            .assertIsDisplayed()
+            .assert(matcher = hasNoText())
+            .assert(matcher = hasAnyDescendant(matcher = hasNoText().not()).not())
     }
 
     @Test

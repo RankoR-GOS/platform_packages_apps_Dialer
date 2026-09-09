@@ -40,8 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -50,6 +52,7 @@ import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.common.components.bottomBarInsets
 import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_ADD_CONTACT_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_AVATAR_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_BLOCK_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_DETAILS_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_TEST_TAG
@@ -275,6 +278,9 @@ private fun RecentsActionsSheetHeader(
         RecentsItemAvatar(
             avatar = item.avatar,
             colorSeed = avatarColorSeed(number = item.number),
+            modifier = Modifier.clearAndSetSemantics {
+                testTag = RECENTS_SHEET_AVATAR_TEST_TAG
+            },
         )
 
         val spokenNumber = Modifier.semantics { contentDescription = item.spokenDisplayNumber }
