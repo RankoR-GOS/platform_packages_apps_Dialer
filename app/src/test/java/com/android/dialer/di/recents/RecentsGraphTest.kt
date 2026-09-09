@@ -4,6 +4,8 @@ import android.os.Build
 import android.provider.Settings
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatterImpl
+import com.android.dialer.data.recents.contact.ContactLookup
+import com.android.dialer.data.recents.contact.ContactLookupImpl
 import com.android.dialer.data.recents.repository.RecentsRepository
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 import com.android.dialer.data.recents.repository.SyntheticRecentsRepository
@@ -13,6 +15,8 @@ import com.android.dialer.domain.recents.usecase.GroupConsecutiveCalls
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCallsImpl
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGrantedImpl
+import com.android.dialer.domain.recents.usecase.IsContactsPermissionGranted
+import com.android.dialer.domain.recents.usecase.IsContactsPermissionGrantedImpl
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumberImpl
 import com.android.dialer.domain.recents.usecase.IsPermissionGranted
@@ -61,6 +65,10 @@ internal class RecentsGraphTest {
         fun syntheticRecentsRepository(): RecentsRepository
 
         fun isCallLogPermissionGranted(): IsCallLogPermissionGranted
+
+        fun isContactsPermissionGranted(): IsContactsPermissionGranted
+
+        fun contactLookup(): ContactLookup
 
         fun groupConsecutiveCalls(): GroupConsecutiveCalls
 
@@ -114,6 +122,8 @@ internal class RecentsGraphTest {
         assertTrue(entryPoint.canPlaceCall() is CanPlaceCallImpl)
         assertTrue(entryPoint.isEmergencyNumber() is IsEmergencyNumberImpl)
         assertTrue(entryPoint.isPermissionGranted() is IsPermissionGrantedImpl)
+        assertTrue(entryPoint.isContactsPermissionGranted() is IsContactsPermissionGrantedImpl)
+        assertTrue(entryPoint.contactLookup() is ContactLookupImpl)
         assertTrue(entryPoint.relativeTimestampFormatter() is RelativeTimestampFormatterImpl)
         assertTrue(entryPoint.phoneNumberFormatter() is PhoneNumberFormatterImpl)
         assertTrue(entryPoint.recentsItemUiMapper() is RecentsItemUiMapperImpl)

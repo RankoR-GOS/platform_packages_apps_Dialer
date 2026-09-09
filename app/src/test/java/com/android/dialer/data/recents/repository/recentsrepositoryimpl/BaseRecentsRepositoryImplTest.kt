@@ -5,8 +5,10 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
+import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
+import com.android.dialer.domain.recents.usecase.IsContactsPermissionGranted
 import com.android.dialer.testutil.MainDispatcherRule
 import com.android.dialer.testutil.TestCallLogRow
 import com.android.dialer.testutil.callLogCursor
@@ -29,6 +31,8 @@ internal abstract class BaseRecentsRepositoryImplTest {
 
     protected val contentResolver = mockk<ContentResolver>()
     protected val isCallLogPermissionGranted = mockk<IsCallLogPermissionGranted>()
+    protected val isContactsPermissionGranted = mockk<IsContactsPermissionGranted>()
+    protected val contactLookup = mockk<ContactLookup>()
     protected val capturedProjections = mutableListOf<Array<String>?>()
     protected val capturedUris = mutableListOf<Uri>()
 
@@ -79,14 +83,29 @@ internal abstract class BaseRecentsRepositoryImplTest {
 
     protected fun createRepository(
         isCallLogGranted: Boolean = true,
+        isContactsGranted: Boolean = false,
         dispatcher: CoroutineDispatcher = mainDispatcherRule.testDispatcher,
     ): RecentsRepositoryImpl {
         every { isCallLogPermissionGranted() } returns isCallLogGranted
+        every { isContactsPermissionGranted() } returns isContactsGranted
 
         return RecentsRepositoryImpl(
             contentResolver = contentResolver,
             isCallLogPermissionGranted = isCallLogPermissionGranted,
+            isContactsPermissionGranted = isContactsPermissionGranted,
+            contactLookup = contactLookup,
             ioDispatcher = dispatcher,
         )
+    }
+
+    protected fun stubObserverRegistrations(): Map<Uri, ContentObserver> {
+        val observers = mutableMapOf<Uri, ContentObserver>()
+
+        every { contentResolver.registerContentObserver(any(), any(), any()) } answers {
+            observers[firstArg()] = thirdArg()
+        }
+        every { contentResolver.unregisterContentObserver(any()) } just runs
+
+        return observers
     }
 }

@@ -18,3 +18,17 @@ internal class IsCallLogPermissionGrantedImpl @Inject constructor(
         return PermissionsUtil.hasCallLogReadPermissions(context)
     }
 }
+
+internal fun interface IsContactsPermissionGranted {
+    operator fun invoke(): Boolean
+}
+
+internal class IsContactsPermissionGrantedImpl @Inject constructor(
+    @param:ApplicationContext
+    private val context: Context,
+) : IsContactsPermissionGranted {
+
+    override fun invoke(): Boolean {
+        return PermissionsUtil.hasContactsReadPermissions(context)
+    }
+}

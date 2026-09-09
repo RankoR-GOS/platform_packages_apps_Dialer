@@ -1,5 +1,7 @@
 package com.android.dialer.di.recents
 
+import com.android.dialer.data.recents.contact.ContactLookup
+import com.android.dialer.data.recents.contact.ContactLookupImpl
 import com.android.dialer.data.recents.repository.RecentsRepository
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 import com.android.dialer.domain.recents.usecase.CanPlaceCall
@@ -8,6 +10,8 @@ import com.android.dialer.domain.recents.usecase.GroupConsecutiveCalls
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCallsImpl
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGrantedImpl
+import com.android.dialer.domain.recents.usecase.IsContactsPermissionGranted
+import com.android.dialer.domain.recents.usecase.IsContactsPermissionGrantedImpl
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumberImpl
 import com.android.dialer.domain.recents.usecase.IsPermissionGranted
@@ -39,6 +43,18 @@ internal abstract class RecentsBindsModule {
     abstract fun bindIsCallLogPermissionGranted(
         impl: IsCallLogPermissionGrantedImpl,
     ): IsCallLogPermissionGranted
+
+    @Binds
+    @Reusable
+    abstract fun bindIsContactsPermissionGranted(
+        impl: IsContactsPermissionGrantedImpl,
+    ): IsContactsPermissionGranted
+
+    @Binds
+    @Reusable
+    abstract fun bindContactLookup(
+        impl: ContactLookupImpl,
+    ): ContactLookup
 
     @Binds
     @Reusable

@@ -10,7 +10,10 @@ import android.database.sqlite.SQLiteFullException
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
+import android.provider.ContactsContract
 import com.android.dialer.common.LogUtil
+import com.android.dialer.data.recents.contact.ContactLookup
+import com.android.dialer.data.recents.contact.ContactLookupResult
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.data.recents.model.CallLogFilter
@@ -20,6 +23,8 @@ import com.android.dialer.data.recents.model.RecentsWriteFailure
 import com.android.dialer.data.recents.model.RecentsWriteResult
 import com.android.dialer.di.core.IoDispatcher
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
+import com.android.dialer.domain.recents.usecase.IsContactsPermissionGranted
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -31,11 +36,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 
 internal interface RecentsRepository {
@@ -54,11 +62,14 @@ internal interface RecentsRepository {
 internal class RecentsRepositoryImpl @Inject constructor(
     private val contentResolver: ContentResolver,
     private val isCallLogPermissionGranted: IsCallLogPermissionGranted,
+    private val isContactsPermissionGranted: IsContactsPermissionGranted,
+    private val contactLookup: ContactLookup,
     @param:IoDispatcher
     private val ioDispatcher: CoroutineDispatcher,
 ) : RecentsRepository {
 
     private val manualRefresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val contactCache = ConcurrentHashMap<String, ContactLookupResult>()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot> {
@@ -66,7 +77,11 @@ internal class RecentsRepositoryImpl @Inject constructor(
             .onStart { emit(Unit) }
             .flatMapLatest { observeCallLog() }
             .conflate()
-            .mapNotNull { querySnapshot(filter = filter) }
+            .transform {
+                val snapshot = querySnapshot(filter = filter) ?: return@transform
+                emit(snapshot)
+                enrichWithContacts(snapshot = snapshot)?.let { enriched -> emit(enriched) }
+            }
             .flowOn(ioDispatcher)
     }
 
@@ -146,11 +161,46 @@ internal class RecentsRepositoryImpl @Inject constructor(
     }
 
     private fun observeCallLog(): Flow<Unit> {
-        if (!isCallLogPermissionGranted()) {
-            return flowOf(Unit)
+        val callLogChanges = when {
+            isCallLogPermissionGranted() -> observeUri(uri = CallLog.Calls.CONTENT_URI)
+            else -> flowOf(Unit)
         }
 
-        return observeUri(uri = CallLog.Calls.CONTENT_URI)
+        if (!isContactsPermissionGranted()) {
+            return callLogChanges
+        }
+
+        val contactChanges = observeUri(uri = ContactsContract.Contacts.CONTENT_URI)
+            .drop(count = 1)
+            .onEach { contactCache.clear() }
+
+        return merge(callLogChanges, contactChanges)
+    }
+
+    private fun enrichWithContacts(snapshot: CallLogSnapshot): CallLogSnapshot? {
+        if (!snapshot.isPermissionGranted || !isContactsPermissionGranted()) {
+            return null
+        }
+
+        val enriched = snapshot.entries.map(::withContact).toImmutableList()
+
+        return snapshot.copy(entries = enriched).takeIf { it != snapshot }
+    }
+
+    private fun withContact(entry: CallLogEntry): CallLogEntry {
+        val contact = contactCache.getOrPut(entry.number) {
+            contactLookup(entry.number) ?: NO_CONTACT
+        }
+
+        if (contact === NO_CONTACT) {
+            return entry
+        }
+
+        return entry.copy(
+            cachedName = contact.name ?: entry.cachedName,
+            photoUri = contact.photoUri ?: entry.photoUri,
+            lookupUri = contact.lookupUri ?: entry.lookupUri,
+        )
     }
 
     private fun observeUri(uri: Uri): Flow<Unit> {
@@ -344,6 +394,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
 
     internal companion object {
         private const val TAG = "RecentsRepositoryImpl"
+        private val NO_CONTACT = ContactLookupResult(name = null, photoUri = null, lookupUri = null)
 
         private const val CALL_LOG_LIMIT = 1_000
 
