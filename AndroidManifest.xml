@@ -320,6 +320,7 @@
         <activity
             android:name="com.android.dialer.calldetails.OldCallDetailsActivity"
             android:exported="false"
+            android:theme="@style/Dialer.ThemeBase.NoActionBar"
             android:label="@string/call_details" />
         <activity
             android:name="com.android.dialer.calldetails.CallDetailsActivity"

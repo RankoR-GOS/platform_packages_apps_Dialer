@@ -27,9 +27,6 @@ import com.android.dialer.glidephotomanager.PhotoInfo;
 
 /**
  * A {@link RecyclerView.Adapter} for {@link CallDetailsActivity}.
- *
- * <p>See {@link CallDetailsAdapterCommon} for logic shared between this adapter and {@link
- * OldCallDetailsAdapter}.
  */
 final class CallDetailsAdapter extends CallDetailsAdapterCommon {
 

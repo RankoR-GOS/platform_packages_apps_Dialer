@@ -18,13 +18,32 @@
   <!-- Title bar for call detail screen -->
   <string name="call_details">Call details</string>
 
-  <!-- Text for the action item to remove a call or voicemail from the call log. -->
-
   <!-- Option displayed in context menu to copy long pressed phone number. [CHAR LIMIT=48] -->
   <string name="call_details_copy_number">Copy number</string>
 
   <!-- Label for action to edit a number before calling it. [CHAR LIMIT=48] -->
   <string name="call_details_edit_number">Edit number before call</string>
+
+  <!-- Title of dialog that confirms whether a user wants to delete calls from the call log. -->
+  <string name="delete_call_log_title">Delete from call log?</string>
+
+  <!-- Message of dialog that confirms whether a user wants to delete calls from the call log. -->
+  <string name="delete_call_log_message">Are you sure you want to delete this call from your call history?</string>
+
+  <!-- Action to delete from call log in call details actions list. -->
+  <string name="delete_from_call_log">Delete from call log</string>
+
+  <!-- Text shown when call details are unavailable. -->
+  <string name="call_details_unavailable">Call details unavailable</string>
+
+  <!-- Content description for navigating back. -->
+  <string name="back">Back</string>
+
+  <!-- Label for video call action in call details. -->
+  <string name="video">Video</string>
+
+  <!-- Label for sending a message/SMS in call details. -->
+  <string name="message">Message</string>
 
   <!-- Label for action to report a number with inaccurate caller id information. [CHAR LIMIT=48] -->
   <string name="call_details_report_call_id">Report inaccurate number</string>

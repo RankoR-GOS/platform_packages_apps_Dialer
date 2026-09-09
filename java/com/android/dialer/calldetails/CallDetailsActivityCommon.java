@@ -73,8 +73,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Contains common logic shared between {@link OldCallDetailsActivity} and {@link
- * CallDetailsActivity}.
+ * Contains common logic for {@link CallDetailsActivity}.
  */
 abstract class CallDetailsActivityCommon extends AppCompatActivity {
 
@@ -100,12 +99,12 @@ abstract class CallDetailsActivityCommon extends AppCompatActivity {
   private UiListener<ImmutableSet<String>> checkRttTranscriptAvailabilityListener;
 
   /**
-   * Handles the intent that launches {@link OldCallDetailsActivity} or {@link CallDetailsActivity},
+   * Handles the intent that launches {@link CallDetailsActivity},
    * e.g., extract data from intent extras, start loading data, etc.
    */
   protected abstract void handleIntent(Intent intent);
 
-  /** Creates an adapter for {@link OldCallDetailsActivity} or {@link CallDetailsActivity}. */
+  /** Creates an adapter for {@link CallDetailsActivity}. */
   protected abstract CallDetailsAdapterCommon createAdapter(
       CallDetailsEntryViewHolder.CallDetailsEntryListener callDetailsEntryListener,
       CallDetailsHeaderViewHolder.CallDetailsHeaderListener callDetailsHeaderListener,

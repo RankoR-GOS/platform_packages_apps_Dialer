@@ -38,8 +38,7 @@ import com.android.dialer.duo.DuoComponent;
 import com.android.dialer.glidephotomanager.PhotoInfo;
 
 /**
- * Contains common logic shared between {@link OldCallDetailsAdapter} and {@link
- * CallDetailsAdapter}.
+ * Contains common adapter logic for {@link CallDetailsActivity}.
  */
 abstract class CallDetailsAdapterCommon extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
