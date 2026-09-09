@@ -2,11 +2,13 @@ package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.os.Build
 import android.provider.CallLog.Calls
+import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.testutil.callLogEntry
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
 import io.mockk.every
 import java.util.Locale
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -144,5 +146,18 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
 
     private companion object {
         private const val UNKNOWN_RAW_TYPE = 42
+    }
+
+    @Test
+    fun map_carriesEveryGroupedEntryIdForDelete() {
+        val groupIds = persistentListOf(
+            CallLogEntryId(value = 3L),
+            CallLogEntryId(value = 2L),
+            CallLogEntryId(value = 1L),
+        )
+
+        val model = map(callLogEntry(id = 3L).copy(groupedEntryIds = groupIds))
+
+        assertEquals(groupIds, model.groupedEntryIds)
     }
 }

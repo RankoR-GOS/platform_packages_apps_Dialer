@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.model
 
 import androidx.compose.runtime.Immutable
 import com.android.dialer.data.recents.model.CallLogEntryId
+import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 internal data class RecentsItemUiModel(
@@ -15,6 +16,7 @@ internal data class RecentsItemUiModel(
     val avatar: RecentsAvatarUiModel,
     val callTypeIcon: RecentsCallTypeIcon,
     val groupedCallCountLabel: String?,
+    val groupedEntryIds: ImmutableList<CallLogEntryId>,
     val number: String,
     val isUnreadMissedCall: Boolean,
     val canCallBack: Boolean,

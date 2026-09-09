@@ -1,6 +1,8 @@
 package com.android.dialer.data.recents.model
 
 import android.provider.CallLog
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 internal data class CallLogEntry(
     val entryId: CallLogEntryId,
@@ -16,8 +18,11 @@ internal data class CallLogEntry(
     val features: Int,
     val callType: CallType,
     val isRead: Boolean,
-    val groupedCallCount: Int = 1,
+    val groupedEntryIds: ImmutableList<CallLogEntryId> = persistentListOf(entryId),
 ) {
+
+    val groupedCallCount: Int
+        get() = groupedEntryIds.size
 
     val isVideoCall: Boolean
         get() = features and CallLog.Calls.FEATURES_VIDEO != 0

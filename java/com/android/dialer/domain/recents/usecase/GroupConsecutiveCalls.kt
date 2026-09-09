@@ -22,24 +22,25 @@ internal class GroupConsecutiveCallsImpl @Inject constructor() : GroupConsecutiv
         }
 
         val grouped = mutableListOf<CallLogEntry>()
+        val runIds = mutableListOf(entries.first().entryId)
         var runStart = entries.first()
-        var runSize = 1
 
         for (index in 1 until entries.size) {
             val entry = entries[index]
 
             when {
-                canMerge(runStart = runStart, entry = entry) -> runSize++
+                canMerge(runStart = runStart, entry = entry) -> runIds.add(entry.entryId)
 
                 else -> {
-                    grouped.add(runStart.copy(groupedCallCount = runSize))
+                    grouped.add(runStart.copy(groupedEntryIds = runIds.toImmutableList()))
+                    runIds.clear()
+                    runIds.add(entry.entryId)
                     runStart = entry
-                    runSize = 1
                 }
             }
         }
 
-        grouped.add(runStart.copy(groupedCallCount = runSize))
+        grouped.add(runStart.copy(groupedEntryIds = runIds.toImmutableList()))
         return grouped.toImmutableList()
     }
 

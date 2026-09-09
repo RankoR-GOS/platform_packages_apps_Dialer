@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.verify
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -73,20 +74,20 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
-    fun deleteConfirmed_deletesThatOneEntryAndRaisesNothing() {
+    fun deleteConfirmed_deletesEveryEntryInTheGroupAndRaisesNothing() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
         ) {
-            coEvery { repository.delete(listOf(ENTRY_ID)) } returns RecentsWriteResult.Completed
+            coEvery { repository.delete(GROUP_IDS) } returns RecentsWriteResult.Completed
             val viewModel = createViewModel()
 
             viewModel.effects.test {
-                viewModel.onAction(Action.DeleteConfirmed(entryId = ENTRY_ID))
+                viewModel.onAction(Action.DeleteConfirmed(entryIds = GROUP_IDS))
                 advanceUntilIdle()
 
                 expectNoEvents()
             }
-            coVerify(exactly = 1) { repository.delete(listOf(ENTRY_ID)) }
+            coVerify(exactly = 1) { repository.delete(listOf(ENTRY_ID, OLDER_ENTRY_ID)) }
         }
     }
 
@@ -100,7 +101,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
             val viewModel = createViewModel()
 
             viewModel.effects.test {
-                viewModel.onAction(Action.DeleteConfirmed(entryId = ENTRY_ID))
+                viewModel.onAction(Action.DeleteConfirmed(entryIds = GROUP_IDS))
                 advanceUntilIdle()
 
                 assertEquals(Effect.WriteFailed, awaitItem())
@@ -164,5 +165,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     private companion object {
         private const val NUMBER = "+15551234567"
         private val ENTRY_ID = CallLogEntryId(value = 7L)
+        private val OLDER_ENTRY_ID = CallLogEntryId(value = 6L)
+        private val GROUP_IDS = persistentListOf(ENTRY_ID, OLDER_ENTRY_ID)
     }
 }

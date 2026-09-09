@@ -1,6 +1,7 @@
 package com.android.dialer.ui.recents.model
 
 import com.android.dialer.data.recents.model.CallLogEntryId
+import kotlinx.collections.immutable.ImmutableList
 
 internal sealed interface RecentsAction {
 
@@ -31,7 +32,7 @@ internal sealed interface RecentsAction {
     ) : RecentsAction
 
     data class DeleteConfirmed(
-        val entryId: CallLogEntryId,
+        val entryIds: ImmutableList<CallLogEntryId>,
     ) : RecentsAction
 
     data object ClearHistoryConfirmed : RecentsAction

@@ -71,7 +71,7 @@ internal class RecentsViewModel @Inject constructor(
             is Action.MessageClicked -> emitEffect(Effect.SendMessage(number = action.number))
             is Action.AddContactClicked -> emitEffect(Effect.AddContact(number = action.number))
             is Action.CopyNumberClicked -> emitEffect(Effect.CopyNumber(number = action.number))
-            is Action.DeleteConfirmed -> delete(entryId = action.entryId)
+            is Action.DeleteConfirmed -> delete(entryIds = action.entryIds)
             Action.ClearHistoryConfirmed -> clearHistory()
         }
     }
@@ -85,9 +85,9 @@ internal class RecentsViewModel @Inject constructor(
         }
     }
 
-    private fun delete(entryId: CallLogEntryId) {
+    private fun delete(entryIds: List<CallLogEntryId>) {
         viewModelScope.launch(defaultDispatcher) {
-            report(result = repository.delete(entryIds = listOf(entryId)))
+            report(result = repository.delete(entryIds = entryIds))
         }
     }
 

@@ -69,6 +69,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             ),
             callTypeIcon = entry.callType.toIcon(),
             groupedCallCountLabel = entry.groupedCallCountLabel(),
+            groupedEntryIds = entry.groupedEntryIds,
             number = entry.number,
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,

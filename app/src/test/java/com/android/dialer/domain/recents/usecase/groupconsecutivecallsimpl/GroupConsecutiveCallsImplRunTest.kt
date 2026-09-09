@@ -51,6 +51,43 @@ internal class GroupConsecutiveCallsImplRunTest {
     }
 
     @Test
+    fun invoke_withConsecutiveCallsToTheSameNumber_carriesEveryMemberIdNewestFirst() {
+        val entries = listOf(
+            callLogEntry(id = 3L, number = SHARED_NUMBER, timestampMillis = LATEST_MILLIS),
+            callLogEntry(id = 2L, number = SHARED_NUMBER, timestampMillis = LATEST_MILLIS - 1L),
+            callLogEntry(id = 1L, number = SHARED_NUMBER, timestampMillis = LATEST_MILLIS - 2L),
+        )
+
+        val grouped = groupConsecutiveCalls(entries = entries)
+
+        assertEquals(listOf(3L, 2L, 1L), grouped.first().groupedEntryIds.map { id -> id.value })
+    }
+
+    @Test
+    fun invoke_withASingleCall_carriesOnlyItsOwnId() {
+        val grouped = groupConsecutiveCalls(entries = listOf(callLogEntry(id = 7L)))
+
+        assertEquals(listOf(7L), grouped.first().groupedEntryIds.map { id -> id.value })
+    }
+
+    @Test
+    fun invoke_withTwoRuns_keepsEachRunsIdsApart() {
+        val entries = listOf(
+            callLogEntry(id = 4L, number = SHARED_NUMBER, timestampMillis = LATEST_MILLIS),
+            callLogEntry(id = 3L, number = SHARED_NUMBER, timestampMillis = LATEST_MILLIS - 1L),
+            callLogEntry(id = 2L, number = OTHER_NUMBER, timestampMillis = LATEST_MILLIS - 2L),
+            callLogEntry(id = 1L, number = SHARED_NUMBER, timestampMillis = LATEST_MILLIS - 3L),
+        )
+
+        val grouped = groupConsecutiveCalls(entries = entries)
+
+        assertEquals(
+            listOf(listOf(4L, 3L), listOf(2L), listOf(1L)),
+            grouped.map { entry -> entry.groupedEntryIds.map { id -> id.value } },
+        )
+    }
+
+    @Test
     fun invoke_withCallsToDifferentNumbers_keepsThemInSeparateEntries() {
         val entries = listOf(
             callLogEntry(id = 2L, number = SHARED_NUMBER),

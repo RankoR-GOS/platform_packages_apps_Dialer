@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import java.util.TimeZone
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -73,7 +74,8 @@ internal class RecentsUiStateMapperImplTest {
             callLogEntry(id = 2L, timestampMillis = NOW_MILLIS),
             callLogEntry(id = 1L, timestampMillis = NOW_MILLIS - HOUR_MILLIS),
         )
-        val grouped = listOf(entries.first().copy(groupedCallCount = 2)).toImmutableList()
+        val groupIds = persistentListOf(entries[0].entryId, entries[1].entryId)
+        val grouped = listOf(entries.first().copy(groupedEntryIds = groupIds)).toImmutableList()
         every { groupConsecutiveCalls(entries) } returns grouped
 
         val state = createMapper().map(callLogSnapshot(*entries.toTypedArray()), NOW_MILLIS)

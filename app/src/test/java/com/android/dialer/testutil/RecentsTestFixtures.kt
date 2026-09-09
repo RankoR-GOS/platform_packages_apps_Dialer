@@ -8,6 +8,7 @@ import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 internal fun callLogEntry(
@@ -40,7 +41,9 @@ internal fun callLogEntry(
         features = features,
         callType = callType,
         isRead = isRead,
-        groupedCallCount = groupedCallCount,
+        groupedEntryIds = (0 until groupedCallCount)
+            .map { offset -> CallLogEntryId(value = id + offset) }
+            .toImmutableList(),
     )
 }
 
@@ -70,6 +73,7 @@ internal fun recentsItemUiModel(
         avatar = RecentsAvatarUiModel(photoUri = null, letter = 'C', lookupUri = null),
         callTypeIcon = RecentsCallTypeIcon.Incoming,
         groupedCallCountLabel = null,
+        groupedEntryIds = persistentListOf(CallLogEntryId(value = id)),
         number = number,
         isUnreadMissedCall = false,
         canCallBack = true,
