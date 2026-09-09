@@ -8,11 +8,13 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.core.DialerTheme
 import com.android.dialer.ui.recents.common.RECENTS_LIST_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_DELETE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_TITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.previewActionLabels
 import com.android.dialer.ui.recents.common.previewRecentsItem
@@ -87,6 +89,20 @@ internal class RecentsStateRestorationTest {
         composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
             .assertCountEquals(expectedSize = 0)
         assertEquals(2, (uiState.value.content as RecentsContentUiState.Entries).items.size)
+    }
+
+    @Test
+    fun sheetTarget_whenAnActionRanBeforeTheRestore_doesNotReopen() {
+        setContent()
+        openSheet(id = 3L)
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG)
+            .performScrollTo()
+            .performClick()
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+            .assertCountEquals(expectedSize = 0)
     }
 
     private fun setContent() {

@@ -132,13 +132,14 @@ internal fun RecentsScreen(
         }
     }
 
+    val sheetTarget = uiState.content.entryOrNull(entryId = sheetTargetId)
+
     RecentsActionsSheet(
-        target = uiState.content.entryOrNull(entryId = sheetTargetId),
+        target = sheetTarget,
         labels = uiState.actionLabels,
         onAction = { sheetAction ->
-            val target = uiState.content.entryOrNull(entryId = sheetTargetId)
             sheetTargetId = null
-            target?.let { item -> screenModel.onAction(sheetAction.toAction(item = item)) }
+            sheetTarget?.let { item -> screenModel.onAction(sheetAction.toAction(item = item)) }
         },
         onDismissRequest = { sheetTargetId = null },
     )

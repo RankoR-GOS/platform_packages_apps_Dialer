@@ -107,6 +107,30 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
     }
 
     @Test
+    fun sheet_delete_dispatchesAtTheTapEvenWhenItsRowLeavesTheSnapshotDuringTheHide() {
+        setContent(state = entriesState(item(id = 1L), item(id = 2L)))
+        openSheet(id = 2L)
+        composeTestRule.mainClock.autoAdvance = false
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG)
+            .performScrollTo()
+            .performClick()
+        composeTestRule.mainClock.advanceTimeByFrame()
+        uiState.value = entriesState(item(id = 1L))
+        composeTestRule.mainClock.autoAdvance = true
+
+        composeTestRule.runOnIdle {
+            verify(exactly = 1) {
+                screenModel.onAction(
+                    Action.DeleteConfirmed(entryIds = persistentListOf(CallLogEntryId(value = 2L))),
+                )
+            }
+        }
+        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+            .assertCountEquals(expectedSize = 0)
+    }
+
+    @Test
     fun permissionAction_click_dispatchesGrantPermissionClicked() {
         setContent(
             state = uiState.value.copy(

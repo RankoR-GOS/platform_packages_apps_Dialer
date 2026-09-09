@@ -30,7 +30,11 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,7 +68,6 @@ import com.android.dialer.ui.recents.common.previewRecentsItem
 import com.android.dialer.ui.recents.model.RecentsActionLabelsUiModel
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
 import com.android.dialer.ui.recents.model.RecentsSheetAction
-import kotlinx.coroutines.launch
 
 private const val DISABLED_CONTENT_ALPHA = 0.38f
 
@@ -85,25 +88,27 @@ internal fun RecentsActionsSheet(
     onAction: (RecentsSheetAction) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    if (target == null) {
-        return
+    var shownTarget by remember { mutableStateOf(value = target) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    LaunchedEffect(target) {
+        when (target) {
+            null -> {
+                sheetState.hide()
+                shownTarget = null
+            }
+            else -> shownTarget = target
+        }
     }
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val coroutineScope = rememberCoroutineScope()
+    val item = shownTarget ?: return
 
     ModalBottomSheet(
         modifier = Modifier.testTag(tag = RECENTS_SHEET_TEST_TAG),
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        RecentsActionsSheetContent(
-            item = target,
-            labels = labels,
-            onAction = { action ->
-                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion { onAction(action) }
-            },
-        )
+        RecentsActionsSheetContent(item = item, labels = labels, onAction = onAction)
     }
 }
 
