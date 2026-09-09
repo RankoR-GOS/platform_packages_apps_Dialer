@@ -38,12 +38,12 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 
 internal interface RecentsRepository {
@@ -71,18 +71,31 @@ internal class RecentsRepositoryImpl @Inject constructor(
     private val manualRefresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val contactCache = ConcurrentHashMap<String, ContactLookupResult>()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot> {
+        return flow {
+            var hasEmitted = false
+
+            callLogChanges().collect {
+                val snapshot = querySnapshot(filter = filter)
+                    ?: emptySnapshot().takeUnless { hasEmitted }
+                    ?: return@collect
+                hasEmitted = true
+                emit(snapshot)
+                enrichWithContacts(snapshot = snapshot)?.let { enriched -> emit(enriched) }
+            }
+        }.flowOn(ioDispatcher)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun callLogChanges(): Flow<Unit> {
         return manualRefresh
             .onStart { emit(Unit) }
             .flatMapLatest { observeCallLog() }
             .conflate()
-            .transform {
-                val snapshot = querySnapshot(filter = filter) ?: return@transform
-                emit(snapshot)
-                enrichWithContacts(snapshot = snapshot)?.let { enriched -> emit(enriched) }
-            }
-            .flowOn(ioDispatcher)
+    }
+
+    private fun emptySnapshot(): CallLogSnapshot {
+        return CallLogSnapshot(entries = persistentListOf(), isPermissionGranted = true)
     }
 
     override suspend fun delete(entryIds: List<CallLogEntryId>): RecentsWriteResult {

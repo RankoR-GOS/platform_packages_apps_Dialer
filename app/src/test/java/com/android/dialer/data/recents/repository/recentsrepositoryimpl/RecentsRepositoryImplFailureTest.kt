@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import app.cash.turbine.test
 import com.android.dialer.data.recents.model.CallLogFilter
+import com.android.dialer.testutil.callLogRow
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -27,23 +28,64 @@ import org.robolectric.annotation.Config
 internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest() {
 
     @Test
-    fun observeSnapshot_whenTheProviderThrowsSqliteDiskIo_emitsNothingAndKeepsObserving() {
-        assertRecoverableFailureEmitsNothing(error = SQLiteDiskIOException("disk io"))
+    fun observeSnapshot_whenTheProviderThrowsSqliteDiskIo_showsTheEmptyStateThenKeepsObserving() {
+        assertFailureShowsTheEmptyState(error = SQLiteDiskIOException("disk io"))
     }
 
     @Test
-    fun observeSnapshot_whenTheDiskIsFull_emitsNothingAndKeepsObserving() {
-        assertRecoverableFailureEmitsNothing(error = SQLiteFullException("disk full"))
+    fun observeSnapshot_whenTheDiskIsFull_showsTheEmptyStateThenKeepsObserving() {
+        assertFailureShowsTheEmptyState(error = SQLiteFullException("disk full"))
     }
 
     @Test
-    fun observeSnapshot_whenTheCallLogIsCorrupt_emitsNothingAndKeepsObserving() {
-        assertRecoverableFailureEmitsNothing(error = SQLiteDatabaseCorruptException("corrupt"))
+    fun observeSnapshot_whenTheCallLogIsCorrupt_showsTheEmptyStateThenKeepsObserving() {
+        assertFailureShowsTheEmptyState(error = SQLiteDatabaseCorruptException("corrupt"))
     }
 
     @Test
-    fun observeSnapshot_whenTheProviderRejectsTheQuery_emitsNothingAndKeepsObserving() {
-        assertRecoverableFailureEmitsNothing(error = IllegalArgumentException("Invalid token"))
+    fun observeSnapshot_whenTheProviderRejectsTheQuery_showsTheEmptyStateThenKeepsObserving() {
+        assertFailureShowsTheEmptyState(error = IllegalArgumentException("Invalid token"))
+    }
+
+    @Test
+    fun observeSnapshot_whenALaterReadFails_keepsTheRows() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
+            val observerSlot = stubObserverRegistration()
+
+            createRepository().observeSnapshot(filter = CallLogFilter.All).test {
+                assertEquals(1, awaitItem().entries.size)
+
+                stubQueryThrows(error = SQLiteDiskIOException("disk io"))
+                observerSlot.captured.onChange(false)
+                advanceUntilIdle()
+
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenTheFirstReadFailsThenRecovers_replacesTheEmptyState() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubQueryThrows(error = SQLiteDiskIOException("disk io"))
+            val observerSlot = stubObserverRegistration()
+
+            createRepository().observeSnapshot(filter = CallLogFilter.All).test {
+                assertTrue(awaitItem().entries.isEmpty())
+
+                stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
+                observerSlot.captured.onChange(false)
+
+                assertEquals(1, awaitItem().entries.size)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
     }
 
     @Test
@@ -95,7 +137,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
         }
     }
 
-    private fun assertRecoverableFailureEmitsNothing(error: Throwable) {
+    private fun assertFailureShowsTheEmptyState(error: Throwable) {
         runTest(
             context = mainDispatcherRule.testDispatcher,
         ) {
@@ -103,8 +145,10 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             val observerSlot = stubObserverRegistration()
 
             createRepository().observeSnapshot(filter = CallLogFilter.All).test {
-                advanceUntilIdle()
-                expectNoEvents()
+                val shown = awaitItem()
+
+                assertTrue(shown.isPermissionGranted)
+                assertTrue(shown.entries.isEmpty())
 
                 observerSlot.captured.onChange(false)
                 advanceUntilIdle()
