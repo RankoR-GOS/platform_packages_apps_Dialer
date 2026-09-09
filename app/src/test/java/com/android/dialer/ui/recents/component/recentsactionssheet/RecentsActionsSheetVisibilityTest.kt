@@ -1,6 +1,7 @@
 package com.android.dialer.ui.recents.component.recentsactionssheet
 
 import android.os.Build
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,6 +11,10 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_ADD_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_BLOCK_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CALL_DETAILS_TEST_TAG
@@ -21,6 +26,7 @@ import com.android.dialer.ui.recents.common.RECENTS_SHEET_MESSAGE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_SUBTITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_TITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_VIDEO_CALL_TEST_TAG
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -46,6 +52,38 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
 
         composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
             .assertCountEquals(expectedSize = 0)
+    }
+
+    @Test
+    fun header_whenThePrimaryTextIsTheNumber_laysTheTitleOutLeftToRight() {
+        setContent(item = item(primaryText = DISPLAY_NUMBER), layoutDirection = LayoutDirection.Rtl)
+
+        assertEquals(TextDirection.Ltr, textDirection(tag = RECENTS_SHEET_TITLE_TEST_TAG))
+    }
+
+    @Test
+    fun header_whenThePrimaryTextIsAName_laysTheTitleOutByItsContent() {
+        setContent(item = item(), layoutDirection = LayoutDirection.Rtl)
+
+        assertEquals(TextDirection.Content, textDirection(tag = RECENTS_SHEET_TITLE_TEST_TAG))
+    }
+
+    @Test
+    fun header_laysTheSubtitleNumberOutLeftToRight() {
+        setContent(item = item(), layoutDirection = LayoutDirection.Rtl)
+
+        assertEquals(TextDirection.Ltr, textDirection(tag = RECENTS_SHEET_SUBTITLE_TEST_TAG))
+    }
+
+    private fun textDirection(tag: String): TextDirection {
+        val layouts = mutableListOf<TextLayoutResult>()
+
+        composeTestRule.onNodeWithTag(testTag = tag)
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { fetch ->
+                fetch(layouts)
+            }
+
+        return layouts.single().layoutInput.style.textDirection
     }
 
     @Test

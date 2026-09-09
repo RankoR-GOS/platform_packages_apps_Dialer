@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.testutil.RobolectricComposeActivityRule
 import com.android.dialer.testutil.hasClickLabel
@@ -173,6 +174,16 @@ internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
     @Test
     fun recentsItemFontWeight_withAReadCall_isNormal() {
         assertEquals(FontWeight.Normal, recentsItemFontWeight(isUnreadMissedCall = false))
+    }
+
+    @Test
+    fun recentsItemTextDirection_forANumber_isLeftToRight() {
+        assertEquals(TextDirection.Ltr, recentsItemTextDirection(isNumber = true))
+    }
+
+    @Test
+    fun recentsItemTextDirection_forAName_followsTheContent() {
+        assertEquals(TextDirection.Content, recentsItemTextDirection(isNumber = false))
     }
 
     private fun item(

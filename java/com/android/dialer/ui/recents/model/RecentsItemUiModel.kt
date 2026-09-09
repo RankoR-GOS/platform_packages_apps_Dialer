@@ -23,7 +23,11 @@ internal data class RecentsItemUiModel(
     val canVideoCall: Boolean,
     val canMessage: Boolean,
     val canAddContact: Boolean,
-)
+) {
+
+    val isPrimaryTextTheNumber: Boolean
+        get() = displayNumber.isNotBlank() && primaryText == displayNumber
+}
 
 @Immutable
 internal data class RecentsAvatarUiModel(

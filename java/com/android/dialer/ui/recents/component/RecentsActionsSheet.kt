@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -227,17 +228,23 @@ private fun RecentsActionsSheetHeader(
             Text(
                 text = item.primaryText,
                 modifier = Modifier.testTag(tag = RECENTS_SHEET_TITLE_TEST_TAG),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    textDirection = recentsItemTextDirection(
+                        isNumber = item.isPrimaryTextTheNumber,
+                    ),
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
 
-            if (item.displayNumber.isNotBlank() && item.displayNumber != item.primaryText) {
+            if (item.displayNumber.isNotBlank() && !item.isPrimaryTextTheNumber) {
                 Text(
                     text = item.displayNumber,
                     modifier = Modifier.testTag(tag = RECENTS_SHEET_SUBTITLE_TEST_TAG),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        textDirection = TextDirection.Ltr,
+                    ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

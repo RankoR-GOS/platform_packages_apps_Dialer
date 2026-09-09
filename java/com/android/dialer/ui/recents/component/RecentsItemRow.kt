@@ -39,6 +39,7 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -121,6 +122,13 @@ internal fun recentsItemFontWeight(isUnreadMissedCall: Boolean): FontWeight {
     }
 }
 
+internal fun recentsItemTextDirection(isNumber: Boolean): TextDirection {
+    return when {
+        isNumber -> TextDirection.Ltr
+        else -> TextDirection.Content
+    }
+}
+
 private fun Modifier.recentsItemSemantics(
     item: RecentsItemUiModel,
     onCallActionClick: (() -> Unit)?,
@@ -159,7 +167,9 @@ private fun RecentsItemText(
     ) {
         Text(
             text = item.primaryText,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                textDirection = recentsItemTextDirection(isNumber = item.isPrimaryTextTheNumber),
+            ),
             fontWeight = fontWeight,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,

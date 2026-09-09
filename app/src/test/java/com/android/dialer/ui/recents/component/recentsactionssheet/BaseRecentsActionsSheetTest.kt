@@ -1,6 +1,9 @@
 package com.android.dialer.ui.recents.component.recentsactionssheet
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.LayoutDirection
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.testutil.RobolectricComposeActivityRule
 import com.android.dialer.ui.core.DialerTheme
@@ -22,14 +25,19 @@ internal abstract class BaseRecentsActionsSheetTest {
 
     protected val emittedActions = mutableListOf<RecentsSheetAction>()
 
-    protected fun setContent(item: RecentsItemUiModel) {
+    protected fun setContent(
+        item: RecentsItemUiModel,
+        layoutDirection: LayoutDirection = LayoutDirection.Ltr,
+    ) {
         composeTestRule.setContent {
             DialerTheme {
-                RecentsActionsSheetContent(
-                    item = item,
-                    labels = previewActionLabels(),
-                    onAction = { action -> emittedActions.add(action) },
-                )
+                CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                    RecentsActionsSheetContent(
+                        item = item,
+                        labels = previewActionLabels(),
+                        onAction = { action -> emittedActions.add(action) },
+                    )
+                }
             }
         }
     }
