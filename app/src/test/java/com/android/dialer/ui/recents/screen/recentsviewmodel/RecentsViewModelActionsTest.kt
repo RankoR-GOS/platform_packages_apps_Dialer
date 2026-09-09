@@ -103,7 +103,9 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
 
                 expectNoEvents()
             }
-            coVerify(exactly = 1) { repository.markRead(listOf(ENTRY_ID, OLDER_ENTRY_ID)) }
+            coVerify(exactly = 1) {
+                repository.markRead(entryIds = listOf(ENTRY_ID, OLDER_ENTRY_ID))
+            }
         }
     }
 
@@ -139,7 +141,9 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
 
                 expectNoEvents()
             }
-            coVerify(exactly = 1) { repository.delete(listOf(ENTRY_ID, OLDER_ENTRY_ID)) }
+            coVerify(exactly = 1) {
+                repository.delete(entryIds = listOf(ENTRY_ID, OLDER_ENTRY_ID))
+            }
         }
     }
 

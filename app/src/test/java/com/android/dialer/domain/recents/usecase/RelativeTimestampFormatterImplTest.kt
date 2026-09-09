@@ -115,6 +115,20 @@ internal class RelativeTimestampFormatterImplTest {
         assertEquals("Sat", label)
     }
 
+    @Test
+    fun invoke_twoCalendarDaysAcrossTheNewYorkSpringForward_returnsTheWeekdayNotYesterday() {
+        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"))
+        val formatter = createFormatter()
+
+        val label = formatter(
+            timestampMillis = SPRING_FORWARD_TWO_CALENDAR_DAYS_EARLIER_MILLIS,
+            nowMillis = SPRING_FORWARD_NOW_MILLIS,
+            isAbbreviated = false,
+        )
+
+        assertEquals("Saturday", label)
+    }
+
     private fun createFormatter(): RelativeTimestampFormatterImpl {
         return RelativeTimestampFormatterImpl(context = context)
     }
@@ -127,5 +141,7 @@ internal class RelativeTimestampFormatterImplTest {
         private const val THREE_DAYS_MILLIS = 3 * 86_400_000L
         private const val ONE_MINUTE_MILLIS = 60_000L
         private const val MILLIS_SINCE_MIDNIGHT = 48_000_000L
+        private const val SPRING_FORWARD_NOW_MILLIS = 1_773_072_000_000L
+        private const val SPRING_FORWARD_TWO_CALENDAR_DAYS_EARLIER_MILLIS = 1_772_902_800_000L
     }
 }

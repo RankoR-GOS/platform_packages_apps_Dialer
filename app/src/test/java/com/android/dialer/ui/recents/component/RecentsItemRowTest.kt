@@ -13,7 +13,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import com.android.dialer.data.recents.model.CallLogEntryId
-import com.android.dialer.testutil.RobolectricComposeActivityRule
 import com.android.dialer.testutil.hasClickLabel
 import com.android.dialer.testutil.hasCustomAction
 import com.android.dialer.testutil.hasCustomActionCount
@@ -23,7 +22,6 @@ import com.android.dialer.ui.recents.common.recentsItemCallButtonTestTag
 import com.android.dialer.ui.recents.common.recentsItemTestTag
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
 import org.junit.Assert.assertEquals
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,9 +30,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.BAKLAVA])
 internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
-
-    @get:Rule(order = 0)
-    val componentActivityRule = RobolectricComposeActivityRule()
 
     @Test
     fun row_whenRendered_isTaggedByEntryId() {

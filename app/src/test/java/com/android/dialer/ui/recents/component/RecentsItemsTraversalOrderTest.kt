@@ -8,8 +8,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.testutil.RobolectricComposeActivityRule
 import com.android.dialer.ui.core.DialerTheme
@@ -62,8 +61,7 @@ internal class RecentsItemsTraversalOrderTest {
     fun dayHeader_isAnnouncedAsAHeading() {
         setContent(items = listOf(header(key = "Today"), entry(id = 1L)))
 
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_DAY_HEADER_TEST_TAG)
-            .onFirst()
+        composeTestRule.onNodeWithTag(testTag = RECENTS_DAY_HEADER_TEST_TAG)
             .assert(matcher = isHeading())
     }
 

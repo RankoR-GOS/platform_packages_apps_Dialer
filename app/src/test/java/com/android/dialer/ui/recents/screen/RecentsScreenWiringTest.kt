@@ -17,13 +17,28 @@ import org.junit.Test
 internal class RecentsScreenWiringTest {
 
     @Test
-    fun itemEvents_openTheSheetForATapAndDispatchTheCallActionsWithTheNumber() {
+    fun itemEvents_whenARowIsTapped_opensTheSheetForThatRowWithoutAnAction() {
+        val actions = mutableListOf<Action>()
+        val openedSheets = mutableListOf<CallLogEntryId>()
+
+        handleItemEvent(
+            event = RecentsItemEvent.Clicked(entryId = ENTRY_ID),
+            content = entries(recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER)),
+            onAction = actions::add,
+            onOpenSheet = openedSheets::add,
+        )
+
+        assertEquals(listOf(ENTRY_ID), openedSheets)
+        assertEquals(emptyList<Action>(), actions)
+    }
+
+    @Test
+    fun itemEvents_whenACallButtonIsTapped_dispatchesTheCallActionWithTheNumber() {
         val actions = mutableListOf<Action>()
         val openedSheets = mutableListOf<CallLogEntryId>()
         val content = entries(recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER))
 
         listOf(
-            RecentsItemEvent.Clicked(entryId = ENTRY_ID),
             RecentsItemEvent.CallClicked(entryId = ENTRY_ID, number = NUMBER),
             RecentsItemEvent.VideoCallClicked(entryId = ENTRY_ID, number = NUMBER),
         ).forEach { event ->
@@ -35,7 +50,7 @@ internal class RecentsScreenWiringTest {
             )
         }
 
-        assertEquals(listOf(ENTRY_ID), openedSheets)
+        assertEquals(emptyList<CallLogEntryId>(), openedSheets)
         assertEquals(
             listOf(
                 Action.CallBackClicked(number = NUMBER),
@@ -77,7 +92,7 @@ internal class RecentsScreenWiringTest {
     }
 
     @Test
-    fun sheetActions_mapToTheScreenActionForThatRowWithEveryCallOfTheGroupForDelete() {
+    fun sheetActions_mapEveryMemberToItsScreenActionForThatRow() {
         val groupIds = persistentListOf(ENTRY_ID, CallLogEntryId(value = 6L))
         val item = recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER)
             .copy(groupedEntryIds = groupIds)

@@ -77,6 +77,7 @@ internal class RecentsItemAvatarTest {
         composeTestRule.onNodeWithTag(testTag = AVATAR_TEST_TAG)
             .assertIsDisplayed()
             .onChildren()
+            .assertCountEquals(expectedSize = 1)
             .onFirst()
             .assertTextEquals("A")
     }
@@ -112,6 +113,7 @@ internal class RecentsItemAvatarTest {
 
         composeTestRule.onNodeWithTag(testTag = AVATAR_TEST_TAG)
             .onChildren()
+            .assertCountEquals(expectedSize = 1)
             .onFirst()
             .assertTextEquals("A")
     }
@@ -122,6 +124,7 @@ internal class RecentsItemAvatarTest {
 
         composeTestRule.onNodeWithTag(testTag = AVATAR_TEST_TAG)
             .onChildren()
+            .assertCountEquals(expectedSize = 1)
             .onFirst()
             .assertTextEquals("A")
         verify(exactly = 0) { Glide.with(any<Context>()) }
@@ -133,6 +136,7 @@ internal class RecentsItemAvatarTest {
 
         composeTestRule.onNodeWithTag(testTag = AVATAR_TEST_TAG)
             .onChildren()
+            .assertCountEquals(expectedSize = 1)
             .onFirst()
             .assertTextEquals("A")
         verify(exactly = 0) { Glide.with(any<Context>()) }

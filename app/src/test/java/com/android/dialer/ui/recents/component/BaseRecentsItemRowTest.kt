@@ -1,12 +1,16 @@
 package com.android.dialer.ui.recents.component
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.android.dialer.testutil.RobolectricComposeActivityRule
 import com.android.dialer.ui.core.DialerTheme
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
 import org.junit.Rule
 
 @Suppress("AbstractClassCanBeConcreteClass")
 internal abstract class BaseRecentsItemRowTest {
+
+    @get:Rule(order = 0)
+    val componentActivityRule = RobolectricComposeActivityRule()
 
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()

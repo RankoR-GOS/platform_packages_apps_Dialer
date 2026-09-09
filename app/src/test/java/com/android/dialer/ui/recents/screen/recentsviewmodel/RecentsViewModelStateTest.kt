@@ -34,8 +34,10 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
                 cancelAndIgnoreRemainingEvents()
             }
 
-            verify(exactly = 1) { repository.observeSnapshot(CallLogFilter.All) }
-            verify(exactly = 1) { uiStateMapper.map(SNAPSHOT, NOW_MILLIS) }
+            verify(exactly = 1) { repository.observeSnapshot(filter = CallLogFilter.All) }
+            verify(exactly = 1) {
+                uiStateMapper.map(snapshot = SNAPSHOT, nowMillis = NOW_MILLIS)
+            }
         }
     }
 
@@ -86,7 +88,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
             advanceTimeBy(STOP_TIMEOUT_MILLIS + 1L)
 
             assertFalse(isClosed)
-            verify(exactly = 1) { repository.observeSnapshot(CallLogFilter.All) }
+            verify(exactly = 1) { repository.observeSnapshot(filter = CallLogFilter.All) }
             second.cancel()
         }
     }
