@@ -2,9 +2,10 @@ package com.android.dialer.ui.recents.screen
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.StateRestorationTester
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -62,7 +63,7 @@ internal class RecentsStateRestorationTest {
         restorationTester.emulateSavedInstanceStateRestore()
 
         composeTestRule.onNodeWithTag(testTag = recentsItemTestTag(CallLogEntryId(ANCHOR_ID)))
-            .assertExists()
+            .assertIsDisplayed()
         composeTestRule.onAllNodesWithTag(testTag = recentsItemTestTag(CallLogEntryId(1L)))
             .assertCountEquals(expectedSize = 0)
     }

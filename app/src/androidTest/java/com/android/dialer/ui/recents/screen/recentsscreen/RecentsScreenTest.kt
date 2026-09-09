@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.screen.recentsscreen
 
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTextExactly
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.recents.common.RECENTS_PERMISSION_ACTION_TEST_TAG
@@ -93,6 +95,15 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
                 verify(exactly = 1) { screenModel.onAction(expected) }
             }
         }
+    }
+
+    @Test
+    fun sheet_rows_meetTheMinimumRowHeight() {
+        setContent(state = entriesState(item(id = 1L)))
+        openSheet(id = 1L)
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_CALL_TEST_TAG)
+            .assertHeightIsAtLeast(expectedMinHeight = SHEET_ROW_MIN_HEIGHT)
     }
 
     @Test
@@ -201,6 +212,7 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
     }
 
     private companion object {
+        val SHEET_ROW_MIN_HEIGHT = 56.dp
         val ENTRY_TWO = CallLogEntryId(value = 2L)
         const val NUMBER_ONE = "+15550001"
     }

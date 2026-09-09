@@ -2,7 +2,7 @@ package com.android.dialer.ui.recents
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -24,7 +24,7 @@ internal class RecentsTabSwitchingTest {
     val composeRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun recentsSurvivesLeavingAndReturningToItsTab() {
+    fun recentsScreen_whenItsTabIsLeftAndReturnedTo_isDisplayedAgain() {
         selectTab(tabId = R.id.call_log_tab)
         recentsScreen().assertIsDisplayed()
 

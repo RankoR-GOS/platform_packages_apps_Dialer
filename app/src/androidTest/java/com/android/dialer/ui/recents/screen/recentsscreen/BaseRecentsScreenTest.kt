@@ -1,7 +1,7 @@
 package com.android.dialer.ui.recents.screen.recentsscreen
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import com.android.dialer.ui.core.DialerTheme
 import com.android.dialer.ui.recents.common.previewActionLabels
 import com.android.dialer.ui.recents.model.RecentsContentUiState
