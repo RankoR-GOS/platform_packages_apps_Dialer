@@ -35,7 +35,7 @@ internal class ContactLookupImpl @Inject constructor(
 
     override fun invoke(number: String): ContactLookupResult {
         if (number.isBlank()) {
-            return ContactLookupResult.Unavailable
+            return ContactLookupResult.None
         }
 
         val uri = Uri.withAppendedPath(

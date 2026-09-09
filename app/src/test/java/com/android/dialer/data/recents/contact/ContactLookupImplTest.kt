@@ -81,6 +81,13 @@ internal class ContactLookupImplTest {
     }
 
     @Test
+    fun invoke_whenTheProviderReturnsNoCursor_returnsUnavailable() {
+        every { contentResolver.query(any(), any(), null, null, null) } returns null
+
+        assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
+    }
+
+    @Test
     fun invoke_whenTheContactsDatabaseFails_returnsUnavailable() {
         listOf(
             SQLiteDiskIOException(),
@@ -113,8 +120,8 @@ internal class ContactLookupImplTest {
     }
 
     @Test
-    fun invoke_withABlankNumber_doesNotQuery() {
-        assertEquals(ContactLookupResult.Unavailable, lookup(" "))
+    fun invoke_withABlankNumber_answersNoContactWithoutQuerying() {
+        assertEquals(ContactLookupResult.None, lookup(" "))
 
         verify(exactly = 0) { contentResolver.query(any(), any(), null, null, null) }
     }
