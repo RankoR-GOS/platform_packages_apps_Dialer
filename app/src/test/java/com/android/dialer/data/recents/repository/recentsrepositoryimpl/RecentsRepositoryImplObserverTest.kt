@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,6 +47,47 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubObserverRegistration()
 
             createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+
+            verify(exactly = 1) {
+                contentResolver.registerContentObserver(CallLog.Calls.CONTENT_URI, true, any())
+            }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_withoutTheCallLogPermission_registersNoObserver() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubObserverRegistration()
+
+            val snapshot = createRepository(isCallLogGranted = false)
+                .observeSnapshot(filter = CallLogFilter.All)
+                .first()
+
+            assertFalse(snapshot.isPermissionGranted)
+            verify(exactly = 0) { contentResolver.registerContentObserver(any(), any(), any()) }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenThePermissionArrivesWithARefresh_registersTheObserverAndQueries() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
+            stubObserverRegistration()
+            val repository = createRepository(isCallLogGranted = false)
+
+            repository.observeSnapshot(filter = CallLogFilter.All).test {
+                assertFalse(awaitItem().isPermissionGranted)
+
+                every { isCallLogPermissionGranted() } returns true
+                repository.refresh()
+
+                assertEquals(1L, awaitItem().entries.single().entryId.value)
+                cancelAndIgnoreRemainingEvents()
+            }
 
             verify(exactly = 1) {
                 contentResolver.registerContentObserver(CallLog.Calls.CONTENT_URI, true, any())

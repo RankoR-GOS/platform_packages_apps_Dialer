@@ -25,14 +25,17 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
 
 internal interface RecentsRepository {
@@ -57,11 +60,11 @@ internal class RecentsRepositoryImpl @Inject constructor(
 
     private val manualRefresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot> {
-        return merge(
-            observeUri(uri = CallLog.Calls.CONTENT_URI),
-            manualRefresh,
-        )
+        return manualRefresh
+            .onStart { emit(Unit) }
+            .flatMapLatest { observeCallLog() }
             .conflate()
             .mapNotNull { querySnapshot(filter = filter) }
             .flowOn(ioDispatcher)
@@ -140,6 +143,14 @@ internal class RecentsRepositoryImpl @Inject constructor(
     private fun idSelection(entryIds: List<CallLogEntryId>): String {
         val ids = entryIds.joinToString(separator = ",") { entryId -> entryId.value.toString() }
         return "${CallLog.Calls._ID} IN ($ids)"
+    }
+
+    private fun observeCallLog(): Flow<Unit> {
+        if (!isCallLogPermissionGranted()) {
+            return flowOf(Unit)
+        }
+
+        return observeUri(uri = CallLog.Calls.CONTENT_URI)
     }
 
     private fun observeUri(uri: Uri): Flow<Unit> {
