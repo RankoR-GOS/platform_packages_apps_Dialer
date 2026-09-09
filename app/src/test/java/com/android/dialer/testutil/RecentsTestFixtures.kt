@@ -71,7 +71,7 @@ internal fun recentsItemUiModel(
         contentDescription = "1 answered call from $primaryText",
         clickActionLabel = "expand menu",
         callActionLabel = "Call $primaryText",
-        avatar = RecentsAvatarUiModel(photoUri = null, letter = 'C', lookupUri = null),
+        avatar = RecentsAvatarUiModel(photoUri = null, letter = 'C'),
         callTypeIcon = RecentsCallTypeIcon.Incoming,
         groupedCallCountLabel = null,
         groupedEntryIds = persistentListOf(CallLogEntryId(value = id)),

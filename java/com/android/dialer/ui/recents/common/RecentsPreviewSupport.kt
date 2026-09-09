@@ -24,7 +24,6 @@ internal fun previewRecentsItem(
     avatar: RecentsAvatarUiModel = RecentsAvatarUiModel(
         photoUri = null,
         letter = primaryText.firstOrNull()?.takeIf { it.isLetter() }?.uppercaseChar(),
-        lookupUri = null,
     ),
     callTypeIcon: RecentsCallTypeIcon = RecentsCallTypeIcon.Incoming,
     groupedCallCountLabel: String? = null,

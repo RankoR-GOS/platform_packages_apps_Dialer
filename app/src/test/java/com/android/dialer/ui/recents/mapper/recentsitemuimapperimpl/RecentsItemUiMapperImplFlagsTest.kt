@@ -129,19 +129,17 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
     }
 
     @Test
-    fun map_copiesTheNumberAndTheContactUrisOntoTheModel() {
+    fun map_copiesTheNumberAndThePhotoUriOntoTheModel() {
         val entry = callLogEntry(
             id = 1L,
             number = "6502530000",
             photoUri = "content://photo/1",
-            lookupUri = "content://contacts/lookup/1",
         )
 
         val model = map(entry)
 
         assertEquals("6502530000", model.number)
         assertEquals("content://photo/1", model.avatar.photoUri)
-        assertEquals("content://contacts/lookup/1", model.avatar.lookupUri)
     }
 
     private companion object {

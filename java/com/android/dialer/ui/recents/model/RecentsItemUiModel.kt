@@ -35,7 +35,6 @@ internal data class RecentsItemUiModel(
 internal data class RecentsAvatarUiModel(
     val photoUri: String?,
     val letter: Char?,
-    val lookupUri: String?,
 )
 
 internal enum class RecentsCallTypeIcon {

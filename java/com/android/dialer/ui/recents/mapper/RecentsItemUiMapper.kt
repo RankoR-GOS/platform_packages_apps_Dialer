@@ -68,7 +68,6 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             avatar = RecentsAvatarUiModel(
                 photoUri = entry.photoUri,
                 letter = initial?.uppercaseChar(),
-                lookupUri = entry.lookupUri,
             ),
             callTypeIcon = entry.callType.toIcon(),
             groupedCallCountLabel = entry.groupedCallCountLabel(),

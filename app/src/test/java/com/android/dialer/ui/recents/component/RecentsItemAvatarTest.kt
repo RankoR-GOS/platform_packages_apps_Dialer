@@ -160,7 +160,7 @@ internal class RecentsItemAvatarTest {
     }
 
     private fun avatar(letter: Char?, photoUri: String? = null): RecentsAvatarUiModel {
-        return RecentsAvatarUiModel(photoUri = photoUri, letter = letter, lookupUri = null)
+        return RecentsAvatarUiModel(photoUri = photoUri, letter = letter)
     }
 
     private fun bitmap(): Bitmap {
