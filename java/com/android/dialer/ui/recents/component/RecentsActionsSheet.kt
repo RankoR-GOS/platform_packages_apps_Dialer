@@ -30,6 +30,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,6 +64,7 @@ import com.android.dialer.ui.recents.common.previewRecentsItem
 import com.android.dialer.ui.recents.model.RecentsActionLabelsUiModel
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
 import com.android.dialer.ui.recents.model.RecentsSheetAction
+import kotlinx.coroutines.launch
 
 private const val DISABLED_CONTENT_ALPHA = 0.38f
 
@@ -88,13 +90,20 @@ internal fun RecentsActionsSheet(
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
         modifier = Modifier.testTag(tag = RECENTS_SHEET_TEST_TAG),
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        RecentsActionsSheetContent(item = target, labels = labels, onAction = onAction)
+        RecentsActionsSheetContent(
+            item = target,
+            labels = labels,
+            onAction = { action ->
+                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion { onAction(action) }
+            },
+        )
     }
 }
 
