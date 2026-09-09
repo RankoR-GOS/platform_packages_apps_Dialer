@@ -67,6 +67,31 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
     }
 
     @Test
+    fun uiState_whenACollectorReturnsWithinTheTimeout_keepsTheRepositoryFlow() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            var isClosed = false
+            every { repository.observeSnapshot(any()) } returns callbackFlow {
+                trySend(SNAPSHOT)
+                awaitClose { isClosed = true }
+            }
+            val viewModel = createViewModel()
+
+            val first = backgroundScope.launch { viewModel.uiState.collect {} }
+            runCurrent()
+            first.cancel()
+            advanceTimeBy(STOP_TIMEOUT_MILLIS - 1L)
+            val second = backgroundScope.launch { viewModel.uiState.collect {} }
+            advanceTimeBy(STOP_TIMEOUT_MILLIS + 1L)
+
+            assertFalse(isClosed)
+            verify(exactly = 1) { repository.observeSnapshot(CallLogFilter.All) }
+            second.cancel()
+        }
+    }
+
+    @Test
     fun uiState_whenTheLastCollectorLeaves_stopsTheRepositoryFlowAfterTheTimeout() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
