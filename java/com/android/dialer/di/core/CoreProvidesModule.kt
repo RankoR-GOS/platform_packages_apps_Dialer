@@ -2,6 +2,7 @@ package com.android.dialer.di.core
 
 import android.content.ContentResolver
 import android.content.Context
+import android.telephony.TelephonyManager
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -36,5 +37,14 @@ internal class CoreProvidesModule {
         context: Context,
     ): ContentResolver {
         return context.contentResolver
+    }
+
+    @Provides
+    @Reusable
+    fun provideTelephonyManager(
+        @ApplicationContext
+        context: Context,
+    ): TelephonyManager? {
+        return context.getSystemService(TelephonyManager::class.java)
     }
 }

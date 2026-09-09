@@ -2,6 +2,7 @@ package com.android.dialer.di.core
 
 import android.content.ContentResolver
 import android.os.Build
+import android.telephony.TelephonyManager
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -10,6 +11,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
@@ -38,6 +40,8 @@ internal class CoreGraphTest {
         fun ioDispatcher(): CoroutineDispatcher
 
         fun contentResolver(): ContentResolver
+
+        fun telephonyManager(): TelephonyManager?
     }
 
     @get:Rule
@@ -67,5 +71,10 @@ internal class CoreGraphTest {
         val application = RuntimeEnvironment.getApplication()
 
         assertSame(application.contentResolver, entryPoint.contentResolver())
+        assertNotNull(entryPoint.telephonyManager())
+        assertSame(
+            application.getSystemService(TelephonyManager::class.java),
+            entryPoint.telephonyManager(),
+        )
     }
 }

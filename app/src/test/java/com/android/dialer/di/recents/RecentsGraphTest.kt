@@ -2,13 +2,23 @@ package com.android.dialer.di.recents
 
 import android.os.Build
 import android.provider.Settings
+import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
+import com.android.dialer.data.phone.formatter.PhoneNumberFormatterImpl
 import com.android.dialer.data.recents.repository.RecentsRepository
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 import com.android.dialer.data.recents.repository.SyntheticRecentsRepository
+import com.android.dialer.domain.recents.usecase.CanPlaceCall
+import com.android.dialer.domain.recents.usecase.CanPlaceCallImpl
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCalls
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCallsImpl
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGrantedImpl
+import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
+import com.android.dialer.domain.recents.usecase.IsEmergencyNumberImpl
+import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
+import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatterImpl
+import com.android.dialer.ui.recents.mapper.RecentsItemUiMapper
+import com.android.dialer.ui.recents.mapper.RecentsItemUiMapperImpl
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -40,6 +50,7 @@ internal class RecentsGraphTest {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     internal interface RecentsTestEntryPoint {
+
         fun recentsRepository(): RecentsRepository
 
         @SyntheticCallLog
@@ -48,6 +59,16 @@ internal class RecentsGraphTest {
         fun isCallLogPermissionGranted(): IsCallLogPermissionGranted
 
         fun groupConsecutiveCalls(): GroupConsecutiveCalls
+
+        fun canPlaceCall(): CanPlaceCall
+
+        fun isEmergencyNumber(): IsEmergencyNumber
+
+        fun relativeTimestampFormatter(): RelativeTimestampFormatter
+
+        fun phoneNumberFormatter(): PhoneNumberFormatter
+
+        fun recentsItemUiMapper(): RecentsItemUiMapper
     }
 
     @get:Rule
@@ -78,6 +99,15 @@ internal class RecentsGraphTest {
     fun graph_resolvesEachUseCaseToItsImplementation() {
         assertTrue(entryPoint.isCallLogPermissionGranted() is IsCallLogPermissionGrantedImpl)
         assertTrue(entryPoint.groupConsecutiveCalls() is GroupConsecutiveCallsImpl)
+    }
+
+    @Test
+    fun graph_resolvesTheItemMapperAndItsSeams() {
+        assertTrue(entryPoint.canPlaceCall() is CanPlaceCallImpl)
+        assertTrue(entryPoint.isEmergencyNumber() is IsEmergencyNumberImpl)
+        assertTrue(entryPoint.relativeTimestampFormatter() is RelativeTimestampFormatterImpl)
+        assertTrue(entryPoint.phoneNumberFormatter() is PhoneNumberFormatterImpl)
+        assertTrue(entryPoint.recentsItemUiMapper() is RecentsItemUiMapperImpl)
     }
 
     @Test
