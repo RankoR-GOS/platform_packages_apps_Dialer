@@ -8,6 +8,7 @@ import android.os.Bundle
 import app.cash.turbine.test
 import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.testutil.callLogRow
+import io.mockk.every
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -83,6 +84,30 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
                 observerSlot.captured.onChange(false)
 
                 assertEquals(1, awaitItem().entries.size)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenTheFirstReadAfterAGrantFails_showsTheEmptyState() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubQueryThrows(error = SQLiteDiskIOException())
+            stubObserverRegistration()
+            val repository = createRepository(isCallLogGranted = false)
+
+            repository.observeSnapshot(filter = CallLogFilter.All).test {
+                assertFalse(awaitItem().isPermissionGranted)
+
+                every { isCallLogPermissionGranted() } returns true
+                repository.refresh()
+
+                val shown = awaitItem()
+
+                assertTrue(shown.isPermissionGranted)
+                assertTrue(shown.entries.isEmpty())
                 cancelAndIgnoreRemainingEvents()
             }
         }

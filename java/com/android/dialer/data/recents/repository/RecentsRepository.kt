@@ -73,13 +73,13 @@ internal class RecentsRepositoryImpl @Inject constructor(
 
     override fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot> {
         return flow {
-            var hasEmitted = false
+            var hasShownTheLog = false
 
             callLogChanges().collect {
                 val snapshot = querySnapshot(filter = filter)
-                    ?: emptySnapshot().takeUnless { hasEmitted }
+                    ?: emptySnapshot().takeUnless { hasShownTheLog }
                     ?: return@collect
-                hasEmitted = true
+                hasShownTheLog = snapshot.isPermissionGranted
                 emit(snapshot)
                 enrichWithContacts(snapshot = snapshot)?.let { enriched -> emit(enriched) }
             }
