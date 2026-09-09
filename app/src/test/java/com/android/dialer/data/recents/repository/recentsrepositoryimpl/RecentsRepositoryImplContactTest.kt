@@ -6,6 +6,7 @@ import android.provider.ContactsContract
 import app.cash.turbine.test
 import com.android.dialer.data.recents.contact.ContactLookupResult
 import com.android.dialer.data.recents.model.CallLogFilter
+import com.android.dialer.testutil.TestCallLogRow
 import com.android.dialer.testutil.callLogRow
 import io.mockk.every
 import io.mockk.verify
@@ -90,6 +91,41 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             }
 
             verify(exactly = 1) { contactLookup(NUMBER) }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenARowLeavesTheSnapshot_forgetsItsContactAndAsksAgainWhenItReturns() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(
+                rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L, number = OTHER)),
+            )
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ADA
+            every { contactLookup(OTHER) } returns ContactLookupResult.None
+            val repository = createRepository(isContactsGranted = true)
+
+            repository.observeSnapshot(filter = CallLogFilter.All).test {
+                awaitItem()
+                awaitItem()
+
+                stubCallLogQuery(rows = listOf(unnamedRow(id = 2L)))
+                repository.refresh()
+                awaitItem()
+
+                stubCallLogQuery(
+                    rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L, number = OTHER)),
+                )
+                repository.refresh()
+                awaitItem()
+                awaitItem()
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(exactly = 1) { contactLookup(NUMBER) }
+            verify(exactly = 2) { contactLookup(OTHER) }
         }
     }
 
@@ -211,10 +247,13 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
         }
     }
 
-    private fun unnamedRow(id: Long) = callLogRow(id = id, number = NUMBER, cachedName = null)
+    private fun unnamedRow(id: Long, number: String = NUMBER): TestCallLogRow {
+        return callLogRow(id = id, number = number, cachedName = null)
+    }
 
     private companion object {
         const val NUMBER = "+18765550201"
+        const val OTHER = "+18765550202"
         val ADA = ContactLookupResult.Found(
             name = "Ada Lovelace",
             photoUri = "content://com.android.contacts/contacts/42/photo",

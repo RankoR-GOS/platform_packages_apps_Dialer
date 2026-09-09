@@ -197,6 +197,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
 
         val enriched = snapshot.entries.map(::withContact).toImmutableList()
 
+        contactCache.keys.retainAll(enriched.mapTo(HashSet()) { entry -> entry.number })
+
         return snapshot.copy(entries = enriched).takeIf { it != snapshot }
     }
 

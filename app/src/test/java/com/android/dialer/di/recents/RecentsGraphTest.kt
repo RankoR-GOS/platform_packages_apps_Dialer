@@ -112,6 +112,11 @@ internal class RecentsGraphTest {
     }
 
     @Test
+    fun graph_returnsTheSameRecentsRepositoryOnEveryLookup() {
+        assertSame(entryPoint.recentsRepository(), entryPoint.recentsRepository())
+    }
+
+    @Test
     fun graph_resolvesEachUseCaseToItsImplementation() {
         assertTrue(entryPoint.isCallLogPermissionGranted() is IsCallLogPermissionGrantedImpl)
         assertTrue(entryPoint.groupConsecutiveCalls() is GroupConsecutiveCallsImpl)
