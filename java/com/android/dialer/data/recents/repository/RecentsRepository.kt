@@ -80,8 +80,20 @@ internal class RecentsRepositoryImpl @Inject constructor(
                     ?: emptySnapshot().takeUnless { hasShownTheLog }
                     ?: return@collect
                 hasShownTheLog = snapshot.isPermissionGranted
-                emit(snapshot)
-                enrichWithContacts(snapshot = snapshot)?.let { enriched -> emit(enriched) }
+                val isServedFromCache = snapshot.entries.all { entry ->
+                    contactCache.containsKey(entry.number)
+                }
+
+                if (!isServedFromCache) {
+                    emit(snapshot)
+                }
+
+                val enriched = enrichWithContacts(snapshot = snapshot)
+
+                when {
+                    enriched != null -> emit(enriched)
+                    isServedFromCache -> emit(snapshot)
+                }
             }
         }.flowOn(ioDispatcher)
     }

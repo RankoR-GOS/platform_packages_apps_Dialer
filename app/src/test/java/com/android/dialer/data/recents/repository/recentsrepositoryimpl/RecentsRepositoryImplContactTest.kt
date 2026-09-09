@@ -95,6 +95,57 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
     }
 
     @Test
+    fun observeSnapshot_whenEveryNumberIsCached_emitsOnlyTheEnrichedSnapshot() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(
+                rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L, number = OTHER)),
+            )
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ADA
+            every { contactLookup(OTHER) } returns ContactLookupResult.None
+            val repository = createRepository(isContactsGranted = true)
+
+            repository.observeSnapshot(filter = CallLogFilter.All).test {
+                assertNull(awaitItem().entries.first().cachedName)
+                assertEquals("Ada Lovelace", awaitItem().entries.first().cachedName)
+
+                repository.refresh()
+
+                assertEquals("Ada Lovelace", awaitItem().entries.first().cachedName)
+                advanceUntilIdle()
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenACachedSnapshotGainsNoNames_stillEmitsItOnce() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L)))
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ContactLookupResult.None
+            val repository = createRepository(isContactsGranted = true)
+
+            repository.observeSnapshot(filter = CallLogFilter.All).test {
+                assertEquals(2, awaitItem().entries.size)
+
+                stubCallLogQuery(rows = listOf(unnamedRow(id = 2L)))
+                repository.refresh()
+
+                assertEquals(1, awaitItem().entries.size)
+                advanceUntilIdle()
+                expectNoEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Test
     fun observeSnapshot_whenARowLeavesTheSnapshot_forgetsItsContactAndAsksAgainWhenItReturns() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
