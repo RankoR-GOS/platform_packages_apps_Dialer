@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteFullException
 import android.os.Build
 import android.os.Bundle
 import app.cash.turbine.test
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.testutil.callLogRow
 import io.mockk.every
 import io.mockk.verify
@@ -56,7 +55,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             val observerSlot = stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).test {
+            createRepository().observeSnapshot().test {
                 assertEquals(1, awaitItem().entries.size)
 
                 stubQueryThrows(error = SQLiteDiskIOException("disk io"))
@@ -77,7 +76,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubQueryThrows(error = SQLiteDiskIOException("disk io"))
             val observerSlot = stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).test {
+            createRepository().observeSnapshot().test {
                 assertTrue(awaitItem().entries.isEmpty())
 
                 stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
@@ -98,7 +97,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubObserverRegistration()
             val repository = createRepository(isCallLogGranted = false)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 assertFalse(awaitItem().isPermissionGranted)
 
                 every { isCallLogPermissionGranted() } returns true
@@ -121,7 +120,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubQueryThrows(error = SecurityException("revoked mid-query"))
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertFalse(snapshot.isPermissionGranted)
             assertTrue(snapshot.entries.isEmpty())
@@ -137,7 +136,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubObserverRegistration()
 
             try {
-                createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+                createRepository().observeSnapshot().first()
                 fail("expected the IllegalStateException to propagate")
             } catch (e: IllegalStateException) {
                 assertEquals(PROGRAMMING_ERROR, e.message)
@@ -153,7 +152,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubObserverRegistration()
 
             val snapshot = createRepository(isCallLogGranted = false)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .first()
 
             assertFalse(snapshot.isPermissionGranted)
@@ -169,7 +168,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
             stubQueryThrows(error = error)
             val observerSlot = stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).test {
+            createRepository().observeSnapshot().test {
                 val shown = awaitItem()
 
                 assertTrue(shown.isPermissionGranted)

@@ -171,43 +171,6 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
         }
     }
 
-    @Test
-    fun clearHistoryConfirmed_clearsTheCallLogAndRaisesNothing() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            coEvery { repository.clearHistory() } returns RecentsWriteResult.Completed
-            val viewModel = createViewModel()
-
-            viewModel.effects.test {
-                viewModel.onAction(Action.ClearHistoryConfirmed)
-                advanceUntilIdle()
-
-                expectNoEvents()
-            }
-            coVerify(exactly = 1) { repository.clearHistory() }
-        }
-    }
-
-    @Test
-    fun clearHistoryConfirmed_whenTheClearFails_emitsWriteFailed() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            coEvery { repository.clearHistory() } returns
-                RecentsWriteResult.Failed(cause = RecentsWriteFailure.PermissionRevoked)
-            val viewModel = createViewModel()
-
-            viewModel.effects.test {
-                viewModel.onAction(Action.ClearHistoryConfirmed)
-                advanceUntilIdle()
-
-                assertEquals(Effect.WriteFailed, awaitItem())
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-    }
-
     private fun assertEffect(action: Action, expected: Effect) {
         runTest(
             context = mainDispatcherRule.testDispatcher,

@@ -58,6 +58,4 @@ internal sealed interface RecentsAction {
     data class DeleteConfirmed(
         val entryIds: ImmutableList<CallLogEntryId>,
     ) : EntryAction
-
-    data object ClearHistoryConfirmed : EntryAction
 }

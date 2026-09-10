@@ -2,7 +2,6 @@ package com.android.dialer.data.recents.repository.recentsrepositoryimpl
 
 import android.os.Build
 import android.provider.CallLog.Calls
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.testutil.callLogRow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -35,9 +34,7 @@ internal class RecentsRepositoryImplMetadataTest : BaseRecentsRepositoryImplTest
             )
             stubObserverRegistration()
 
-            val entry = createRepository().observeSnapshot(
-                CallLogFilter.All
-            ).first().entries.single()
+            val entry = createRepository().observeSnapshot().first().entries.single()
 
             assertEquals("example/.PhoneService", entry.accountComponentName)
             assertEquals("sim1", entry.accountId)
@@ -62,9 +59,7 @@ internal class RecentsRepositoryImplMetadataTest : BaseRecentsRepositoryImplTest
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
-            val entry = createRepository().observeSnapshot(
-                CallLogFilter.All
-            ).first().entries.single()
+            val entry = createRepository().observeSnapshot().first().entries.single()
 
             assertNull(entry.accountComponentName)
             assertNull(entry.accountId)

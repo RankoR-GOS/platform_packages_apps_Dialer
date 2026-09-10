@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CallLog
 import app.cash.turbine.test
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.testutil.callLogCursor
 import com.android.dialer.testutil.callLogRow
 import io.mockk.every
@@ -46,7 +45,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubCallLogQuery(rows = emptyList())
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             verify(exactly = 1) {
                 contentResolver.registerContentObserver(CallLog.Calls.CONTENT_URI, true, any())
@@ -62,7 +61,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubObserverRegistration()
 
             val snapshot = createRepository(isCallLogGranted = false)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .first()
 
             assertFalse(snapshot.isPermissionGranted)
@@ -79,7 +78,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubObserverRegistration()
             val repository = createRepository(isCallLogGranted = false)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 assertFalse(awaitItem().isPermissionGranted)
 
                 every { isCallLogPermissionGranted() } returns true
@@ -103,7 +102,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             val observerSlot = stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).test {
+            createRepository().observeSnapshot().test {
                 assertEquals(1L, awaitItem().entries.single().entryId.value)
 
                 observerSlot.captured.onChange(false)
@@ -124,7 +123,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubCallLogQuery(rows = emptyList())
             val observerSlot = stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
             advanceUntilIdle()
 
             verify(exactly = 1) {
@@ -146,7 +145,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubObserverRegistration()
 
             createRepository(dispatcher = queryDispatcher)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .first()
 
             assertTrue(
@@ -165,7 +164,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             stubObserverRegistration()
             val repository = createRepository()
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 awaitItem()
 
                 repository.refresh()
@@ -188,7 +187,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
             val repository = createRepository()
 
             repository.refresh()
-            repository.observeSnapshot(filter = CallLogFilter.All).first()
+            repository.observeSnapshot().first()
             advanceUntilIdle()
 
             verify(exactly = 1) { contentResolver.query(any(), any(), any<Bundle>(), any()) }

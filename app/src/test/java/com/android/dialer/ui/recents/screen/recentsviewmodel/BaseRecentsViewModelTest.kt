@@ -31,7 +31,7 @@ internal abstract class BaseRecentsViewModelTest {
 
     @Before
     fun setUp() {
-        every { repository.observeSnapshot(any()) } returns flowOf(SNAPSHOT)
+        every { repository.observeSnapshot() } returns flowOf(SNAPSHOT)
         every { currentTimeProvider.currentTimeMillis() } returns NOW_MILLIS
         every { uiStateMapper.map(any(), any()) } returns MAPPED_STATE
     }

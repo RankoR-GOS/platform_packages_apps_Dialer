@@ -3,7 +3,6 @@ package com.android.dialer.ui.recents.screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.dialer.data.recents.model.CallLogEntryId
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.data.recents.model.RecentsWriteResult
 import com.android.dialer.data.recents.repository.RecentsRepository
 import com.android.dialer.di.core.DefaultDispatcher
@@ -48,7 +47,7 @@ internal class RecentsViewModel @Inject constructor(
     override val effects: Flow<Effect> = _effects.receiveAsFlow()
 
     override val uiState: StateFlow<State> = combine(
-        repository.observeSnapshot(filter = CallLogFilter.All),
+        repository.observeSnapshot(),
         minuteTicks(),
     ) { snapshot, nowMillis ->
         uiStateMapper.map(snapshot = snapshot, nowMillis = nowMillis)
@@ -104,7 +103,6 @@ internal class RecentsViewModel @Inject constructor(
         when (action) {
             is Action.EntryViewed -> markRead(entryIds = action.entryIds)
             is Action.DeleteConfirmed -> delete(entryIds = action.entryIds)
-            Action.ClearHistoryConfirmed -> clearHistory()
         }
     }
 
@@ -126,12 +124,6 @@ internal class RecentsViewModel @Inject constructor(
     private fun delete(entryIds: List<CallLogEntryId>) {
         viewModelScope.launch(defaultDispatcher) {
             report(result = repository.delete(entryIds = entryIds))
-        }
-    }
-
-    private fun clearHistory() {
-        viewModelScope.launch(defaultDispatcher) {
-            report(result = repository.clearHistory())
         }
     }
 

@@ -1,7 +1,6 @@
 package com.android.dialer.ui.recents.screen.recentsviewmodel
 
 import app.cash.turbine.test
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.ui.recents.model.RecentsContentUiState
 import com.android.dialer.ui.recents.model.RecentsUiState
 import io.mockk.every
@@ -34,7 +33,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
                 cancelAndIgnoreRemainingEvents()
             }
 
-            verify(exactly = 1) { repository.observeSnapshot(filter = CallLogFilter.All) }
+            verify(exactly = 1) { repository.observeSnapshot() }
             verify(exactly = 1) {
                 uiStateMapper.map(snapshot = SNAPSHOT, nowMillis = NOW_MILLIS)
             }
@@ -77,7 +76,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
             context = mainDispatcherRule.testDispatcher,
         ) {
             var isClosed = false
-            every { repository.observeSnapshot(any()) } returns callbackFlow {
+            every { repository.observeSnapshot() } returns callbackFlow {
                 trySend(SNAPSHOT)
                 awaitClose { isClosed = true }
             }
@@ -91,7 +90,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
             advanceTimeBy(STOP_TIMEOUT_MILLIS + 1L)
 
             assertFalse(isClosed)
-            verify(exactly = 1) { repository.observeSnapshot(filter = CallLogFilter.All) }
+            verify(exactly = 1) { repository.observeSnapshot() }
             second.cancel()
         }
     }
@@ -102,7 +101,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
             context = mainDispatcherRule.testDispatcher,
         ) {
             var isClosed = false
-            every { repository.observeSnapshot(any()) } returns callbackFlow {
+            every { repository.observeSnapshot() } returns callbackFlow {
                 trySend(SNAPSHOT)
                 awaitClose { isClosed = true }
             }

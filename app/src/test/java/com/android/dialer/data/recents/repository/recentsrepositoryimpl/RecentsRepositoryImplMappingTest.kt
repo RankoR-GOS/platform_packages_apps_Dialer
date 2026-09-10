@@ -3,7 +3,6 @@ package com.android.dialer.data.recents.repository.recentsrepositoryimpl
 import android.os.Build
 import android.os.Bundle
 import android.provider.CallLog
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 import com.android.dialer.testutil.TEST_CALL_DURATION_SECONDS
@@ -55,7 +54,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             )
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertEquals(2, snapshot.entries.size)
             assertTrue(snapshot.isPermissionGranted)
@@ -92,7 +91,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             assertEquals(
                 RecentsRepositoryImpl.CALL_LOG_PROJECTION.toList(),
@@ -119,7 +118,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             )
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertEquals(
                 listOf(
@@ -144,7 +143,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L, callType = UNKNOWN_CALL_TYPE)))
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertEquals(
                 CallType.Unknown(rawType = UNKNOWN_CALL_TYPE),
@@ -174,7 +173,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             )
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             val entry = snapshot.entries.single()
             assertEquals("", entry.number)
@@ -197,7 +196,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             )
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertEquals(listOf(2L), snapshot.entries.map { entry -> entry.entryId.value })
         }
@@ -211,7 +210,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             every { contentResolver.query(any(), any(), any<Bundle>(), any()) } returns null
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertTrue(snapshot.entries.isEmpty())
             assertTrue(snapshot.isPermissionGranted)
@@ -226,7 +225,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             stubCallLogQuery(rows = emptyList())
             stubObserverRegistration()
 
-            val snapshot = createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            val snapshot = createRepository().observeSnapshot().first()
 
             assertTrue(snapshot.entries.isEmpty())
             assertTrue(snapshot.isPermissionGranted)
@@ -242,7 +241,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             every { contentResolver.query(any(), any(), any<Bundle>(), any()) } returns cursor
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             assertTrue(cursor.isClosed)
         }

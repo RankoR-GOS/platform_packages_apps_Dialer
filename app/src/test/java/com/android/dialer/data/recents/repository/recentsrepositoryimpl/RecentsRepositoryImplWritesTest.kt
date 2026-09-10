@@ -200,55 +200,6 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
         }
     }
 
-    @Test
-    fun clearHistory_deletesEveryRowThroughTheCallLogUri() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            every { contentResolver.delete(any(), any(), any()) } returns 2
-
-            val result = createRepository().clearHistory()
-
-            assertEquals(RecentsWriteResult.Completed, result)
-            verify(exactly = 1) {
-                contentResolver.delete(CallLog.Calls.CONTENT_URI, null, null)
-            }
-        }
-    }
-
-    @Test
-    fun clearHistory_whenTheResolverThrowsSqliteDiskIo_returnsFailedStorage() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            every {
-                contentResolver.delete(any(), any(), any())
-            } throws SQLiteDiskIOException("disk io")
-
-            val result = createRepository().clearHistory()
-
-            assertEquals(RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage), result)
-        }
-    }
-
-    @Test
-    fun clearHistory_whenTheProviderRejectsTheWrite_returnsFailedProviderAbsent() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            every {
-                contentResolver.delete(any(), any(), any())
-            } throws IllegalArgumentException("unknown uri")
-
-            val result = createRepository().clearHistory()
-
-            assertEquals(
-                RecentsWriteResult.Failed(cause = RecentsWriteFailure.ProviderAbsent),
-                result,
-            )
-        }
-    }
-
     private companion object {
         private const val WRITE_THREAD_NAME = "recents-write"
         private const val PROGRAMMING_ERROR = "the provider handle was already closed"

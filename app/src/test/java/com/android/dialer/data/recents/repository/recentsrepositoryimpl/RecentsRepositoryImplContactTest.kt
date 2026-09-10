@@ -6,7 +6,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import app.cash.turbine.test
 import com.android.dialer.data.recents.contact.ContactLookupResult
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.testutil.TestCallLogRow
 import com.android.dialer.testutil.callLogRow
 import io.mockk.every
@@ -36,7 +35,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ADA
 
             createRepository(isContactsGranted = true)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .test {
                     assertNull(awaitItem().entries.single().cachedName)
 
@@ -63,7 +62,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ADA
 
             createRepository(isContactsGranted = true)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .test {
                     assertEquals("Old", awaitItem().entries.single().cachedName)
                     assertEquals("Ada Lovelace", awaitItem().entries.single().cachedName)
@@ -82,7 +81,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ADA
             val repository = createRepository(isContactsGranted = true)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 awaitItem()
                 awaitItem()
 
@@ -105,7 +104,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ADA
             val snapshots = createRepository(isContactsGranted = true)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
 
             snapshots.test {
                 awaitItem()
@@ -134,7 +133,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ContactLookupResult.None
             val snapshots = createRepository(isContactsGranted = true)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
 
             snapshots.test {
                 assertNull(awaitItem().entries.single().cachedName)
@@ -166,7 +165,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(OTHER) } returns ContactLookupResult.None
             val repository = createRepository(isContactsGranted = true)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 assertNull(awaitItem().entries.first().cachedName)
                 assertEquals("Ada Lovelace", awaitItem().entries.first().cachedName)
 
@@ -190,7 +189,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ContactLookupResult.None
             val repository = createRepository(isContactsGranted = true)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 assertEquals(2, awaitItem().entries.size)
 
                 stubCallLogQuery(rows = listOf(unnamedRow(id = 2L)))
@@ -217,7 +216,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(OTHER) } returns ContactLookupResult.None
             val repository = createRepository(isContactsGranted = true)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 awaitItem()
                 awaitItem()
 
@@ -249,7 +248,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ADA
 
             createRepository(isContactsGranted = true)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .test {
                     awaitItem()
                     awaitItem()
@@ -274,7 +273,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             stubObserverRegistration()
 
             createRepository(isContactsGranted = false)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .test {
                     assertNull(awaitItem().entries.single().cachedName)
                     advanceUntilIdle()
@@ -316,7 +315,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ContactLookupResult.None
 
             createRepository(isContactsGranted = true)
-                .observeSnapshot(filter = CallLogFilter.All)
+                .observeSnapshot()
                 .test {
                     assertEquals("Old", awaitItem().entries.single().cachedName)
 
@@ -343,7 +342,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
             every { contactLookup(NUMBER) } returns ContactLookupResult.Unavailable
             val repository = createRepository(isContactsGranted = true)
 
-            repository.observeSnapshot(filter = CallLogFilter.All).test {
+            repository.observeSnapshot().test {
                 assertEquals("Old", awaitItem().entries.single().cachedName)
 
                 repository.refresh()

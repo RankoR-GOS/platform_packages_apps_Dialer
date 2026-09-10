@@ -17,7 +17,6 @@ import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.contact.ContactLookupResult
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallLogEntryId
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.data.recents.model.CallLogSnapshot
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.data.recents.model.RecentsWriteFailure
@@ -49,13 +48,11 @@ import kotlinx.coroutines.withContext
 
 internal interface RecentsRepository {
 
-    fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot>
+    fun observeSnapshot(): Flow<CallLogSnapshot>
 
     suspend fun delete(entryIds: List<CallLogEntryId>): RecentsWriteResult
 
     suspend fun markRead(entryIds: List<CallLogEntryId>): RecentsWriteResult
-
-    suspend fun clearHistory(): RecentsWriteResult
 
     fun refresh()
 }
@@ -72,13 +69,13 @@ internal class RecentsRepositoryImpl @Inject constructor(
     private val manualRefresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val contactCache = ConcurrentHashMap<String, ContactLookupResult>()
 
-    override fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot> {
+    override fun observeSnapshot(): Flow<CallLogSnapshot> {
         return flow {
             contactCache.clear()
             var hasShownTheLog = false
 
             callLogChanges().collect {
-                val snapshot = querySnapshot(filter = filter)
+                val snapshot = querySnapshot()
                     ?: emptySnapshot().takeUnless { hasShownTheLog }
                     ?: return@collect
                 hasShownTheLog = snapshot.isPermissionGranted
@@ -144,14 +141,6 @@ internal class RecentsRepositoryImpl @Inject constructor(
                     idSelection(entryIds = entryIds),
                     null,
                 )
-            }
-        }
-    }
-
-    override suspend fun clearHistory(): RecentsWriteResult {
-        return withContext(ioDispatcher) {
-            runWrite(operation = "clearHistory") {
-                contentResolver.delete(CallLog.Calls.CONTENT_URI, null, null)
             }
         }
     }
@@ -265,13 +254,13 @@ internal class RecentsRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun querySnapshot(filter: CallLogFilter): CallLogSnapshot? {
+    private fun querySnapshot(): CallLogSnapshot? {
         if (!isCallLogPermissionGranted()) {
             return permissionDeniedSnapshot()
         }
 
         return try {
-            queryEntries(filter = filter)?.let { entries ->
+            queryEntries()?.let { entries ->
                 CallLogSnapshot(entries = entries, isPermissionGranted = true)
             }
         } catch (e: SecurityException) {
@@ -284,12 +273,12 @@ internal class RecentsRepositoryImpl @Inject constructor(
         return CallLogSnapshot(entries = persistentListOf(), isPermissionGranted = false)
     }
 
-    private fun queryEntries(filter: CallLogFilter): ImmutableList<CallLogEntry>? {
+    private fun queryEntries(): ImmutableList<CallLogEntry>? {
         return try {
             val cursor = contentResolver.query(
                 CALL_LOG_LIST_URI,
                 CALL_LOG_PROJECTION,
-                queryArgs(filter = filter),
+                queryArgs(),
                 null,
             ) ?: return persistentListOf()
 
@@ -385,8 +374,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun queryArgs(filter: CallLogFilter): Bundle {
-        val selection = selection(filter = filter)
+    private fun queryArgs(): Bundle {
+        val selection = selection()
         return Bundle().apply {
             putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection.where)
             putStringArray(
@@ -404,24 +393,15 @@ internal class RecentsRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun selection(filter: CallLogFilter): CallLogSelection {
+    private fun selection(): CallLogSelection {
         val predicates = mutableListOf<String>()
         val args = mutableListOf<String>()
 
         predicates.add("(${CallLog.Calls.TYPE} != ?)")
         args.add(CallLog.Calls.BLOCKED_TYPE.toString())
 
-        when (filter) {
-            CallLogFilter.All -> {
-                predicates.add("NOT (${CallLog.Calls.TYPE} = ?)")
-                args.add(CallLog.Calls.VOICEMAIL_TYPE.toString())
-            }
-
-            CallLogFilter.Missed -> {
-                predicates.add("(${CallLog.Calls.TYPE} = ?)")
-                args.add(CallLog.Calls.MISSED_TYPE.toString())
-            }
-        }
+        predicates.add("NOT (${CallLog.Calls.TYPE} = ?)")
+        args.add(CallLog.Calls.VOICEMAIL_TYPE.toString())
 
         predicates.add(DUO_EXCLUSION)
         args.add(DUO_PACKAGE_PATTERN)

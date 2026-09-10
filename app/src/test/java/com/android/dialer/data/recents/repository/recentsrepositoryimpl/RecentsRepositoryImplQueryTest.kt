@@ -3,7 +3,6 @@ package com.android.dialer.data.recents.repository.recentsrepositoryimpl
 import android.content.ContentResolver
 import android.os.Build
 import android.provider.CallLog
-import com.android.dialer.data.recents.model.CallLogFilter
 import com.android.dialer.testutil.callLogRow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -21,14 +20,14 @@ import org.robolectric.annotation.Config
 internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() {
 
     @Test
-    fun observeSnapshot_withTheAllFilter_selectsEveryCallButBlockedAndVoicemail() {
+    fun observeSnapshot_selectsEveryCallButBlockedAndVoicemail() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
         ) {
             val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             assertEquals(
                 joinPredicates(BLOCKED_PREDICATE, VOICEMAIL_EXCLUSION, DUO_EXCLUSION),
@@ -42,27 +41,6 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
     }
 
     @Test
-    fun observeSnapshot_withTheMissedFilter_selectsOnlyMissedCalls() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
-            stubObserverRegistration()
-
-            createRepository().observeSnapshot(filter = CallLogFilter.Missed).first()
-
-            assertEquals(
-                joinPredicates(BLOCKED_PREDICATE, MISSED_PREDICATE, DUO_EXCLUSION),
-                capturedSelection(queryArgs = queryArgs),
-            )
-            assertEquals(
-                listOf(BLOCKED_TYPE_ARG, MISSED_TYPE_ARG, DUO_PACKAGE_PATTERN),
-                capturedArgs(queryArgs = queryArgs),
-            )
-        }
-    }
-
-    @Test
     fun observeSnapshot_bindsEveryComparedValueAsASelectionArgument() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
@@ -70,7 +48,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
             val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             val selection = capturedSelection(queryArgs = queryArgs)
             assertEquals(
@@ -89,7 +67,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             assertEquals(
                 CALL_LOG_LIMIT.toString(),
@@ -106,7 +84,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
             val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
-            createRepository().observeSnapshot(filter = CallLogFilter.All).first()
+            createRepository().observeSnapshot().first()
 
             val captured = queryArgs.captured
             assertEquals(
@@ -130,7 +108,6 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
 
         private val BLOCKED_PREDICATE = "(${CallLog.Calls.TYPE} != ?)"
         private val VOICEMAIL_EXCLUSION = "NOT (${CallLog.Calls.TYPE} = ?)"
-        private val MISSED_PREDICATE = "(${CallLog.Calls.TYPE} = ?)"
         private val DUO_EXCLUSION =
             "(${CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME} IS NULL OR " +
                 "${CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME} NOT LIKE ? OR " +
@@ -139,6 +116,5 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
 
         private val BLOCKED_TYPE_ARG = CallLog.Calls.BLOCKED_TYPE.toString()
         private val VOICEMAIL_TYPE_ARG = CallLog.Calls.VOICEMAIL_TYPE.toString()
-        private val MISSED_TYPE_ARG = CallLog.Calls.MISSED_TYPE.toString()
     }
 }
