@@ -6,12 +6,14 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.PersistableBundle
+import android.telecom.PhoneAccountHandle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.android.dialer.callintent.CallInitiationType
 import com.android.dialer.callintent.CallIntentBuilder
 import com.android.dialer.precall.PreCall
+import com.android.dialer.telecom.TelecomUtil
 import com.android.dialer.ui.recents.model.RecentsEffect
 import com.android.dialer.util.CallUtil
 import com.android.dialer.util.DialerUtils
@@ -37,7 +39,14 @@ internal class RecentsEffectHandlerImpl(
     override fun handle(effect: RecentsEffect) {
         when (effect) {
             is RecentsEffect.PlaceCall -> placeCall(number = effect.number, isVideoCall = false)
-            is RecentsEffect.PlaceVideoCall -> placeCall(number = effect.number, isVideoCall = true)
+            is RecentsEffect.PlaceVideoCall -> placeCall(
+                number = effect.number,
+                isVideoCall = true,
+                accountHandle = TelecomUtil.composePhoneAccountHandle(
+                    effect.accountComponentName,
+                    effect.accountId,
+                ),
+            )
             is RecentsEffect.SendMessage -> startActivity(
                 intent = IntentUtil.getSendSmsIntent(effect.number),
             )
@@ -58,9 +67,14 @@ internal class RecentsEffectHandlerImpl(
         }
     }
 
-    private fun placeCall(number: String, isVideoCall: Boolean) {
+    private fun placeCall(
+        number: String,
+        isVideoCall: Boolean,
+        accountHandle: PhoneAccountHandle? = null,
+    ) {
         val builder = CallIntentBuilder(number, CallInitiationType.Type.CALL_LOG)
             .setIsVideoCall(isVideoCall)
+            .setPhoneAccountHandle(accountHandle)
 
         PreCall.start(context, builder)
     }

@@ -5,6 +5,8 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
+import com.android.dialer.data.recents.account.PhoneAccountLookup
+import com.android.dialer.data.recents.account.PhoneAccountSnapshot
 import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.repository.RecentsRepositoryImpl
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
@@ -33,6 +35,9 @@ internal abstract class BaseRecentsRepositoryImplTest {
     protected val isCallLogPermissionGranted = mockk<IsCallLogPermissionGranted>()
     protected val isContactsPermissionGranted = mockk<IsContactsPermissionGranted>()
     protected val contactLookup = mockk<ContactLookup>()
+    protected val phoneAccountLookup = mockk<PhoneAccountLookup> {
+        every { this@mockk.invoke() } returns PhoneAccountSnapshot()
+    }
     protected val capturedProjections = mutableListOf<Array<String>?>()
     protected val capturedUris = mutableListOf<Uri>()
 
@@ -94,6 +99,7 @@ internal abstract class BaseRecentsRepositoryImplTest {
             isCallLogPermissionGranted = isCallLogPermissionGranted,
             isContactsPermissionGranted = isContactsPermissionGranted,
             contactLookup = contactLookup,
+            phoneAccountLookup = phoneAccountLookup,
             ioDispatcher = dispatcher,
         )
     }

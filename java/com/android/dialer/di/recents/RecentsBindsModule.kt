@@ -1,5 +1,7 @@
 package com.android.dialer.di.recents
 
+import com.android.dialer.data.recents.account.PhoneAccountLookup
+import com.android.dialer.data.recents.account.PhoneAccountLookupImpl
 import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.contact.ContactLookupImpl
 import com.android.dialer.data.recents.repository.RecentsRepository
@@ -30,6 +32,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 internal abstract class RecentsBindsModule {
+
+    @Binds
+    @Reusable
+    abstract fun bindPhoneAccountLookup(impl: PhoneAccountLookupImpl): PhoneAccountLookup
 
     @Binds
     @Singleton

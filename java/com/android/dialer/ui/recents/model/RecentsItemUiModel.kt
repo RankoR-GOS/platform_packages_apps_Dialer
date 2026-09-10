@@ -26,6 +26,13 @@ internal data class RecentsItemUiModel(
     val canAddContact: Boolean,
     val canEditNumberBeforeCall: Boolean,
     val postDialDigits: String = "",
+    val isVideoCall: Boolean = false,
+    val accountLabel: String? = null,
+    val isHdCall: Boolean = false,
+    val isRttCall: Boolean = false,
+    val isAssistedDialing: Boolean = false,
+    val accountComponentName: String? = null,
+    val accountId: String? = null,
 ) {
 
     val callbackNumber: String

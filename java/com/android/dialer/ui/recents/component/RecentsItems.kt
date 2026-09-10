@@ -95,9 +95,14 @@ private fun RecentsEntry(
         }.takeIf { item.canCallBack },
         onVideoCallClick = {
             onItemEvent(
-                RecentsItemEvent.VideoCallClicked(entryId = item.entryId, number = item.number),
+                RecentsItemEvent.VideoCallClicked(
+                    entryId = item.entryId,
+                    number = item.number,
+                    accountComponentName = item.accountComponentName,
+                    accountId = item.accountId,
+                ),
             )
-        }.takeIf { item.canVideoCall },
+        }.takeIf { item.canVideoCall && item.isVideoCall },
     )
 }
 

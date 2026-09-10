@@ -5,6 +5,7 @@ import android.provider.CallLog
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.text.TextUtils
 import com.android.dialer.R
+import com.android.dialer.compat.telephony.TelephonyManagerCompat
 import com.android.dialer.contacts.displaypreference.ContactDisplayPreferences
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.recents.model.CallLogEntry
@@ -82,26 +83,42 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
                 letter = initial?.uppercaseChar(),
             ),
             callTypeIcon = entry.callType.toIcon(),
+            accountLabel = entry.accountLabelText(isSpoken = false),
+            isHdCall = entry.features and CallLog.Calls.FEATURES_HD_CALL != 0,
+            isRttCall = entry.features and CallLog.Calls.FEATURES_RTT != 0,
+            isAssistedDialing =
+                entry.features and TelephonyManagerCompat.FEATURES_ASSISTED_DIALING != 0,
             groupedCallCountLabel = entry.groupedCallCountLabel(),
             groupedEntryIds = entry.groupedEntryIds,
             number = entry.number,
             postDialDigits = entry.postDialDigits,
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,
-            canVideoCall = canCall && !isEmergency && entry.isVideoCall,
+            canVideoCall = entry.canVideoCall(canCall = canCall, isEmergency = isEmergency),
+            isVideoCall = entry.isVideoCall && !isEmergency,
+            accountComponentName = entry.accountComponentName,
+            accountId = entry.accountId,
             canMessage = canCall && !isEmergency,
             canAddContact = canCall && !isEmergency && entry.lookupUri == null,
             canEditNumberBeforeCall = canCall && !PhoneNumberHelper.isUriNumber(entry.number),
         )
     }
 
+    private fun CallLogEntry.canVideoCall(canCall: Boolean, isEmergency: Boolean): Boolean {
+        return canCall && !isEmergency && (
+            isVideoCall || (
+                supportsVideoPresence && carrierPresence and Phone.CARRIER_PRESENCE_VT_CAPABLE != 0
+                )
+            )
+    }
+
     private fun CallLogEntry.displayNumber(): String {
         return when {
-            formattedNumber != null -> formattedNumber
+            !formattedNumber.isNullOrBlank() -> formattedNumber
             number.isNotBlank() -> phoneNumberFormatter.formatForDisplay(
                 number = number,
                 countryIso = countryIso,
-            )
+            ) + postDialDigits
             else -> ""
         }
     }
@@ -181,13 +198,45 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isAbbreviated = false,
         ).joinToString(separator = DESCRIPTOR_SEPARATOR)
 
+        val accountDescription = accountLabelText(isSpoken = true)
+        val template = when (accountDescription) {
+            null -> R.string.a11y_new_call_log_entry_full_description_without_phone_account_info
+            else -> R.string.a11y_new_call_log_entry_full_description_with_phone_account_info
+        }
+
         return TextUtils.expandTemplate(
-            context.resources.getText(
-                R.string.a11y_new_call_log_entry_full_description_without_phone_account_info,
-            ),
+            context.resources.getText(template),
             primaryDescription,
             secondaryDescription,
+            accountDescription.orEmpty(),
         ).toString()
+    }
+
+    private fun CallLogEntry.accountLabelText(isSpoken: Boolean): String? {
+        val via = viaNumber.takeIf { it.isNotBlank() }?.let { number ->
+            if (isSpoken) spokenDigits(number) else number
+        }
+
+        return when {
+            via != null && !accountLabel.isNullOrBlank() -> context.getString(
+                if (isSpoken) {
+                    R.string.description_via_number_phone_account
+                } else {
+                    R.string.call_log_via_number_phone_account
+                },
+                accountLabel,
+                via,
+            )
+            via != null -> context.getString(
+                if (isSpoken) R.string.description_via_number else R.string.call_log_via_number,
+                via,
+            )
+            !accountLabel.isNullOrBlank() && isSpoken -> TextUtils.expandTemplate(
+                context.getText(R.string.description_phone_account),
+                accountLabel,
+            ).toString()
+            else -> accountLabel?.takeIf { it.isNotBlank() }
+        }
     }
 
     private fun CallLogEntry.callActionLabel(canCall: Boolean, primaryText: String): String? {

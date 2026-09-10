@@ -13,6 +13,7 @@ import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.common.LogUtil
+import com.android.dialer.data.recents.account.PhoneAccountLookup
 import com.android.dialer.data.recents.contact.ContactLookup
 import com.android.dialer.data.recents.contact.ContactLookupResult
 import com.android.dialer.data.recents.model.CallLogEntry
@@ -24,6 +25,7 @@ import com.android.dialer.data.recents.model.RecentsWriteResult
 import com.android.dialer.di.core.IoDispatcher
 import com.android.dialer.domain.recents.usecase.IsCallLogPermissionGranted
 import com.android.dialer.domain.recents.usecase.IsContactsPermissionGranted
+import com.android.dialer.telecom.TelecomUtil
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
@@ -62,6 +64,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
     private val isCallLogPermissionGranted: IsCallLogPermissionGranted,
     private val isContactsPermissionGranted: IsContactsPermissionGranted,
     private val contactLookup: ContactLookup,
+    private val phoneAccountLookup: PhoneAccountLookup,
     @param:IoDispatcher
     private val ioDispatcher: CoroutineDispatcher,
 ) : RecentsRepository {
@@ -75,7 +78,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
             var hasShownTheLog = false
 
             callLogChanges().collect {
-                val snapshot = querySnapshot()
+                val snapshot = querySnapshot()?.withAccounts()
                     ?: emptySnapshot().takeUnless { hasShownTheLog }
                     ?: return@collect
                 hasShownTheLog = snapshot.isPermissionGranted
@@ -193,6 +196,27 @@ internal class RecentsRepositoryImpl @Inject constructor(
         return merge(callLogChanges, contactChanges)
     }
 
+    private fun CallLogSnapshot.withAccounts(): CallLogSnapshot {
+        if (!isPermissionGranted || entries.isEmpty()) {
+            return this
+        }
+
+        val accounts = phoneAccountLookup()
+
+        return copy(
+            entries = entries.map { entry ->
+                val handle = TelecomUtil.composePhoneAccountHandle(
+                    entry.accountComponentName,
+                    entry.accountId,
+                )
+                entry.copy(
+                    accountLabel = accounts.labels[handle],
+                    supportsVideoPresence = accounts.supportsVideoPresence,
+                )
+            }.toImmutableList(),
+        )
+    }
+
     private fun enrichWithContacts(snapshot: CallLogSnapshot): CallLogSnapshot? {
         if (!snapshot.isPermissionGranted || !isContactsPermissionGranted()) {
             return null
@@ -211,12 +235,12 @@ internal class RecentsRepositoryImpl @Inject constructor(
         return when (contact) {
             is ContactLookupResult.Found -> entry.copy(
                 cachedName = contact.name,
+                alternativeName = contact.alternativeName,
+                carrierPresence = contact.carrierPresence,
                 photoUri = contact.photoUri,
                 lookupUri = contact.lookupUri,
                 numberType = contact.numberType,
                 numberLabel = contact.numberLabel,
-                alternativeName = contact.alternativeName,
-                carrierPresence = contact.carrierPresence,
             )
             ContactLookupResult.None -> entry.copy(
                 cachedName = null,

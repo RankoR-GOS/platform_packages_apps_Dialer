@@ -12,6 +12,8 @@ internal sealed interface RecentsEffect {
 
     data class PlaceVideoCall(
         val number: String,
+        val accountComponentName: String? = null,
+        val accountId: String? = null,
     ) : RecentsEffect
 
     data class SendMessage(

@@ -21,5 +21,7 @@ internal sealed interface RecentsItemEvent {
     data class VideoCallClicked(
         val entryId: CallLogEntryId,
         val number: String,
+        val accountComponentName: String? = null,
+        val accountId: String? = null,
     ) : RecentsItemEvent
 }

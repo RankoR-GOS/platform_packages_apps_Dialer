@@ -92,6 +92,31 @@ internal class RecentsScreenWiringTest {
     }
 
     @Test
+    fun videoActions_withARecordedAccount_preserveItFromBothEntryPoints() {
+        val item = recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER).copy(
+            isVideoCall = true,
+            accountComponentName = "example/.Service",
+            accountId = "sim2",
+        )
+        val expected = Action.VideoCallClicked(NUMBER, "example/.Service", "sim2")
+        val actions = mutableListOf<Action>()
+
+        assertEquals(expected, RecentsSheetAction.VideoCall.toAction(item))
+        handleItemEvent(
+            RecentsItemEvent.VideoCallClicked(ENTRY_ID, NUMBER, "example/.Service", "sim2"),
+            entries(item),
+            actions::add,
+            {},
+        )
+
+        assertEquals(listOf(expected), actions)
+        assertEquals(
+            Action.VideoCallClicked(NUMBER),
+            RecentsSheetAction.VideoCall.toAction(item.copy(isVideoCall = false)),
+        )
+    }
+
+    @Test
     fun sheetActions_mapEveryMemberToItsScreenActionForThatRow() {
         val groupIds = persistentListOf(ENTRY_ID, CallLogEntryId(value = 6L))
         val item = recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER)

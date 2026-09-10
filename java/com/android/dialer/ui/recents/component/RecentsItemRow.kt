@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -43,11 +44,18 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.android.dialer.R
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.core.DialerPreviewTheme
+import com.android.dialer.ui.recents.common.RECENTS_ASSISTED_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_GROUP_COUNT_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_HD_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_RTT_TEST_TAG
 import com.android.dialer.ui.recents.common.previewRecentsItems
+import com.android.dialer.ui.recents.common.recentsItemAccountTestTag
 import com.android.dialer.ui.recents.common.recentsItemAvatarTestTag
 import com.android.dialer.ui.recents.common.recentsItemCallButtonTestTag
+import com.android.dialer.ui.recents.common.recentsItemPrimaryTextTestTag
 import com.android.dialer.ui.recents.common.recentsItemSecondaryTextTestTag
 import com.android.dialer.ui.recents.common.recentsItemTestTag
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
@@ -169,6 +177,7 @@ private fun RecentsItemText(
     ) {
         Text(
             text = item.primaryText,
+            modifier = Modifier.testTag(recentsItemPrimaryTextTestTag(item.entryId)),
             style = MaterialTheme.typography.bodyLarge.copy(
                 textDirection = recentsItemTextDirection(isNumber = item.isPrimaryTextTheNumber),
             ),
@@ -192,6 +201,7 @@ private fun RecentsItemText(
             item.groupedCallCountLabel?.let { label ->
                 Text(
                     text = label,
+                    modifier = Modifier.testTag(RECENTS_GROUP_COUNT_TEST_TAG),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = fontWeight,
                     color = secondaryColor,
@@ -211,7 +221,58 @@ private fun RecentsItemText(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+
+        RecentsItemAccount(item = item)
+
+        RecentsItemFeatures(item = item)
     }
+}
+
+@Composable
+private fun RecentsItemAccount(item: RecentsItemUiModel) {
+    val fontWeight = recentsItemFontWeight(isUnreadMissedCall = item.isUnreadMissedCall)
+
+    item.accountLabel?.let { label ->
+        Text(
+            text = label,
+            modifier = Modifier.testTag(recentsItemAccountTestTag(item.entryId)),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = fontWeight,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun RecentsItemFeatures(item: RecentsItemUiModel) {
+    if (item.isHdCall || item.isRttCall || item.isAssistedDialing) {
+        Row(horizontalArrangement = Arrangement.spacedBy(ItemSecondarySpacing)) {
+            if (item.isHdCall) {
+                RecentsFeatureIcon(R.drawable.quantum_ic_hd_vd_theme_24, RECENTS_HD_TEST_TAG)
+            }
+            if (item.isRttCall) {
+                RecentsFeatureIcon(R.drawable.quantum_ic_rtt_vd_theme_24, RECENTS_RTT_TEST_TAG)
+            }
+            if (item.isAssistedDialing) {
+                RecentsFeatureIcon(
+                    R.drawable.quantum_ic_language_vd_theme_24,
+                    RECENTS_ASSISTED_TEST_TAG
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentsFeatureIcon(drawable: Int, tag: String) {
+    Icon(
+        painter = painterResource(drawable),
+        contentDescription = null,
+        modifier = Modifier.size(ItemCallTypeIconSize).testTag(tag),
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable
@@ -273,7 +334,7 @@ private fun RecentsItemRowPreview() {
                     item = item,
                     onClick = {},
                     onCallClick = {}.takeIf { item.canCallBack },
-                    onVideoCallClick = {}.takeIf { item.canVideoCall },
+                    onVideoCallClick = {}.takeIf { item.canVideoCall && item.isVideoCall },
                 )
             }
         }

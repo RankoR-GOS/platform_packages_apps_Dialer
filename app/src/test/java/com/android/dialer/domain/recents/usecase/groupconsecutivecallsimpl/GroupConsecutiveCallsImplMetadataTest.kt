@@ -1,6 +1,7 @@
 package com.android.dialer.domain.recents.usecase.groupconsecutivecallsimpl
 
 import android.os.Build
+import android.provider.CallLog.Calls
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.domain.recents.usecase.GroupConsecutiveCallsImpl
 import com.android.dialer.testutil.callLogEntry
@@ -64,6 +65,19 @@ internal class GroupConsecutiveCallsImplMetadataTest {
             grouped.single()
         )
         assertEquals(listOf(3L, 2L), grouped.single().groupedEntryIds.map { it.value })
+    }
+
+    @Test
+    fun invoke_withDifferentHdAndRttFlags_aggregatesFeaturesWithoutSplittingTheRun() {
+        val older = newest.copy(
+            entryId = callLogEntry(id = 2L).entryId,
+            features = Calls.FEATURES_HD_CALL or Calls.FEATURES_RTT,
+        )
+
+        val result = groupConsecutiveCalls(listOf(newest, older)).single()
+
+        assertEquals(Calls.FEATURES_HD_CALL or Calls.FEATURES_RTT, result.features)
+        assertEquals(listOf(3L, 2L), result.groupedEntryIds.map { it.value })
     }
 
     private fun assertSeparate(older: CallLogEntry) {

@@ -199,7 +199,13 @@ internal fun handleItemEvent(
         }
         is RecentsItemEvent.VideoCallClicked -> {
             content.markViewed(entryId = event.entryId, onAction = onAction)
-            onAction(Action.VideoCallClicked(number = event.number))
+            onAction(
+                Action.VideoCallClicked(
+                    number = event.number,
+                    accountComponentName = event.accountComponentName,
+                    accountId = event.accountId,
+                ),
+            )
         }
     }
 }
@@ -215,7 +221,11 @@ private fun RecentsContentUiState.markViewed(entryId: CallLogEntryId, onAction: 
 internal fun RecentsSheetAction.toAction(item: RecentsItemUiModel): Action {
     return when (this) {
         RecentsSheetAction.Call -> Action.CallBackClicked(number = item.callbackNumber)
-        RecentsSheetAction.VideoCall -> Action.VideoCallClicked(number = item.number)
+        RecentsSheetAction.VideoCall -> Action.VideoCallClicked(
+            number = item.number,
+            accountComponentName = item.accountComponentName.takeIf { item.isVideoCall },
+            accountId = item.accountId.takeIf { item.isVideoCall },
+        )
         RecentsSheetAction.Message -> Action.MessageClicked(number = item.number)
         RecentsSheetAction.CreateContact -> Action.CreateContactClicked(number = item.number)
         RecentsSheetAction.AddContact -> Action.AddContactClicked(number = item.number)

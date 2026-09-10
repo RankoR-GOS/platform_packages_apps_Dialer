@@ -2,7 +2,13 @@ package com.android.dialer.data.recents.repository.recentsrepositoryimpl
 
 import android.os.Build
 import android.provider.CallLog.Calls
+import app.cash.turbine.test
+import com.android.dialer.data.recents.account.PhoneAccountSnapshot
+import com.android.dialer.data.recents.contact.ContactLookupResult
+import com.android.dialer.telecom.TelecomUtil
 import com.android.dialer.testutil.callLogRow
+import io.mockk.every
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -65,6 +71,48 @@ internal class RecentsRepositoryImplMetadataTest : BaseRecentsRepositoryImplTest
             assertNull(entry.accountId)
             assertEquals("", entry.postDialDigits)
             assertEquals("", entry.viaNumber)
+        }
+    }
+
+    @Test
+    fun observeSnapshot_withContactAndAccountMetadata_preservesItAcrossCachedRefreshes() {
+        runTest(context = mainDispatcherRule.testDispatcher) {
+            val row = callLogRow(id = 1L).copy(
+                accountComponentName = "example/.Service",
+                accountId = "sim2",
+            )
+            stubCallLogQuery(rows = listOf(row))
+            stubObserverRegistration()
+            val handle =
+                requireNotNull(TelecomUtil.composePhoneAccountHandle("example/.Service", "sim2"))
+            every { phoneAccountLookup() } returns
+                PhoneAccountSnapshot(mapOf(handle to "Work"), true)
+            every { contactLookup(any()) } returns ContactLookupResult.Found(
+                "Ada Lovelace",
+                null,
+                "content://contacts/lookup/42",
+                2,
+                null,
+                alternativeName = "Lovelace, Ada",
+                carrierPresence = 1,
+            )
+            val repository = createRepository(isContactsGranted = true)
+
+            repository.observeSnapshot().test {
+                assertEquals("Work", awaitItem().entries.single().accountLabel)
+                val enriched = awaitItem().entries.single()
+                assertEquals("Lovelace, Ada", enriched.alternativeName)
+                assertEquals(1, enriched.carrierPresence)
+                assertTrue(enriched.supportsVideoPresence)
+                every { phoneAccountLookup() } returns PhoneAccountSnapshot()
+                repository.refresh()
+                val refreshed = awaitItem().entries.single()
+                assertEquals("Lovelace, Ada", refreshed.alternativeName)
+                assertNull(refreshed.accountLabel)
+                verify(exactly = 1) { contactLookup(any()) }
+                verify(exactly = 2) { phoneAccountLookup() }
+                cancelAndIgnoreRemainingEvents()
+            }
         }
     }
 }

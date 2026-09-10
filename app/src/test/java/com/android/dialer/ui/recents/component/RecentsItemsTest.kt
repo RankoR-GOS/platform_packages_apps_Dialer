@@ -93,6 +93,45 @@ internal class RecentsItemsTest {
     }
 
     @Test
+    fun callButton_withAnOptionalVideoActionOnAVoiceEntry_emitsAVoiceCallback() {
+        val row = entry(id = 1L, canVideoCall = true)
+        setContent(entries = listOf(row.copy(item = row.item.copy(isVideoCall = false))))
+
+        composeTestRule.onNodeWithTag(testTag = callButtonTag(id = 1L)).performClick()
+
+        composeTestRule.runOnIdle {
+            assertEquals(
+                listOf(Event.CallClicked(entryId = entryId(1L), number = NUMBER)),
+                emittedEvents
+            )
+        }
+    }
+
+    @Test
+    fun callButton_withARecordedVideoAccount_emitsTheRecordedAccount() {
+        val row = entry(id = 1L, canVideoCall = true)
+        setContent(
+            entries = listOf(
+                row.copy(
+                    item = row.item.copy(
+                        accountComponentName = "example/.Service",
+                        accountId = "sim2",
+                    )
+                )
+            )
+        )
+
+        composeTestRule.onNodeWithTag(testTag = callButtonTag(id = 1L)).performClick()
+
+        composeTestRule.runOnIdle {
+            assertEquals(
+                listOf(Event.VideoCallClicked(entryId(1L), NUMBER, "example/.Service", "sim2")),
+                emittedEvents,
+            )
+        }
+    }
+
+    @Test
     fun callButton_whenTheEntryCannotBeCalled_isNotRendered() {
         setContent(entries = listOf(entry(id = 1L, canCallBack = false)))
 

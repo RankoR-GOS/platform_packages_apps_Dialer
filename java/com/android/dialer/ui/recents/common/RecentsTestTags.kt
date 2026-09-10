@@ -41,3 +41,17 @@ internal fun recentsItemAvatarTestTag(entryId: CallLogEntryId): String {
 internal fun recentsItemSecondaryTextTestTag(entryId: CallLogEntryId): String {
     return "recents_item_secondary_text_${entryId.value}"
 }
+
+internal const val RECENTS_HD_TEST_TAG = "recents_hd"
+internal const val RECENTS_RTT_TEST_TAG = "recents_rtt"
+internal const val RECENTS_ASSISTED_TEST_TAG = "recents_assisted"
+
+internal fun recentsItemAccountTestTag(entryId: CallLogEntryId): String {
+    return "recents_item_account_${entryId.value}"
+}
+
+internal const val RECENTS_GROUP_COUNT_TEST_TAG = "recents_group_count"
+
+internal fun recentsItemPrimaryTextTestTag(entryId: CallLogEntryId): String {
+    return "recents_item_primary_text_${entryId.value}"
+}

@@ -29,7 +29,10 @@ internal class GroupConsecutiveCallsImpl @Inject constructor() : GroupConsecutiv
             val entry = entries[index]
 
             when {
-                canMerge(runStart = runStart, entry = entry) -> runIds.add(entry.entryId)
+                canMerge(runStart = runStart, entry = entry) -> {
+                    runIds.add(entry.entryId)
+                    runStart = runStart.copy(features = runStart.features or entry.features)
+                }
 
                 else -> {
                     grouped.add(runStart.copy(groupedEntryIds = runIds.toImmutableList()))

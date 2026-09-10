@@ -48,6 +48,14 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
         every { canPlaceCall(any(), any()) } returns true
         every { isEmergencyNumber(any()) } returns false
         every { contactDisplayPreferences.getDisplayName(any(), any()) } answers { firstArg() }
+        every { context.getString(any(), *anyVararg()) } answers {
+            "string-${firstArg<Int>()}:" + secondArg<Array<Any>>().joinToString()
+        }
+        every {
+            resources.getText(
+                R.string.a11y_new_call_log_entry_full_description_with_phone_account_info
+            )
+        } returns "^1; ^2; ^3"
     }
 
     protected fun map(entry: CallLogEntry): RecentsItemUiModel {

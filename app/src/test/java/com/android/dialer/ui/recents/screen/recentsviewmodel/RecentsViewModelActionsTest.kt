@@ -64,6 +64,14 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
+    fun videoCallClicked_withAnAccount_preservesItInTheEffect() {
+        assertEffect(
+            Action.VideoCallClicked(NUMBER, "example/.Service", "sim2"),
+            Effect.PlaceVideoCall(NUMBER, "example/.Service", "sim2"),
+        )
+    }
+
+    @Test
     fun messageClicked_emitsSendMessageWithThatNumber() {
         assertEffect(Action.MessageClicked(number = NUMBER), Effect.SendMessage(number = NUMBER))
     }

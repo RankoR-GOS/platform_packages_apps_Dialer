@@ -29,6 +29,8 @@ internal sealed interface RecentsAction {
 
     data class VideoCallClicked(
         override val number: String,
+        val accountComponentName: String? = null,
+        val accountId: String? = null,
     ) : NumberAction
 
     data class MessageClicked(

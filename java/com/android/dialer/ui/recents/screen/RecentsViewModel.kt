@@ -86,7 +86,11 @@ internal class RecentsViewModel @Inject constructor(
     private fun onNumberAction(action: Action.NumberAction) {
         val effect = when (action) {
             is Action.CallBackClicked -> Effect.PlaceCall(number = action.number)
-            is Action.VideoCallClicked -> Effect.PlaceVideoCall(number = action.number)
+            is Action.VideoCallClicked -> Effect.PlaceVideoCall(
+                number = action.number,
+                accountComponentName = action.accountComponentName,
+                accountId = action.accountId,
+            )
             is Action.MessageClicked -> Effect.SendMessage(number = action.number)
             is Action.CreateContactClicked -> Effect.CreateContact(number = action.number)
             is Action.AddContactClicked -> Effect.AddContact(number = action.number)

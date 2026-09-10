@@ -53,6 +53,7 @@ internal fun previewRecentsItem(
         isUnreadMissedCall = isUnreadMissedCall,
         canCallBack = canCallBack,
         canVideoCall = canVideoCall,
+        isVideoCall = canVideoCall,
         canMessage = canMessage,
         canAddContact = canAddContact,
         canEditNumberBeforeCall = canEditNumberBeforeCall,
