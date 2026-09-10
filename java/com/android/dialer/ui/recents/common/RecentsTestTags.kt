@@ -37,3 +37,7 @@ internal fun recentsItemCallButtonTestTag(entryId: CallLogEntryId): String {
 internal fun recentsItemAvatarTestTag(entryId: CallLogEntryId): String {
     return "recents_item_avatar_${entryId.value}"
 }
+
+internal fun recentsItemSecondaryTextTestTag(entryId: CallLogEntryId): String {
+    return "recents_item_secondary_text_${entryId.value}"
+}

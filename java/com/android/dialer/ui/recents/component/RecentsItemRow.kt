@@ -48,6 +48,7 @@ import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.previewRecentsItems
 import com.android.dialer.ui.recents.common.recentsItemAvatarTestTag
 import com.android.dialer.ui.recents.common.recentsItemCallButtonTestTag
+import com.android.dialer.ui.recents.common.recentsItemSecondaryTextTestTag
 import com.android.dialer.ui.recents.common.recentsItemTestTag
 import com.android.dialer.ui.recents.model.RecentsCallTypeIcon
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
@@ -60,6 +61,7 @@ private val ItemSecondarySpacing = 4.dp
 private val ItemCallButtonSize = 48.dp
 private val ItemCallButtonIconSize = 24.dp
 private val PreviewRowSpacing = 2.dp
+private const val SECONDARY_TEXT_MAX_LINES = 2
 
 @Composable
 internal fun RecentsItemRow(
@@ -199,11 +201,13 @@ private fun RecentsItemText(
 
             Text(
                 text = item.secondaryText,
-                modifier = Modifier.weight(weight = 1f, fill = false),
+                modifier = Modifier
+                    .weight(weight = 1f, fill = false)
+                    .testTag(tag = recentsItemSecondaryTextTestTag(entryId = item.entryId)),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = fontWeight,
                 color = secondaryColor,
-                maxLines = 1,
+                maxLines = SECONDARY_TEXT_MAX_LINES,
                 overflow = TextOverflow.Ellipsis,
             )
         }
