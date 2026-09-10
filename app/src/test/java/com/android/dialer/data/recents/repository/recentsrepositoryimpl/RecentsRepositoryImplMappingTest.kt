@@ -39,6 +39,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
                         id = 1L,
                         number = " +15550001 ",
                         formattedNumber = "+1 555-0001",
+                        countryIso = "JM",
                         numberPresentation = CallLog.Calls.PRESENTATION_ALLOWED,
                         callType = CallLog.Calls.MISSED_TYPE,
                         duration = TEST_CALL_DURATION_SECONDS,
@@ -63,6 +64,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             assertEquals(1L, first.entryId.value)
             assertEquals("+15550001", first.number)
             assertEquals("+1 555-0001", first.formattedNumber)
+            assertEquals("JM", first.countryIso)
             assertEquals(CallLog.Calls.PRESENTATION_ALLOWED, first.numberPresentation)
             assertEquals("Kingston, Jamaica", first.geocodedLocation)
             assertEquals("Ada", first.cachedName)
@@ -162,6 +164,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
                         id = 1L,
                         number = null,
                         formattedNumber = " ",
+                        countryIso = "",
                         cachedName = "",
                         cachedPhotoUri = "  ",
                         cachedLookupUri = "",
@@ -176,6 +179,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
             val entry = snapshot.entries.single()
             assertEquals("", entry.number)
             assertNull(entry.formattedNumber)
+            assertNull(entry.countryIso)
             assertNull(entry.cachedName)
             assertNull(entry.photoUri)
             assertNull(entry.lookupUri)

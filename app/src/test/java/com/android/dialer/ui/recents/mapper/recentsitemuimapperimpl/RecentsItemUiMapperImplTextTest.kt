@@ -85,7 +85,14 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
         val model = map(entry)
 
         assertEquals(FORMATTED_NUMBER, model.primaryText)
-        verify(exactly = 0) { phoneNumberFormatter.formatForDisplay(any()) }
+        verify(exactly = 0) { phoneNumberFormatter.formatForDisplay(any(), any()) }
+    }
+
+    @Test
+    fun map_withoutACachedFormattedNumber_formatsItWithTheCallsCountry() {
+        map(callLogEntry(id = 1L, number = "8765550100", countryIso = "JM"))
+
+        verify { phoneNumberFormatter.formatForDisplay(number = "8765550100", countryIso = "JM") }
     }
 
     @Test

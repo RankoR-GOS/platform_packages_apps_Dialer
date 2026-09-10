@@ -8,6 +8,7 @@ internal data class CallLogEntry(
     val entryId: CallLogEntryId,
     val number: String,
     val formattedNumber: String?,
+    val countryIso: String?,
     val numberPresentation: Int,
     val geocodedLocation: String?,
     val cachedName: String?,

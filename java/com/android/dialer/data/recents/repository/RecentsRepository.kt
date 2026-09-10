@@ -315,6 +315,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
             formattedNumberIndex = cursor.getColumnIndexOrThrow(
                 CallLog.Calls.CACHED_FORMATTED_NUMBER,
             ),
+            countryIsoIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.COUNTRY_ISO),
             presentationIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER_PRESENTATION),
             typeIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.TYPE),
             dateIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.DATE),
@@ -344,6 +345,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
             number = cursor.getString(columns.numberIndex)?.trim().orEmpty(),
             formattedNumber = cursor.getString(columns.formattedNumberIndex)
                 ?.takeIf { it.isNotBlank() },
+            countryIso = cursor.getString(columns.countryIsoIndex)?.takeIf { it.isNotBlank() },
             numberPresentation = cursor.getInt(columns.presentationIndex),
             geocodedLocation = cursor.getString(columns.geocodedLocationIndex)
                 ?.takeIf { it.isNotBlank() },
@@ -428,6 +430,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
         val idIndex: Int,
         val numberIndex: Int,
         val formattedNumberIndex: Int,
+        val countryIsoIndex: Int,
         val presentationIndex: Int,
         val typeIndex: Int,
         val dateIndex: Int,
@@ -462,6 +465,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
             CallLog.Calls._ID,
             CallLog.Calls.NUMBER,
             CallLog.Calls.CACHED_FORMATTED_NUMBER,
+            CallLog.Calls.COUNTRY_ISO,
             CallLog.Calls.NUMBER_PRESENTATION,
             CallLog.Calls.TYPE,
             CallLog.Calls.DATE,

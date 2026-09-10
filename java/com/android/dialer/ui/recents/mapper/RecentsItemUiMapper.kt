@@ -91,7 +91,10 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     private fun CallLogEntry.displayNumber(): String {
         return when {
             formattedNumber != null -> formattedNumber
-            number.isNotBlank() -> phoneNumberFormatter.formatForDisplay(number = number)
+            number.isNotBlank() -> phoneNumberFormatter.formatForDisplay(
+                number = number,
+                countryIso = countryIso,
+            )
             else -> ""
         }
     }

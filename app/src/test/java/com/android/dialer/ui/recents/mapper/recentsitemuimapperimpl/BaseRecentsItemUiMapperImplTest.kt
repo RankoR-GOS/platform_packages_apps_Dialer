@@ -40,7 +40,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
             resources.getText(Phone.getTypeLabelResource(Phone.TYPE_MOBILE))
         } returns MOBILE_LABEL
         every { context.getText(any()) } answers { "text-${firstArg<Int>()} ^1" }
-        every { phoneNumberFormatter.formatForDisplay(any()) } answers {
+        every { phoneNumberFormatter.formatForDisplay(any(), any()) } answers {
             "formatted ${firstArg<String>()}"
         }
         every { relativeTimestampFormatter(any(), NOW_MILLIS, true) } returns SHORT_TIME

@@ -34,21 +34,50 @@ internal class PhoneNumberFormatterImplTest {
     fun formatForDisplay_usesTheNetworkCountry() {
         every { telephonyManager.networkCountryIso } returns "us"
 
-        assertEquals("(650) 253-0000", createFormatter().formatForDisplay(US_NUMBER))
+        assertEquals(
+            "(650) 253-0000",
+            createFormatter().formatForDisplay(US_NUMBER, countryIso = null),
+        )
+    }
+
+    @Test
+    fun formatForDisplay_withTheCallsCountry_usesItBeforeTheNetwork() {
+        every { telephonyManager.networkCountryIso } returns "us"
+
+        assertEquals(
+            "020 7946 0958",
+            createFormatter().formatForDisplay(UK_NUMBER, countryIso = "gb"),
+        )
+    }
+
+    @Test
+    fun formatForDisplay_withABlankCallCountry_fallsBackToTheNetwork() {
+        every { telephonyManager.networkCountryIso } returns "us"
+
+        assertEquals(
+            "(650) 253-0000",
+            createFormatter().formatForDisplay(US_NUMBER, countryIso = ""),
+        )
     }
 
     @Test
     fun formatForDisplay_withoutANetworkCountry_fallsBackToTheLocale() {
         every { telephonyManager.networkCountryIso } returns ""
 
-        assertEquals("020 7946 0958", createFormatter().formatForDisplay(UK_NUMBER))
+        assertEquals(
+            "020 7946 0958",
+            createFormatter().formatForDisplay(UK_NUMBER, countryIso = null),
+        )
     }
 
     @Test
     fun formatForDisplay_withAnUnformattableNumber_returnsItUnchanged() {
         every { telephonyManager.networkCountryIso } returns "us"
 
-        assertEquals("1-800-FLOWERS", createFormatter().formatForDisplay("1-800-FLOWERS"))
+        assertEquals(
+            "1-800-FLOWERS",
+            createFormatter().formatForDisplay("1-800-FLOWERS", countryIso = null),
+        )
     }
 
     @Test
@@ -56,14 +85,18 @@ internal class PhoneNumberFormatterImplTest {
         Locale.setDefault(Locale.forLanguageTag("tr-TR"))
         every { telephonyManager.networkCountryIso } returns "in"
 
-        assertEquals("098765 43210", createFormatter().formatForDisplay(INDIAN_NUMBER))
+        assertEquals(
+            "098765 43210",
+            createFormatter().formatForDisplay(INDIAN_NUMBER, countryIso = null),
+        )
     }
 
     @Test
     fun formatForDisplay_withoutTelephony_fallsBackToTheLocale() {
         assertEquals(
             "020 7946 0958",
-            PhoneNumberFormatterImpl(telephonyManager = null).formatForDisplay(UK_NUMBER),
+            PhoneNumberFormatterImpl(telephonyManager = null)
+                .formatForDisplay(UK_NUMBER, countryIso = null),
         )
     }
 
