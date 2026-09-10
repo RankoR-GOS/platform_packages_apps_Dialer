@@ -4,8 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -108,7 +110,11 @@ internal fun RecentsActionsSheet(
     val item = shownTarget ?: return
 
     ModalBottomSheet(
-        modifier = modifier.testTag(tag = RECENTS_SHEET_TEST_TAG),
+        modifier = modifier
+            .windowInsetsPadding(
+                insets = bottomBarInsets().only(sides = WindowInsetsSides.Horizontal),
+            )
+            .testTag(tag = RECENTS_SHEET_TEST_TAG),
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
@@ -128,7 +134,6 @@ internal fun RecentsActionsSheetContent(
             .fillMaxWidth()
             .testTag(tag = RECENTS_SHEET_CONTENT_TEST_TAG)
             .verticalScroll(state = rememberScrollState())
-            .windowInsetsPadding(insets = bottomBarInsets())
             .padding(bottom = SheetBottomPadding),
     ) {
         RecentsActionsSheetHeader(item = item)
