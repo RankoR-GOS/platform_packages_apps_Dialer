@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,6 +49,7 @@ import com.android.dialer.R
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.RECENTS_ASSISTED_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_CALL_TYPE_ICON_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_GROUP_COUNT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_HD_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_RTT_TEST_TAG
@@ -189,14 +191,9 @@ private fun RecentsItemText(
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(space = ItemSecondarySpacing),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
-            Icon(
-                imageVector = item.callTypeIcon.toImageVector(),
-                contentDescription = null,
-                modifier = Modifier.size(size = ItemCallTypeIconSize),
-                tint = secondaryColor,
-            )
+            RecentsItemCallTypeIcon(item.callTypeIcon, secondaryColor)
 
             item.groupedCallCountLabel?.let { label ->
                 Text(
@@ -225,6 +222,26 @@ private fun RecentsItemText(
         RecentsItemAccount(item = item)
 
         RecentsItemFeatures(item = item)
+    }
+}
+
+@Composable
+private fun RecentsItemCallTypeIcon(icon: RecentsCallTypeIcon, color: Color) {
+    val style = MaterialTheme.typography.bodyMedium
+    val lineHeight = with(LocalDensity.current) {
+        style.fontSize.toDp() * (style.lineHeight.value / style.fontSize.value)
+    }
+
+    Box(
+        modifier = Modifier.size(width = ItemCallTypeIconSize, height = lineHeight),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon.toImageVector(),
+            contentDescription = null,
+            modifier = Modifier.size(ItemCallTypeIconSize).testTag(RECENTS_CALL_TYPE_ICON_TEST_TAG),
+            tint = color,
+        )
     }
 }
 

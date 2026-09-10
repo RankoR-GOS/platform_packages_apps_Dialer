@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.common.components.bottomBarInsets
 import com.android.dialer.ui.core.DialerPreviewTheme
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_ACTION_ICON_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_ADD_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_AVATAR_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_BLOCK_TEST_TAG
@@ -84,6 +87,7 @@ private val SheetRowMinHeight = 56.dp
 private val SheetRowVerticalPadding = 12.dp
 private val SheetRowSpacing = 16.dp
 private val SheetIconSize = 24.dp
+private val SheetLeadingWidth = 48.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -350,12 +354,18 @@ private fun RecentsSheetActionRow(
         horizontalArrangement = Arrangement.spacedBy(space = SheetRowSpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(size = SheetIconSize),
-            tint = contentColor,
-        )
+        Box(
+            modifier = Modifier.width(SheetLeadingWidth),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(size = SheetIconSize)
+                    .testTag(RECENTS_SHEET_ACTION_ICON_TEST_TAG),
+                tint = contentColor,
+            )
+        }
 
         Text(
             text = label,
