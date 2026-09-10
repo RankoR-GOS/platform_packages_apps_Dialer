@@ -329,6 +329,12 @@ internal class RecentsRepositoryImpl @Inject constructor(
             numberTypeIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NUMBER_TYPE),
             numberLabelIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NUMBER_LABEL),
             isReadIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.IS_READ),
+            accountComponentNameIndex = cursor.getColumnIndexOrThrow(
+                CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME,
+            ),
+            accountIdIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.PHONE_ACCOUNT_ID),
+            postDialDigitsIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.POST_DIAL_DIGITS),
+            viaNumberIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.VIA_NUMBER),
         )
 
         return buildList(capacity = cursor.count) {
@@ -360,6 +366,10 @@ internal class RecentsRepositoryImpl @Inject constructor(
             features = cursor.getInt(columns.featuresIndex),
             callType = callType(rawType = cursor.getInt(columns.typeIndex)),
             isRead = cursor.getInt(columns.isReadIndex) != 0,
+            accountComponentName = cursor.getString(columns.accountComponentNameIndex),
+            accountId = cursor.getString(columns.accountIdIndex),
+            postDialDigits = cursor.getString(columns.postDialDigitsIndex).orEmpty(),
+            viaNumber = cursor.getString(columns.viaNumberIndex).orEmpty(),
         )
     }
 
@@ -444,6 +454,10 @@ internal class RecentsRepositoryImpl @Inject constructor(
         val numberTypeIndex: Int,
         val numberLabelIndex: Int,
         val isReadIndex: Int,
+        val accountComponentNameIndex: Int,
+        val accountIdIndex: Int,
+        val postDialDigitsIndex: Int,
+        val viaNumberIndex: Int,
     )
 
     internal companion object {
@@ -479,6 +493,10 @@ internal class RecentsRepositoryImpl @Inject constructor(
             CallLog.Calls.CACHED_NUMBER_TYPE,
             CallLog.Calls.CACHED_NUMBER_LABEL,
             CallLog.Calls.IS_READ,
+            CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME,
+            CallLog.Calls.PHONE_ACCOUNT_ID,
+            CallLog.Calls.POST_DIAL_DIGITS,
+            CallLog.Calls.VIA_NUMBER,
         )
     }
 }

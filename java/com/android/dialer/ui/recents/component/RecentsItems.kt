@@ -89,7 +89,9 @@ private fun RecentsEntry(
         onClick = { onItemEvent(RecentsItemEvent.Clicked(entryId = item.entryId)) },
         modifier = modifier,
         onCallClick = {
-            onItemEvent(RecentsItemEvent.CallClicked(entryId = item.entryId, number = item.number))
+            onItemEvent(
+                RecentsItemEvent.CallClicked(entryId = item.entryId, number = item.callbackNumber),
+            )
         }.takeIf { item.canCallBack },
         onVideoCallClick = {
             onItemEvent(

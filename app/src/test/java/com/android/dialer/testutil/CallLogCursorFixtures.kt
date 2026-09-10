@@ -76,6 +76,10 @@ internal data class TestCallLogRow(
     val numberType: Int,
     val numberLabel: String?,
     val isRead: Int,
+    val accountComponentName: String? = null,
+    val accountId: String? = null,
+    val postDialDigits: String? = null,
+    val viaNumber: String? = null,
 ) {
 
     fun toColumnValues(): Map<String, Any?> {
@@ -96,6 +100,10 @@ internal data class TestCallLogRow(
             Calls.CACHED_NUMBER_TYPE to numberType,
             Calls.CACHED_NUMBER_LABEL to numberLabel,
             Calls.IS_READ to isRead,
+            Calls.PHONE_ACCOUNT_COMPONENT_NAME to accountComponentName,
+            Calls.PHONE_ACCOUNT_ID to accountId,
+            Calls.POST_DIAL_DIGITS to postDialDigits,
+            Calls.VIA_NUMBER to viaNumber,
         )
     }
 }

@@ -122,6 +122,25 @@ internal class RecentsScreenWiringTest {
     }
 
     @Test
+    fun sheetActions_withPostDialDigits_appendsThemOnlyForVoiceCallback() {
+        val item = recentsItemUiModel(id = ENTRY_ID.value, number = NUMBER)
+            .copy(postDialDigits = ",12;34")
+
+        assertEquals(
+            Action.CallBackClicked(NUMBER + ",12;34"),
+            RecentsSheetAction.Call.toAction(item)
+        )
+        assertEquals(Action.VideoCallClicked(NUMBER), RecentsSheetAction.VideoCall.toAction(item))
+        assertEquals(Action.MessageClicked(NUMBER), RecentsSheetAction.Message.toAction(item))
+        assertEquals(Action.CopyNumberClicked(NUMBER), RecentsSheetAction.CopyNumber.toAction(item))
+        assertEquals(
+            Action.CreateContactClicked(NUMBER),
+            RecentsSheetAction.CreateContact.toAction(item)
+        )
+        assertEquals(Action.AddContactClicked(NUMBER), RecentsSheetAction.AddContact.toAction(item))
+    }
+
+    @Test
     fun sheetTarget_isResolvedAgainstTheCurrentEntriesById() {
         val wanted = recentsItemUiModel(id = 7L)
         val content = entries(recentsItemUiModel(id = 1L), wanted)

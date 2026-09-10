@@ -25,7 +25,11 @@ internal data class RecentsItemUiModel(
     val canMessage: Boolean,
     val canAddContact: Boolean,
     val canEditNumberBeforeCall: Boolean,
+    val postDialDigits: String = "",
 ) {
+
+    val callbackNumber: String
+        get() = number + postDialDigits
 
     val isPrimaryTextTheNumber: Boolean
         get() = displayNumber.isNotBlank() && primaryText == displayNumber

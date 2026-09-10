@@ -74,6 +74,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             groupedCallCountLabel = entry.groupedCallCountLabel(),
             groupedEntryIds = entry.groupedEntryIds,
             number = entry.number,
+            postDialDigits = entry.postDialDigits,
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,
             canVideoCall = canCall && !isEmergency && entry.isVideoCall,

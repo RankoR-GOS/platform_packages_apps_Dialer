@@ -64,6 +64,21 @@ internal class RecentsItemsTest {
     }
 
     @Test
+    fun callButton_withPostDialDigits_emitsTheWholeVoiceCallbackNumber() {
+        val row = entry(id = 1L)
+        setContent(entries = listOf(row.copy(item = row.item.copy(postDialDigits = ",12;34"))))
+
+        composeTestRule.onNodeWithTag(testTag = callButtonTag(id = 1L)).performClick()
+
+        composeTestRule.runOnIdle {
+            assertEquals(
+                listOf(Event.CallClicked(entryId = entryId(1L), number = NUMBER + ",12;34")),
+                emittedEvents,
+            )
+        }
+    }
+
+    @Test
     fun callButton_whenTheCallWasVideo_emitsVideoCallClickedWithTheNumber() {
         setContent(entries = listOf(entry(id = 1L, canVideoCall = true)))
 

@@ -21,6 +21,10 @@ internal data class CallLogEntry(
     val features: Int,
     val callType: CallType,
     val isRead: Boolean,
+    val accountComponentName: String? = null,
+    val accountId: String? = null,
+    val postDialDigits: String = "",
+    val viaNumber: String = "",
     val groupedEntryIds: ImmutableList<CallLogEntryId> = persistentListOf(entryId),
 ) {
 

@@ -147,6 +147,17 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
     }
 
     @Test
+    fun map_withPostDialDigits_keepsTheBaseNumberAndBuildsTheVoiceCallback() {
+        val entry = callLogEntry(id = 1L, number = "+12025550186")
+            .copy(postDialDigits = ",12;34")
+
+        val model = map(entry)
+
+        assertEquals("+12025550186", model.number)
+        assertEquals("+12025550186,12;34", model.callbackNumber)
+    }
+
+    @Test
     fun map_carriesEveryGroupedEntryIdForDelete() {
         val groupIds = persistentListOf(
             CallLogEntryId(value = 3L),

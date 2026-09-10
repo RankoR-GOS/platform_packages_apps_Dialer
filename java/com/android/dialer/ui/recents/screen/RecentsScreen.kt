@@ -214,7 +214,7 @@ private fun RecentsContentUiState.markViewed(entryId: CallLogEntryId, onAction: 
 
 internal fun RecentsSheetAction.toAction(item: RecentsItemUiModel): Action {
     return when (this) {
-        RecentsSheetAction.Call -> Action.CallBackClicked(number = item.number)
+        RecentsSheetAction.Call -> Action.CallBackClicked(number = item.callbackNumber)
         RecentsSheetAction.VideoCall -> Action.VideoCallClicked(number = item.number)
         RecentsSheetAction.Message -> Action.MessageClicked(number = item.number)
         RecentsSheetAction.CreateContact -> Action.CreateContactClicked(number = item.number)

@@ -46,6 +46,10 @@ internal class GroupConsecutiveCallsImpl @Inject constructor() : GroupConsecutiv
 
     private fun canMerge(runStart: CallLogEntry, entry: CallLogEntry): Boolean {
         return equalNumbers(number1 = runStart.number, number2 = entry.number) &&
+            runStart.accountComponentName == entry.accountComponentName &&
+            runStart.accountId == entry.accountId &&
+            runStart.postDialDigits == entry.postDialDigits &&
+            runStart.viaNumber == entry.viaNumber &&
             sameCallbackAction(runStart = runStart, entry = entry) &&
             areBothNotVoicemail(callType = entry.callType, runCallType = runStart.callType) &&
             (
