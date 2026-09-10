@@ -74,6 +74,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
 
     override fun observeSnapshot(filter: CallLogFilter): Flow<CallLogSnapshot> {
         return flow {
+            contactCache.clear()
             var hasShownTheLog = false
 
             callLogChanges().collect {

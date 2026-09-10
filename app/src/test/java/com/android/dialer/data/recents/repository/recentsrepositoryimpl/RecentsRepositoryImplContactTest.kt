@@ -97,6 +97,63 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
     }
 
     @Test
+    fun observeSnapshot_whenAContactChangesWhileUnobserved_looksItUpOnResubscription() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ADA
+            val snapshots = createRepository(isContactsGranted = true)
+                .observeSnapshot(filter = CallLogFilter.All)
+
+            snapshots.test {
+                awaitItem()
+                assertEquals("Ada Lovelace", awaitItem().entries.single().cachedName)
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            every { contactLookup(NUMBER) } returns ADA.copy(name = "Grace Hopper")
+
+            snapshots.test {
+                advanceUntilIdle()
+                assertEquals("Grace Hopper", expectMostRecentItem().entries.single().cachedName)
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(exactly = 2) { contactLookup(NUMBER) }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_whenAContactIsAddedWhileUnobserved_forgetsTheCachedMiss() {
+        runTest(
+            context = mainDispatcherRule.testDispatcher,
+        ) {
+            stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
+            stubObserverRegistration()
+            every { contactLookup(NUMBER) } returns ContactLookupResult.None
+            val snapshots = createRepository(isContactsGranted = true)
+                .observeSnapshot(filter = CallLogFilter.All)
+
+            snapshots.test {
+                assertNull(awaitItem().entries.single().cachedName)
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            every { contactLookup(NUMBER) } returns ADA
+
+            snapshots.test {
+                advanceUntilIdle()
+                assertEquals("Ada Lovelace", expectMostRecentItem().entries.single().cachedName)
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(exactly = 2) { contactLookup(NUMBER) }
+        }
+    }
+
+    @Test
     fun observeSnapshot_whenEveryNumberIsCached_emitsOnlyTheEnrichedSnapshot() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
