@@ -17,8 +17,6 @@ import com.android.dialer.domain.recents.usecase.IsContactsPermissionGranted
 import com.android.dialer.domain.recents.usecase.IsContactsPermissionGrantedImpl
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumberImpl
-import com.android.dialer.domain.recents.usecase.IsPermissionGranted
-import com.android.dialer.domain.recents.usecase.IsPermissionGrantedImpl
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatterImpl
 import com.android.dialer.ui.recents.mapper.RecentsItemUiMapper
@@ -69,8 +67,6 @@ internal class RecentsGraphTest {
 
         fun isEmergencyNumber(): IsEmergencyNumber
 
-        fun isPermissionGranted(): IsPermissionGranted
-
         fun relativeTimestampFormatter(): RelativeTimestampFormatter
 
         fun phoneNumberFormatter(): PhoneNumberFormatter
@@ -114,7 +110,6 @@ internal class RecentsGraphTest {
     fun graph_resolvesTheItemMapperAndItsSeams() {
         assertTrue(entryPoint.canPlaceCall() is CanPlaceCallImpl)
         assertTrue(entryPoint.isEmergencyNumber() is IsEmergencyNumberImpl)
-        assertTrue(entryPoint.isPermissionGranted() is IsPermissionGrantedImpl)
         assertTrue(entryPoint.isContactsPermissionGranted() is IsContactsPermissionGrantedImpl)
         assertTrue(entryPoint.contactLookup() is ContactLookupImpl)
         assertTrue(entryPoint.relativeTimestampFormatter() is RelativeTimestampFormatterImpl)

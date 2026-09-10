@@ -1,6 +1,5 @@
 package com.android.dialer.ui.recents.mapper
 
-import android.Manifest
 import android.content.Context
 import android.provider.CallLog
 import android.provider.ContactsContract.CommonDataKinds.Phone
@@ -11,7 +10,6 @@ import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.domain.recents.usecase.CanPlaceCall
 import com.android.dialer.domain.recents.usecase.IsEmergencyNumber
-import com.android.dialer.domain.recents.usecase.IsPermissionGranted
 import com.android.dialer.domain.recents.usecase.RelativeTimestampFormatter
 import com.android.dialer.phonenumberutil.PhoneNumberHelper
 import com.android.dialer.ui.recents.model.RecentsAvatarUiModel
@@ -31,7 +29,6 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     private val relativeTimestampFormatter: RelativeTimestampFormatter,
     private val canPlaceCall: CanPlaceCall,
     private val isEmergencyNumber: IsEmergencyNumber,
-    private val isPermissionGranted: IsPermissionGranted,
 ) : RecentsItemUiMapper {
 
     override fun map(entry: CallLogEntry, nowMillis: Long): RecentsItemUiModel {
@@ -78,13 +75,8 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,
             canVideoCall = canCall && !isEmergency && entry.isVideoCall,
-            canMessage = canCall &&
-                !isEmergency &&
-                isPermissionGranted(Manifest.permission.SEND_SMS),
-            canAddContact = canCall &&
-                !isEmergency &&
-                entry.lookupUri == null &&
-                isPermissionGranted(Manifest.permission.WRITE_CONTACTS),
+            canMessage = canCall && !isEmergency,
+            canAddContact = canCall && !isEmergency && entry.lookupUri == null,
             canEditNumberBeforeCall = canCall && !PhoneNumberHelper.isUriNumber(entry.number),
         )
     }

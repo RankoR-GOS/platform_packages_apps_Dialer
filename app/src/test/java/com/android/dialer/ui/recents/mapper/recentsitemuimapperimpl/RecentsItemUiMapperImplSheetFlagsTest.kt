@@ -1,6 +1,7 @@
 package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.CallLog.Calls
 import com.android.dialer.testutil.callLogEntry
@@ -30,10 +31,11 @@ internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperIm
     }
 
     @Test
-    fun map_withoutTheSmsPermission_doesNotAllowMessaging() {
-        every { isPermissionGranted(Manifest.permission.SEND_SMS) } returns false
+    fun map_withoutTheSmsPermission_allowsOpeningTheMessageEditor() {
+        every { context.checkSelfPermission(Manifest.permission.SEND_SMS) } returns
+            PackageManager.PERMISSION_DENIED
 
-        assertFalse(map(callLogEntry(id = 1L)).canMessage)
+        assertTrue(map(callLogEntry(id = 1L)).canMessage)
     }
 
     @Test
@@ -92,9 +94,10 @@ internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperIm
     }
 
     @Test
-    fun map_withoutTheContactsWritePermission_doesNotAllowAddingAContact() {
-        every { isPermissionGranted(Manifest.permission.WRITE_CONTACTS) } returns false
+    fun map_withoutTheContactsWritePermission_allowsOpeningTheContactEditor() {
+        every { context.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) } returns
+            PackageManager.PERMISSION_DENIED
 
-        assertFalse(map(callLogEntry(id = 1L)).canAddContact)
+        assertTrue(map(callLogEntry(id = 1L)).canAddContact)
     }
 }
