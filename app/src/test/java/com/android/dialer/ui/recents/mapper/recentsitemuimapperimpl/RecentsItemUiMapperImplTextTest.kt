@@ -9,6 +9,8 @@ import com.android.dialer.testutil.callLogEntry
 import io.mockk.every
 import io.mockk.verify
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -17,6 +19,15 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.BAKLAVA])
 internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest() {
+
+    @Test
+    fun map_withARelativeTimestamp_keepsItsDisplayWordsTogetherAndSpeechUnchanged() {
+        val model = map(callLogEntry(id = 1L, geocodedLocation = LOCATION))
+
+        assertEquals("$LOCATION •\u00A05\u00A0min\u00A0ago", model.secondaryText)
+        assertTrue(model.contentDescription.contains(LONG_TIME))
+        assertFalse(model.contentDescription.contains('\u00A0'))
+    }
 
     @Test
     fun map_withEmergencyNumber_usesTheEmergencyLabelOverTheContactName() {
@@ -113,7 +124,7 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
     fun map_withGeocodedLocationAndNoContact_joinsThePlaceAndTheTimeWithABullet() {
         val model = map(callLogEntry(id = 1L, geocodedLocation = LOCATION))
 
-        assertEquals("$LOCATION • $SHORT_TIME", model.secondaryText)
+        assertEquals("$LOCATION •\u00A0$DISPLAY_TIME", model.secondaryText)
     }
 
     @Test
@@ -125,7 +136,7 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
             numberType = Phone.TYPE_MOBILE,
         )
 
-        assertEquals("$MOBILE_LABEL • $SHORT_TIME", map(entry).secondaryText)
+        assertEquals("$MOBILE_LABEL •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test
@@ -137,7 +148,7 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
             numberLabel = "Studio",
         )
 
-        assertEquals("Studio • $SHORT_TIME", map(entry).secondaryText)
+        assertEquals("Studio •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test
@@ -149,7 +160,7 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
             cachedName = "Ada",
         )
 
-        assertEquals("formatted 6502530000 • $SHORT_TIME", map(entry).secondaryText)
+        assertEquals("formatted 6502530000 •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test
@@ -160,14 +171,14 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
             numberType = Phone.TYPE_MOBILE,
         )
 
-        assertEquals("$LOCATION • $SHORT_TIME", map(entry).secondaryText)
+        assertEquals("$LOCATION •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test
     fun map_withoutGeocodedLocation_showsTheTimeAlone() {
         val model = map(callLogEntry(id = 1L))
 
-        assertEquals(SHORT_TIME, model.secondaryText)
+        assertEquals(DISPLAY_TIME, model.secondaryText)
     }
 
     @Test
@@ -178,7 +189,7 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
             features = Calls.FEATURES_VIDEO,
         )
 
-        assertEquals("$VIDEO_LABEL, $LOCATION • $SHORT_TIME", map(entry).secondaryText)
+        assertEquals("$VIDEO_LABEL, $LOCATION •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test
@@ -186,7 +197,7 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
         every { isEmergencyNumber("911") } returns true
         val entry = callLogEntry(id = 1L, number = "911", geocodedLocation = LOCATION)
 
-        assertEquals(SHORT_TIME, map(entry).secondaryText)
+        assertEquals(DISPLAY_TIME, map(entry).secondaryText)
     }
 
     @Test

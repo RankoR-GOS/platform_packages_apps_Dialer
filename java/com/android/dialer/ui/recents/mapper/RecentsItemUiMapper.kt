@@ -151,11 +151,15 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
         isEmergency: Boolean,
         isAbbreviated: Boolean,
     ): List<String> {
-        val time = relativeTimestampFormatter(
+        val timestamp = relativeTimestampFormatter(
             timestampMillis = timestampMillis,
             nowMillis = nowMillis,
             isAbbreviated = isAbbreviated,
         )
+        val time = when {
+            isAbbreviated -> timestamp.replace(oldChar = ' ', newChar = '\u00A0')
+            else -> timestamp
+        }
         val videoLabel = when {
             isVideoCall -> context.getString(R.string.new_call_log_carrier_video)
             else -> null
@@ -297,7 +301,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     }
 
     private companion object {
-        private const val SECONDARY_TEXT_SEPARATOR = " • "
+        private const val SECONDARY_TEXT_SEPARATOR = " •\u00A0"
         private const val DESCRIPTOR_SEPARATOR = ", "
     }
 }

@@ -80,6 +80,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
     protected companion object {
         const val NOW_MILLIS = TEST_TIMESTAMP_MILLIS + 60_000L
         const val SHORT_TIME = "5 min ago"
+        const val DISPLAY_TIME = "5\u00A0min\u00A0ago"
         const val LONG_TIME = "5 minutes ago"
         const val LOCATION = "Kingston, Jamaica"
         const val MOBILE_LABEL = "Mobile"
