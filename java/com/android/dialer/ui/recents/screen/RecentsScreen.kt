@@ -68,7 +68,7 @@ internal fun RecentsRoute(
     RecentsScreen(
         screenModel = screenModel,
         effectHandler = rememberRecentsEffectHandler(),
-        onRequestPermission = { permissionLauncher.launch(deniedPhonePermissions(context)) },
+        onRequestPermission = { permissionLauncher.launch(deniedRecentsPermissions(context)) },
         onShowDialpad = onShowDialpad,
         modifier = modifier,
     )
@@ -248,9 +248,15 @@ internal fun RecentsContentUiState.entryOrNull(entryId: Long?): RecentsItemUiMod
         ?.item
 }
 
-private fun deniedPhonePermissions(context: Context): Array<String> {
+internal fun deniedRecentsPermissions(context: Context): Array<String> {
     return PermissionsUtil.getPermissionsCurrentlyDenied(
         context,
-        PermissionsUtil.allPhoneGroupPermissionsUsedInDialer,
+        listOf(
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.WRITE_CALL_LOG,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.CALL_PHONE,
+        ),
     )
 }
