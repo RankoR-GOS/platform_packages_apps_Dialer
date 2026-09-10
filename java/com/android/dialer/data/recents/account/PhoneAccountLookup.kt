@@ -12,13 +12,26 @@ internal data class PhoneAccountSnapshot(
     val supportsVideoPresence: Boolean = false,
 )
 
-internal fun interface PhoneAccountLookup {
+internal interface PhoneAccountLookup {
     operator fun invoke(): PhoneAccountSnapshot
+
+    fun isVoicemailNumber(handle: PhoneAccountHandle?, number: String): Boolean
 }
 
 internal class PhoneAccountLookupImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : PhoneAccountLookup {
+
+    override fun isVoicemailNumber(handle: PhoneAccountHandle?, number: String): Boolean {
+        return try {
+            number.isNotBlank() && TelecomUtil.hasReadPhoneStatePermission(context) &&
+                TelecomUtil.isVoicemailNumber(context, handle, number)
+        } catch (_: SecurityException) {
+            false
+        } catch (_: IllegalArgumentException) {
+            false
+        }
+    }
 
     override fun invoke(): PhoneAccountSnapshot {
         return try {

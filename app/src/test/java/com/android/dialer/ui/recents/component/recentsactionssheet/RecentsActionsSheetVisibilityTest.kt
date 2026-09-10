@@ -229,4 +229,26 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
             .assertIsNotEnabled()
         composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG).assertIsEnabled()
     }
+
+    @Test
+    fun sheet_withAVoicemailNumber_keepsCallCopyAndDeleteAndHidesIneligibleActions() {
+        setContent(
+            item = item(
+                canVideoCall = false,
+                canMessage = false,
+                canAddContact = false,
+                canEditNumberBeforeCall = false,
+            ).copy(canBlockNumber = false),
+        )
+
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_CALL_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_COPY_NUMBER_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_DELETE_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_VIDEO_CALL_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_MESSAGE_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_ADD_CONTACT_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_CREATE_CONTACT_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_EDIT_NUMBER_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(RECENTS_SHEET_BLOCK_TEST_TAG).assertDoesNotExist()
+    }
 }

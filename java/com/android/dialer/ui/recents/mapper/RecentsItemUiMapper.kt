@@ -59,7 +59,8 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             else -> primaryText
         }
         val canCall = canPlaceCall(number = entry.number, presentation = entry.numberPresentation)
-        val initial = entry.cachedName?.firstOrNull()?.takeIf { it.isLatinLetter() }
+        val isVoicemail = entry.isVoicemailNumber && !isEmergency
+        val isVideo = entry.isVideoCall && !isEmergency && !isVoicemail
 
         return RecentsItemUiModel(
             entryId = entry.entryId,
@@ -77,11 +78,12 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
                 isEmergency = isEmergency,
             ),
             clickActionLabel = context.getString(R.string.a11y_new_call_log_entry_tap_action),
-            callActionLabel = entry.callActionLabel(canCall = canCall, primaryText = primaryText),
-            avatar = RecentsAvatarUiModel(
-                photoUri = entry.photoUri,
-                letter = initial?.uppercaseChar(),
+            callActionLabel = callActionLabel(
+                canCall = canCall,
+                isVideoCall = isVideo,
+                primaryText = primaryText,
             ),
+            avatar = entry.avatar(isVoicemail = isVoicemail),
             callTypeIcon = entry.callType.toIcon(),
             accountLabel = entry.accountLabelText(isSpoken = false),
             isHdCall = entry.features and CallLog.Calls.FEATURES_HD_CALL != 0,
@@ -95,17 +97,33 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isUnreadMissedCall = entry.callType == CallType.Missed && !entry.isRead,
             canCallBack = canCall,
             canVideoCall = entry.canVideoCall(canCall = canCall, isEmergency = isEmergency),
-            isVideoCall = entry.isVideoCall && !isEmergency,
+            isVideoCall = isVideo,
             accountComponentName = entry.accountComponentName,
             accountId = entry.accountId,
-            canMessage = canCall && !isEmergency,
-            canAddContact = canCall && !isEmergency && entry.lookupUri == null,
-            canEditNumberBeforeCall = canCall && !PhoneNumberHelper.isUriNumber(entry.number),
+            canMessage = canCall && !isEmergency && !isVoicemail,
+            canAddContact = entry.canAddContact(canCall = canCall, isEmergency = isEmergency),
+            canEditNumberBeforeCall = canCall && !isVoicemail &&
+                !PhoneNumberHelper.isUriNumber(entry.number),
+            canBlockNumber = canCall && !isEmergency && !isVoicemail,
         )
     }
 
+    private fun CallLogEntry.avatar(isVoicemail: Boolean): RecentsAvatarUiModel {
+        val initial = cachedName?.firstOrNull()?.takeIf { it.isLatinLetter() }
+
+        return RecentsAvatarUiModel(
+            photoUri = photoUri.takeUnless { isVoicemail },
+            letter = initial?.uppercaseChar().takeUnless { isVoicemail },
+            isVoicemail = isVoicemail,
+        )
+    }
+
+    private fun CallLogEntry.canAddContact(canCall: Boolean, isEmergency: Boolean): Boolean {
+        return canCall && !isEmergency && !isVoicemailNumber && lookupUri == null
+    }
+
     private fun CallLogEntry.canVideoCall(canCall: Boolean, isEmergency: Boolean): Boolean {
-        return canCall && !isEmergency && (
+        return canCall && !isEmergency && !isVoicemailNumber && (
             isVideoCall || (
                 supportsVideoPresence && carrierPresence and Phone.CARRIER_PRESENCE_VT_CAPABLE != 0
                 )
@@ -129,6 +147,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
         return when {
             isEmergency -> context.getString(R.string.emergency_number)
             presentationName != null -> presentationName
+            isVoicemailNumber -> context.getString(R.string.voicemail_string)
             !cachedName.isNullOrBlank() -> cachedName
             displayNumber.isNotBlank() -> displayNumber
             else -> context.getString(R.string.new_call_log_unknown)
@@ -169,7 +188,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             .takeIf { it.isNotEmpty() }
 
         return when {
-            isEmergency -> listOf(time)
+            isEmergency || isVoicemailNumber -> listOf(time)
             else -> listOfNotNull(descriptor, time)
         }
     }
@@ -243,7 +262,11 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
         }
     }
 
-    private fun CallLogEntry.callActionLabel(canCall: Boolean, primaryText: String): String? {
+    private fun callActionLabel(
+        canCall: Boolean,
+        isVideoCall: Boolean,
+        primaryText: String,
+    ): String? {
         val resId = when {
             !canCall -> return null
             isVideoCall -> R.string.description_video_call_action

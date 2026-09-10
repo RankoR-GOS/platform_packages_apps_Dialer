@@ -83,7 +83,7 @@ internal class RecentsRepositoryImpl @Inject constructor(
                     ?: return@collect
                 hasShownTheLog = snapshot.isPermissionGranted
                 val isServedFromCache = snapshot.entries.all { entry ->
-                    contactCache.containsKey(entry.number)
+                    entry.isVoicemailNumber || contactCache.containsKey(entry.number)
                 }
 
                 if (!isServedFromCache) {
@@ -210,6 +210,10 @@ internal class RecentsRepositoryImpl @Inject constructor(
                     entry.accountId,
                 )
                 entry.copy(
+                    isVoicemailNumber = phoneAccountLookup.isVoicemailNumber(
+                        handle = handle,
+                        number = entry.number,
+                    ),
                     accountLabel = accounts.labels[handle],
                     supportsVideoPresence = accounts.supportsVideoPresence,
                 )
@@ -230,6 +234,10 @@ internal class RecentsRepositoryImpl @Inject constructor(
     }
 
     private fun withContact(entry: CallLogEntry): CallLogEntry {
+        if (entry.isVoicemailNumber) {
+            return entry
+        }
+
         val contact = contactCache[entry.number] ?: lookUp(number = entry.number)
 
         return when (contact) {

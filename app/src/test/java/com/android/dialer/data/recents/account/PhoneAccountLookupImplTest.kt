@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -95,6 +96,61 @@ internal class PhoneAccountLookupImplTest {
         every { TelecomUtil.getPhoneAccount(context, second) } returns account(second, "Work")
 
         assertEquals(mapOf(second to "Work"), lookup().labels)
+    }
+
+    @Test
+    fun isVoicemailNumber_withAnAccount_usesThePlatformPredicate() {
+        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns true
+        every { TelecomUtil.isVoicemailNumber(context, first, "123") } returns true
+        every { TelecomUtil.isVoicemailNumber(context, second, "123") } returns false
+
+        assertTrue(lookup.isVoicemailNumber(handle = first, number = "123"))
+        assertFalse(lookup.isVoicemailNumber(handle = second, number = "123"))
+    }
+
+    @Test
+    fun isVoicemailNumber_withoutAnAccount_usesTheDefaultAccountPredicate() {
+        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns true
+        every { TelecomUtil.isVoicemailNumber(context, null, "123") } returns true
+
+        assertTrue(lookup.isVoicemailNumber(handle = null, number = "123"))
+    }
+
+    @Test
+    fun isVoicemailNumber_whenPermissionIsDeniedThenGranted_doesNotCacheTheDenial() {
+        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns false
+
+        assertFalse(lookup.isVoicemailNumber(handle = first, number = "123"))
+        verify(exactly = 0) { TelecomUtil.isVoicemailNumber(any(), any(), any()) }
+
+        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns true
+        every { TelecomUtil.isVoicemailNumber(context, first, "123") } returns true
+
+        assertTrue(lookup.isVoicemailNumber(handle = first, number = "123"))
+    }
+
+    @Test
+    fun isVoicemailNumber_withABlankNumber_doesNotCallTelecom() {
+        assertFalse(lookup.isVoicemailNumber(handle = first, number = " "))
+
+        verify(exactly = 0) { TelecomUtil.isVoicemailNumber(any(), any(), any()) }
+    }
+
+    @Test
+    fun isVoicemailNumber_whenPermissionIsRevoked_returnsFalse() {
+        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns true
+        every { TelecomUtil.isVoicemailNumber(context, first, "123") } throws SecurityException()
+
+        assertFalse(lookup.isVoicemailNumber(handle = first, number = "123"))
+    }
+
+    @Test
+    fun isVoicemailNumber_whenTheAccountDisappears_returnsFalse() {
+        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns true
+        every { TelecomUtil.isVoicemailNumber(context, first, "123") } throws
+            IllegalArgumentException()
+
+        assertFalse(lookup.isVoicemailNumber(handle = first, number = "123"))
     }
 
     private fun account(

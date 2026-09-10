@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Voicemail
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,6 +61,13 @@ internal fun RecentsItemAvatar(
         contentAlignment = Alignment.Center,
     ) {
         when {
+            avatar.isVoicemail -> Icon(
+                imageVector = Icons.Filled.Voicemail,
+                contentDescription = null,
+                modifier = Modifier.size(size = AvatarGlyphSize),
+                tint = colors.content,
+            )
+
             photo != null -> Image(
                 bitmap = photo,
                 contentDescription = null,

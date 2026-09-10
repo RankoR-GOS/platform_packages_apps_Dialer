@@ -246,7 +246,7 @@ private fun RecentsSheetEntryActions(
     onAction: (RecentsSheetAction) -> Unit,
 ) {
     Column {
-        if (item.canCallBack) {
+        if (item.canBlockNumber) {
             RecentsSheetActionRow(
                 icon = Icons.Filled.Block,
                 label = labels.block,

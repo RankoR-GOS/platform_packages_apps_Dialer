@@ -115,4 +115,55 @@ internal class RecentsRepositoryImplMetadataTest : BaseRecentsRepositoryImplTest
             }
         }
     }
+
+    @Test
+    fun observeSnapshot_withAVoicemailNumber_resolvesItsAccountAndSkipsContactLookup() {
+        runTest(context = mainDispatcherRule.testDispatcher) {
+            val row = callLogRow(id = 1L, number = "123").copy(
+                accountComponentName = "example/.Service",
+                accountId = "sim2",
+            )
+            val handle = TelecomUtil.composePhoneAccountHandle("example/.Service", "sim2")
+            every { phoneAccountLookup.isVoicemailNumber(handle, "123") } returns true
+            stubCallLogQuery(rows = listOf(row))
+            stubObserverRegistration()
+            val repository = createRepository(isContactsGranted = true)
+
+            repository.observeSnapshot().test {
+                assertTrue(awaitItem().entries.single().isVoicemailNumber)
+                repository.refresh()
+                assertTrue(awaitItem().entries.single().isVoicemailNumber)
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(exactly = 2) { phoneAccountLookup.isVoicemailNumber(handle, "123") }
+            verify(exactly = 0) { contactLookup(any()) }
+        }
+    }
+
+    @Test
+    fun observeSnapshot_withAVoicemailNumberAndNoContactsPermission_keepsVoicemailMetadata() {
+        runTest(context = mainDispatcherRule.testDispatcher) {
+            every { phoneAccountLookup.isVoicemailNumber(null, "123") } returns true
+            stubCallLogQuery(rows = listOf(callLogRow(id = 1L, number = "123")))
+            stubObserverRegistration()
+
+            val snapshot = createRepository().observeSnapshot().first()
+
+            assertTrue(snapshot.entries.single().isVoicemailNumber)
+        }
+    }
+
+    @Test
+    fun observeSnapshot_withNoRows_doesNotLookUpAccountsOrVoicemail() {
+        runTest(context = mainDispatcherRule.testDispatcher) {
+            stubCallLogQuery(rows = emptyList())
+            stubObserverRegistration()
+
+            assertTrue(createRepository().observeSnapshot().first().entries.isEmpty())
+
+            verify(exactly = 0) { phoneAccountLookup() }
+            verify(exactly = 0) { phoneAccountLookup.isVoicemailNumber(any(), any()) }
+        }
+    }
 }

@@ -37,6 +37,7 @@ internal abstract class BaseRecentsRepositoryImplTest {
     protected val contactLookup = mockk<ContactLookup>()
     protected val phoneAccountLookup = mockk<PhoneAccountLookup> {
         every { this@mockk.invoke() } returns PhoneAccountSnapshot()
+        every { isVoicemailNumber(any(), any()) } returns false
     }
     protected val capturedProjections = mutableListOf<Array<String>?>()
     protected val capturedUris = mutableListOf<Uri>()

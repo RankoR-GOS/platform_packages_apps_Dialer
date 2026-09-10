@@ -25,6 +25,7 @@ internal data class RecentsItemUiModel(
     val canMessage: Boolean,
     val canAddContact: Boolean,
     val canEditNumberBeforeCall: Boolean,
+    val canBlockNumber: Boolean = canCallBack,
     val postDialDigits: String = "",
     val isVideoCall: Boolean = false,
     val accountLabel: String? = null,
@@ -46,6 +47,7 @@ internal data class RecentsItemUiModel(
 internal data class RecentsAvatarUiModel(
     val photoUri: String?,
     val letter: Char?,
+    val isVoicemail: Boolean = false,
 )
 
 internal enum class RecentsCallTypeIcon {
