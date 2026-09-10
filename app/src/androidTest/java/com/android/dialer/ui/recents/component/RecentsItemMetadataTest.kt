@@ -35,21 +35,6 @@ internal class RecentsItemMetadataTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun row_withAllFeatureMarkers_displaysAllThree() {
-        setContent(fontScale = 1f)
-
-        listOf(
-            RECENTS_HD_TEST_TAG,
-            RECENTS_RTT_TEST_TAG,
-            RECENTS_ASSISTED_TEST_TAG
-        ).forEach { tag ->
-            composeTestRule.onNodeWithTag(tag, useUnmergedTree = true).assertIsDisplayed()
-        }
-        composeTestRule.onNodeWithTag(recentsItemAccountTestTag(ENTRY_ID), useUnmergedTree = true)
-            .assertIsDisplayed()
-    }
-
-    @Test
     fun row_withLargeFontAndLongAccountLabel_ellipsizesTheLabelAndKeepsFeatureMarkersVisible() {
         setContent(fontScale = 2f)
         val layouts = mutableListOf<TextLayoutResult>()

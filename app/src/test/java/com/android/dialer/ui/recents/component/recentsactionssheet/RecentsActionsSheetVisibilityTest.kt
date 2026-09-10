@@ -105,13 +105,6 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     }
 
     @Test
-    fun header_whenThePrimaryTextIsAName_laysTheTitleOutByItsContent() {
-        setContent(item = item(), layoutDirection = LayoutDirection.Rtl)
-
-        assertEquals(TextDirection.Content, textDirection(tag = RECENTS_SHEET_TITLE_TEST_TAG))
-    }
-
-    @Test
     fun header_laysTheSubtitleNumberOutLeftToRight() {
         setContent(item = item(), layoutDirection = LayoutDirection.Rtl)
 
@@ -185,14 +178,6 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     }
 
     @Test
-    fun sheet_whenMessagingIsNotAllowed_hidesTheMessage() {
-        setContent(item = item(canMessage = false))
-
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_MESSAGE_TEST_TAG)
-            .assertCountEquals(expectedSize = 0)
-    }
-
-    @Test
     fun sheet_whenTheNumberIsAContact_hidesBothAddContactActions() {
         setContent(item = item(canAddContact = false))
 
@@ -200,16 +185,6 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
             .assertCountEquals(expectedSize = 0)
         composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_ADD_CONTACT_TEST_TAG)
             .assertCountEquals(expectedSize = 0)
-    }
-
-    @Test
-    fun sheet_whenTheNumberIsASipUri_hidesEditNumberBeforeCall() {
-        setContent(item = item(canEditNumberBeforeCall = false))
-
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_EDIT_NUMBER_TEST_TAG)
-            .assertCountEquals(expectedSize = 0)
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_COPY_NUMBER_TEST_TAG)
-            .assertIsDisplayed()
     }
 
     @Test

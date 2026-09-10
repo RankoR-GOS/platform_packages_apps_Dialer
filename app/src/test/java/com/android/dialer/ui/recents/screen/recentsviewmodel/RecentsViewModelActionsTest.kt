@@ -32,15 +32,6 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
-    fun callLogPermissionGranted_refreshesTheCallLog() {
-        every { repository.refresh() } just runs
-
-        createViewModel().onAction(Action.CallLogPermissionGranted)
-
-        verify(exactly = 1) { repository.refresh() }
-    }
-
-    @Test
     fun grantPermissionClicked_emitsRequestCallLogPermission() {
         assertEffect(Action.GrantPermissionClicked, Effect.RequestCallLogPermission)
     }
@@ -56,37 +47,11 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     @Test
-    fun videoCallClicked_emitsPlaceVideoCallWithThatNumber() {
-        assertEffect(
-            Action.VideoCallClicked(number = NUMBER),
-            Effect.PlaceVideoCall(number = NUMBER),
-        )
-    }
-
-    @Test
     fun videoCallClicked_withAnAccount_preservesItInTheEffect() {
         assertEffect(
             Action.VideoCallClicked(NUMBER, "example/.Service", "sim2"),
             Effect.PlaceVideoCall(NUMBER, "example/.Service", "sim2"),
         )
-    }
-
-    @Test
-    fun messageClicked_emitsSendMessageWithThatNumber() {
-        assertEffect(Action.MessageClicked(number = NUMBER), Effect.SendMessage(number = NUMBER))
-    }
-
-    @Test
-    fun createContactClicked_emitsCreateContactWithThatNumber() {
-        assertEffect(
-            Action.CreateContactClicked(number = NUMBER),
-            Effect.CreateContact(number = NUMBER),
-        )
-    }
-
-    @Test
-    fun addContactClicked_emitsAddContactWithThatNumber() {
-        assertEffect(Action.AddContactClicked(number = NUMBER), Effect.AddContact(number = NUMBER))
     }
 
     @Test

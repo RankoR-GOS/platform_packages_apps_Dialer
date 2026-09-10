@@ -27,6 +27,15 @@ internal class GroupConsecutiveCallsImplNumberMatchingTest {
 
         assertEquals(1, grouped.size)
         assertEquals(2, grouped.first().groupedCallCount)
+        assertEquals(
+            2,
+            groupConsecutiveCalls(
+                entries = listOf(
+                    callLogEntry(id = 2L, number = "jane@example.com"),
+                    callLogEntry(id = 1L, number = "jane@other.example"),
+                ),
+            ).size,
+        )
     }
 
     @Test
@@ -34,18 +43,6 @@ internal class GroupConsecutiveCallsImplNumberMatchingTest {
         val entries = listOf(
             callLogEntry(id = 2L, number = "#5551234567"),
             callLogEntry(id = 1L, number = "5551234567"),
-        )
-
-        val grouped = groupConsecutiveCalls(entries = entries)
-
-        assertEquals(2, grouped.size)
-    }
-
-    @Test
-    fun invoke_whenOnlyTheOlderNumberCarriesASpecialCharacter_keepsThemInSeparateEntries() {
-        val entries = listOf(
-            callLogEntry(id = 2L, number = "5551234567"),
-            callLogEntry(id = 1L, number = "#5551234567"),
         )
 
         val grouped = groupConsecutiveCalls(entries = entries)
@@ -66,19 +63,7 @@ internal class GroupConsecutiveCallsImplNumberMatchingTest {
     }
 
     @Test
-    fun invoke_withASipAddressBesideAPlainNumber_keepsThemInSeparateEntries() {
-        val entries = listOf(
-            callLogEntry(id = 2L, number = "jane@example.com"),
-            callLogEntry(id = 1L, number = "5551234567"),
-        )
-
-        val grouped = groupConsecutiveCalls(entries = entries)
-
-        assertEquals(2, grouped.size)
-    }
-
-    @Test
-    fun invoke_withSipAddressesThatDifferOnlyInDomainCase_groupsThem() {
+    fun invoke_withSipAddresses_groupsOnTheHostIgnoringItsCase() {
         val entries = listOf(
             callLogEntry(id = 2L, number = "jane@Example.COM"),
             callLogEntry(id = 1L, number = "jane@example.com"),
@@ -88,6 +73,15 @@ internal class GroupConsecutiveCallsImplNumberMatchingTest {
 
         assertEquals(1, grouped.size)
         assertEquals(2, grouped.first().groupedCallCount)
+        assertEquals(
+            2,
+            groupConsecutiveCalls(
+                entries = listOf(
+                    callLogEntry(id = 2L, number = "jane@example.com"),
+                    callLogEntry(id = 1L, number = "jane@other.example"),
+                ),
+            ).size,
+        )
     }
 
     @Test
@@ -95,18 +89,6 @@ internal class GroupConsecutiveCallsImplNumberMatchingTest {
         val entries = listOf(
             callLogEntry(id = 2L, number = "Jane@example.com"),
             callLogEntry(id = 1L, number = "jane@example.com"),
-        )
-
-        val grouped = groupConsecutiveCalls(entries = entries)
-
-        assertEquals(2, grouped.size)
-    }
-
-    @Test
-    fun invoke_withSipAddressesOnDifferentDomains_keepsThemInSeparateEntries() {
-        val entries = listOf(
-            callLogEntry(id = 2L, number = "jane@example.com"),
-            callLogEntry(id = 1L, number = "jane@other.example"),
         )
 
         val grouped = groupConsecutiveCalls(entries = entries)

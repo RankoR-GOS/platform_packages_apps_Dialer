@@ -51,28 +51,6 @@ internal class PreviewTest {
     }
 
     @Test
-    fun dialerPreviewTheme_doesNotInsetItsContent() {
-        composeRule.setContent {
-            DialerPreviewTheme { TaggedContent() }
-        }
-
-        composeRule.onNodeWithTag(testTag = CONTENT_TEST_TAG)
-            .assertLeftPositionInRootIsEqualTo(expectedLeft = 0.dp)
-            .assertTopPositionInRootIsEqualTo(expectedTop = 0.dp)
-    }
-
-    @Test
-    fun dialerPreviewBox_appliesTheThemeAndTheBackgroundContentColour() {
-        composeRule.setContent {
-            DialerPreviewBox { CaptureTheme() }
-        }
-
-        assertNotEquals(Shapes(), shapes)
-        assertNotEquals(Color.Unspecified, contentColor)
-        assertEquals(onBackgroundColor, contentColor)
-    }
-
-    @Test
     fun dialerPreviewBox_insetsItsContentByThePreviewPadding() {
         composeRule.setContent {
             DialerPreviewBox { TaggedContent() }

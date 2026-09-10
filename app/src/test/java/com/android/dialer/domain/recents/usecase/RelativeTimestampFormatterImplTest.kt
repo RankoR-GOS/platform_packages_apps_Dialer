@@ -51,7 +51,7 @@ internal class RelativeTimestampFormatterImplTest {
     }
 
     @Test
-    fun invoke_minutesAgoAbbreviated_dropsTheUnitsPeriod() {
+    fun invoke_minutesAgo_abbreviatesOnlyWhenAsked() {
         val formatter = createFormatter()
 
         val label = formatter(
@@ -61,23 +61,18 @@ internal class RelativeTimestampFormatterImplTest {
         )
 
         assertEquals("5 min ago", label)
-    }
-
-    @Test
-    fun invoke_minutesAgoSpelledOut_keepsTheFullUnit() {
-        val formatter = createFormatter()
-
-        val label = formatter(
-            timestampMillis = NOW_MILLIS - FIVE_MINUTES_MILLIS,
-            nowMillis = NOW_MILLIS,
-            isAbbreviated = false,
+        assertEquals(
+            "5 minutes ago",
+            formatter(
+                timestampMillis = NOW_MILLIS - FIVE_MINUTES_MILLIS,
+                nowMillis = NOW_MILLIS,
+                isAbbreviated = false,
+            ),
         )
-
-        assertEquals("5 minutes ago", label)
     }
 
     @Test
-    fun invoke_threeDaysAgoAbbreviated_returnsTheShortWeekday() {
+    fun invoke_threeDaysAgo_returnsTheWeekdayShortOrFull() {
         val formatter = createFormatter()
 
         val label = formatter(
@@ -87,19 +82,14 @@ internal class RelativeTimestampFormatterImplTest {
         )
 
         assertEquals("Thu", label)
-    }
-
-    @Test
-    fun invoke_threeDaysAgoSpelledOut_returnsTheFullWeekday() {
-        val formatter = createFormatter()
-
-        val label = formatter(
-            timestampMillis = NOW_MILLIS - THREE_DAYS_MILLIS,
-            nowMillis = NOW_MILLIS,
-            isAbbreviated = false,
+        assertEquals(
+            "Thursday",
+            formatter(
+                timestampMillis = NOW_MILLIS - THREE_DAYS_MILLIS,
+                nowMillis = NOW_MILLIS,
+                isAbbreviated = false,
+            ),
         )
-
-        assertEquals("Thursday", label)
     }
 
     @Test

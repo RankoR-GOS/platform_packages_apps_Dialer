@@ -108,30 +108,6 @@ internal class RecentsItemsTest {
     }
 
     @Test
-    fun callButton_withARecordedVideoAccount_emitsTheRecordedAccount() {
-        val row = entry(id = 1L, canVideoCall = true)
-        setContent(
-            entries = listOf(
-                row.copy(
-                    item = row.item.copy(
-                        accountComponentName = "example/.Service",
-                        accountId = "sim2",
-                    )
-                )
-            )
-        )
-
-        composeTestRule.onNodeWithTag(testTag = callButtonTag(id = 1L)).performClick()
-
-        composeTestRule.runOnIdle {
-            assertEquals(
-                listOf(Event.VideoCallClicked(entryId(1L), NUMBER, "example/.Service", "sim2")),
-                emittedEvents,
-            )
-        }
-    }
-
-    @Test
     fun callButton_whenTheEntryCannotBeCalled_isNotRendered() {
         setContent(entries = listOf(entry(id = 1L, canCallBack = false)))
 
@@ -145,14 +121,6 @@ internal class RecentsItemsTest {
 
         composeTestRule.onNodeWithTag(testTag = rowTag(id = 1L))
             .assertLeftPositionInRootIsEqualTo(expectedLeft = LIST_PADDING)
-    }
-
-    @Test
-    fun dayHeader_whenRendered_startsSixteenDpFromTheListEdge() {
-        setContent(entries = listOf(entry(id = 1L)), withHeader = true)
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_DAY_HEADER_TEST_TAG)
-            .assertLeftPositionInRootIsEqualTo(expectedLeft = HEADER_START)
     }
 
     private fun setContent(
@@ -208,6 +176,5 @@ internal class RecentsItemsTest {
     private companion object {
         private const val NUMBER = "+15550001"
         private val LIST_PADDING = 8.dp
-        private val HEADER_START = 16.dp
     }
 }

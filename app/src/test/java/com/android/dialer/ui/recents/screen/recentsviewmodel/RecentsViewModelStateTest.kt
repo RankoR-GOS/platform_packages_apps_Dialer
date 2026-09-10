@@ -21,26 +21,6 @@ import org.junit.Test
 internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
 
     @Test
-    fun uiState_mapsTheAllFilterSnapshotWithTheCurrentTime() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            val viewModel = createViewModel()
-
-            viewModel.uiState.test {
-                assertEquals(RecentsUiState(), awaitItem())
-                assertEquals(MAPPED_STATE, awaitItem())
-                cancelAndIgnoreRemainingEvents()
-            }
-
-            verify(exactly = 1) { repository.observeSnapshot() }
-            verify(exactly = 1) {
-                uiStateMapper.map(snapshot = SNAPSHOT, nowMillis = NOW_MILLIS)
-            }
-        }
-    }
-
-    @Test
     fun uiState_afterAMinute_mapsAgainWithTheNewTime() {
         runTest(
             context = mainDispatcherRule.testDispatcher,
@@ -66,6 +46,11 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
 
                 assertEquals(laterState, awaitItem())
                 cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(exactly = 1) { repository.observeSnapshot() }
+            verify(exactly = 1) {
+                uiStateMapper.map(snapshot = SNAPSHOT, nowMillis = NOW_MILLIS)
             }
         }
     }

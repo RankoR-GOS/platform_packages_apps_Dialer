@@ -138,14 +138,11 @@ internal class RecentsItemUiMapperImplMetadataTest : BaseRecentsItemUiMapperImpl
         assertTrue(model.isHdCall)
         assertTrue(model.isRttCall)
         assertTrue(model.isAssistedDialing)
-    }
 
-    @Test
-    fun map_withoutFeatureBits_doesNotInventMarkers() {
-        val model = map(callLogEntry(id = 1L))
+        val plain = map(callLogEntry(id = 2L))
 
-        assertFalse(model.isHdCall)
-        assertFalse(model.isRttCall)
-        assertFalse(model.isAssistedDialing)
+        assertFalse(plain.isHdCall)
+        assertFalse(plain.isRttCall)
+        assertFalse(plain.isAssistedDialing)
     }
 }

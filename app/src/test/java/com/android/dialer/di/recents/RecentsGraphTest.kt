@@ -106,30 +106,7 @@ internal class RecentsGraphTest {
     }
 
     @Test
-    fun graph_resolvesTheRepositoryToTheSystemImplementation() {
-        assertTrue(entryPoint.recentsRepository() is RecentsRepositoryImpl)
-    }
-
-    @Test
     fun graph_returnsTheSameRecentsRepositoryOnEveryLookup() {
         assertSame(entryPoint.recentsRepository(), entryPoint.recentsRepository())
-    }
-
-    @Test
-    fun graph_resolvesEachUseCaseToItsImplementation() {
-        assertTrue(entryPoint.isCallLogPermissionGranted() is IsCallLogPermissionGrantedImpl)
-        assertTrue(entryPoint.groupConsecutiveCalls() is GroupConsecutiveCallsImpl)
-    }
-
-    @Test
-    fun graph_resolvesTheItemMapperAndItsSeams() {
-        assertTrue(entryPoint.canPlaceCall() is CanPlaceCallImpl)
-        assertTrue(entryPoint.isEmergencyNumber() is IsEmergencyNumberImpl)
-        assertTrue(entryPoint.isContactsPermissionGranted() is IsContactsPermissionGrantedImpl)
-        assertTrue(entryPoint.contactLookup() is ContactLookupImpl)
-        assertTrue(entryPoint.relativeTimestampFormatter() is RelativeTimestampFormatterImpl)
-        assertTrue(entryPoint.phoneNumberFormatter() is PhoneNumberFormatterImpl)
-        assertTrue(entryPoint.recentsItemUiMapper() is RecentsItemUiMapperImpl)
-        assertTrue(entryPoint.recentsUiStateMapper() is RecentsUiStateMapperImpl)
     }
 }

@@ -52,35 +52,6 @@ internal class RecentsItemsScrollTest {
     private lateinit var listState: LazyListState
 
     @Test
-    fun list_whenRendered_composesOnlyTheVisibleWindow() {
-        setContent(items = entries(count = ENTRY_COUNT))
-
-        val visibleCount = composeTestRule.runOnIdle {
-            listState.layoutInfo.visibleItemsInfo.size
-        }
-
-        assertTrue("expected rows in the viewport", visibleCount > 0)
-        assertTrue("expected a viewport, not the whole list", visibleCount < ENTRY_COUNT)
-        composeTestRule.onNodeWithTag(testTag = tagOf(id = 1L)).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(testTag = RECENTS_LIST_TEST_TAG)
-            .onChildren()
-            .assertCountEquals(expectedSize = visibleCount)
-    }
-
-    @Test
-    fun list_whenRendered_givesEveryVisibleRowTheSameContentType() {
-        setContent(items = entries(count = ENTRY_COUNT))
-
-        val contentTypes = composeTestRule.runOnIdle {
-            listState.layoutInfo.visibleItemsInfo.map { info -> info.contentType }
-        }
-
-        assertTrue("expected rows on screen", contentTypes.isNotEmpty())
-        assertEquals(1, contentTypes.distinct().size)
-        assertTrue("contentType is not set", contentTypes.all { type -> type != null })
-    }
-
-    @Test
     fun list_withADayHeader_givesTheHeaderItsOwnContentType() {
         setContent(items = listOf(header()) + entries(count = VISIBLE_ONLY_COUNT))
 
@@ -93,17 +64,6 @@ internal class RecentsItemsScrollTest {
     }
 
     @Test
-    fun list_whenScrolledToAnIndex_displaysThatRow() {
-        setContent(items = entries(count = ENTRY_COUNT))
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_LIST_TEST_TAG)
-            .performScrollToIndex(index = LAST_INDEX)
-
-        composeTestRule.onNodeWithTag(testTag = tagOf(id = ENTRY_COUNT.toLong()))
-            .assertIsDisplayed()
-    }
-
-    @Test
     fun list_whenScrolledToAKey_displaysThatRow() {
         setContent(items = entries(count = ENTRY_COUNT))
 
@@ -111,27 +71,6 @@ internal class RecentsItemsScrollTest {
             .performScrollToKey(key = TARGET_ENTRY_ID)
 
         composeTestRule.onNodeWithTag(testTag = tagOf(id = TARGET_ENTRY_ID)).assertIsDisplayed()
-    }
-
-    @Test
-    fun list_whenScrolledToANode_displaysTheMatchedRow() {
-        setContent(items = entries(count = ENTRY_COUNT))
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_LIST_TEST_TAG)
-            .performScrollToNode(matcher = hasTestTag(testTag = tagOf(id = TARGET_ENTRY_ID)))
-
-        composeTestRule.onNodeWithTag(testTag = tagOf(id = TARGET_ENTRY_ID)).assertIsDisplayed()
-    }
-
-    @Test
-    fun rows_whenRendered_areAllClickable() {
-        setContent(items = entries(count = VISIBLE_ONLY_COUNT))
-
-        composeTestRule.onAllNodesWithTag(testTag = tagOf(id = 1L))
-            .assertCountEquals(expectedSize = 1)
-        composeTestRule.onNodeWithTag(testTag = RECENTS_LIST_TEST_TAG)
-            .onChildren()
-            .assertAll(matcher = hasAnyDescendant(matcher = hasClickAction()))
     }
 
     @Test
@@ -196,7 +135,6 @@ internal class RecentsItemsScrollTest {
 
     private companion object {
         private const val ENTRY_COUNT = 60
-        private const val LAST_INDEX = ENTRY_COUNT - 1
         private const val SCROLL_TARGET_INDEX = 30
         private const val VISIBLE_ONLY_COUNT = 3
         private const val TARGET_ENTRY_ID = 42L

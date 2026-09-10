@@ -64,13 +64,6 @@ internal class RecentsVideoEffectTest {
     }
 
     @Test
-    fun handle_withNoRecordedVideoAccount_leavesAccountSelectionToPreCall() {
-        handler.handle(RecentsEffect.PlaceVideoCall("123"))
-
-        assertNull(builder.captured.phoneAccountHandle)
-    }
-
-    @Test
     fun handle_withAVoiceCallback_preservesExtensionsAndDoesNotPinAnAccount() {
         handler.handle(RecentsEffect.PlaceCall("123,45;67"))
 

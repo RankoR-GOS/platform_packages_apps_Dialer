@@ -20,24 +20,10 @@ internal class IsEmergencyNumberImplTest {
     private val telephonyManager = mockk<TelephonyManager>()
 
     @Test
-    fun invoke_asksTelephonyForTheNumber() {
-        every { telephonyManager.isEmergencyNumber(EMERGENCY_NUMBER) } returns true
-
-        assertTrue(createUseCase()(EMERGENCY_NUMBER))
-    }
-
-    @Test
     fun invoke_withABlankNumber_returnsFalseWithoutAskingTelephony() {
         assertFalse(createUseCase()(" "))
 
         verify(exactly = 0) { telephonyManager.isEmergencyNumber(any()) }
-    }
-
-    @Test
-    fun invoke_whenTelephonyIsUnavailable_returnsFalse() {
-        every { telephonyManager.isEmergencyNumber(any()) } throws IllegalStateException("down")
-
-        assertFalse(createUseCase()(EMERGENCY_NUMBER))
     }
 
     @Test

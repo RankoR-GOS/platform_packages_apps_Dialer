@@ -35,15 +35,6 @@ internal class RecentsItemsTraversalOrderTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun rows_areTraversedInListOrderForAFlatList() {
-        val items = listOf(entry(id = 3L), entry(id = 1L), entry(id = 2L))
-
-        setContent(items = items)
-
-        assertEquals(tagsOf(items), traversedTags(items))
-    }
-
-    @Test
     fun rows_underADayHeader_areTraversedAfterThatHeader() {
         val items = listOf(
             header(key = "Today"),
@@ -55,14 +46,6 @@ internal class RecentsItemsTraversalOrderTest {
         setContent(items = items)
 
         assertEquals(tagsOf(items), traversedTags(items))
-    }
-
-    @Test
-    fun dayHeader_isAnnouncedAsAHeading() {
-        setContent(items = listOf(header(key = "Today"), entry(id = 1L)))
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_DAY_HEADER_TEST_TAG)
-            .assert(matcher = isHeading())
     }
 
     private fun setContent(items: List<RecentsListItemUiModel>) {

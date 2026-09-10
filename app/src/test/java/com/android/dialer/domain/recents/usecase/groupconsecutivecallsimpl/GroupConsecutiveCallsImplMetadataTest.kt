@@ -24,22 +24,10 @@ internal class GroupConsecutiveCallsImplMetadataTest {
     )
 
     @Test
-    fun invoke_withDifferentAccounts_keepsEachCallsDeleteIdsSeparate() {
+    fun invoke_withADifferentAccountExtensionOrViaNumber_keepsEachCallsDeleteIdsSeparate() {
         assertSeparate(older = newest.copy(accountId = "sim2"))
-    }
-
-    @Test
-    fun invoke_withDifferentAccountComponents_keepsEachCallsDeleteIdsSeparate() {
         assertSeparate(older = newest.copy(accountComponentName = "other/.PhoneService"))
-    }
-
-    @Test
-    fun invoke_withDifferentPostDialDigits_keepsEachCallsDeleteIdsSeparate() {
         assertSeparate(older = newest.copy(postDialDigits = ",56;78"))
-    }
-
-    @Test
-    fun invoke_withDifferentViaNumbers_keepsEachCallsDeleteIdsSeparate() {
         assertSeparate(older = newest.copy(viaNumber = "+12025550188"))
     }
 

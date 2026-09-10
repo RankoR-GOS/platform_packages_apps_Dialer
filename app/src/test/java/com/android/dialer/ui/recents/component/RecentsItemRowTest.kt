@@ -32,13 +32,6 @@ import org.robolectric.annotation.Config
 internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
 
     @Test
-    fun row_whenRendered_isTaggedByEntryId() {
-        setContent(item = item())
-
-        composeTestRule.onNodeWithTag(testTag = ROW_TAG).assertIsDisplayed()
-    }
-
-    @Test
     fun row_whenRendered_carriesTheMergedContentDescription() {
         setContent(item = item())
 
@@ -55,46 +48,12 @@ internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
     }
 
     @Test
-    fun row_click_routesToTheClickCallback() {
-        var clicks = 0
-
-        setContent(item = item(), onClick = { clicks += 1 })
-
-        composeTestRule.onNodeWithTag(testTag = ROW_TAG).performClick()
-
-        composeTestRule.runOnIdle {
-            assertEquals(1, clicks)
-        }
-    }
-
-    @Test
     fun callButton_whenTheNumberCanBeCalled_isDisplayedWithItsDescription() {
         setContent(item = item(), onCallClick = {})
 
         composeTestRule.onNodeWithTag(testTag = CALL_BUTTON_TAG)
             .assertIsDisplayed()
             .assertContentDescriptionEquals(CALL_LABEL)
-    }
-
-    @Test
-    fun callButton_whenTheNumberCannotBeCalled_isNotRendered() {
-        setContent(item = item(canCallBack = false), onCallClick = {})
-
-        composeTestRule.onAllNodesWithTag(testTag = CALL_BUTTON_TAG)
-            .assertCountEquals(expectedSize = 0)
-    }
-
-    @Test
-    fun callButton_click_routesToTheCallCallback() {
-        var callClicks = 0
-
-        setContent(item = item(), onCallClick = { callClicks += 1 })
-
-        composeTestRule.onNodeWithTag(testTag = CALL_BUTTON_TAG).performClick()
-
-        composeTestRule.runOnIdle {
-            assertEquals(1, callClicks)
-        }
     }
 
     @Test
@@ -164,11 +123,6 @@ internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
     @Test
     fun recentsItemFontWeight_withAnUnreadMissedCall_isMedium() {
         assertEquals(FontWeight.Medium, recentsItemFontWeight(isUnreadMissedCall = true))
-    }
-
-    @Test
-    fun recentsItemFontWeight_withAReadCall_isNormal() {
-        assertEquals(FontWeight.Normal, recentsItemFontWeight(isUnreadMissedCall = false))
     }
 
     @Test

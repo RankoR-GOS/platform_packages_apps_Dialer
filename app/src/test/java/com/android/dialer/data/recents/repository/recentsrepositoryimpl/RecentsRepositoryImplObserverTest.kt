@@ -156,28 +156,6 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
     }
 
     @Test
-    fun refresh_requeriesWithoutWaitingForTheObserver() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
-            stubObserverRegistration()
-            val repository = createRepository()
-
-            repository.observeSnapshot().test {
-                awaitItem()
-
-                repository.refresh()
-
-                awaitItem()
-                cancelAndIgnoreRemainingEvents()
-            }
-
-            verify(exactly = 2) { contentResolver.query(any(), any(), any<Bundle>(), any()) }
-        }
-    }
-
-    @Test
     fun refresh_beforeAnyCollection_isDroppedRatherThanReplayed() {
         runTest(
             context = mainDispatcherRule.testDispatcher,

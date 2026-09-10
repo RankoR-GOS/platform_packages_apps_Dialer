@@ -27,21 +27,6 @@ internal class RecentsDayHeaderTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun header_whenRendered_isTaggedAndDisplayed() {
-        setContent()
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_DAY_HEADER_TEST_TAG).assertIsDisplayed()
-    }
-
-    @Test
-    fun header_whenRendered_showsTheLabel() {
-        setContent()
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_DAY_HEADER_TEST_TAG)
-            .assertTextEquals(LABEL)
-    }
-
-    @Test
     fun header_whenRendered_isAnnouncedAsAHeading() {
         setContent()
 

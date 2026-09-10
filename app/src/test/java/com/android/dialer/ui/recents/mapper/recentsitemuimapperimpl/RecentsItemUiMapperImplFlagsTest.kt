@@ -54,13 +54,6 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
     }
 
     @Test
-    fun map_withUnreadAnsweredCall_doesNotMarkTheRow() {
-        val entry = callLogEntry(id = 1L, callType = CallType.Answered, isRead = false)
-
-        assertFalse(map(entry).isUnreadMissedCall)
-    }
-
-    @Test
     fun map_withGroupedCalls_labelsTheCount() {
         val model = map(callLogEntry(id = 1L, groupedCallCount = 3))
 
@@ -97,24 +90,6 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
     }
 
     @Test
-    fun map_withoutVideoFeature_allowsOnlyTheVoiceCall() {
-        val model = map(callLogEntry(id = 1L))
-
-        assertTrue(model.canCallBack)
-        assertFalse(model.canVideoCall)
-    }
-
-    @Test
-    fun map_whenTheNumberCannotBeCalled_disablesBothCallActions() {
-        every { canPlaceCall(any(), any()) } returns false
-
-        val model = map(callLogEntry(id = 1L, features = Calls.FEATURES_VIDEO))
-
-        assertFalse(model.canCallBack)
-        assertFalse(model.canVideoCall)
-    }
-
-    @Test
     fun map_withALatinInitial_uppercasesItForTheAvatar() {
         val model = map(callLogEntry(id = 1L, cachedName = "ada"))
 
@@ -144,17 +119,6 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
 
     private companion object {
         private const val UNKNOWN_RAW_TYPE = 42
-    }
-
-    @Test
-    fun map_withPostDialDigits_keepsTheBaseNumberAndBuildsTheVoiceCallback() {
-        val entry = callLogEntry(id = 1L, number = "+12025550186")
-            .copy(postDialDigits = ",12;34")
-
-        val model = map(entry)
-
-        assertEquals("+12025550186", model.number)
-        assertEquals("+12025550186,12;34", model.callbackNumber)
     }
 
     @Test

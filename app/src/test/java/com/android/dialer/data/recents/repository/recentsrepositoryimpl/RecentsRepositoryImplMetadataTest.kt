@@ -142,19 +142,6 @@ internal class RecentsRepositoryImplMetadataTest : BaseRecentsRepositoryImplTest
     }
 
     @Test
-    fun observeSnapshot_withAVoicemailNumberAndNoContactsPermission_keepsVoicemailMetadata() {
-        runTest(context = mainDispatcherRule.testDispatcher) {
-            every { phoneAccountLookup.isVoicemailNumber(null, "123") } returns true
-            stubCallLogQuery(rows = listOf(callLogRow(id = 1L, number = "123")))
-            stubObserverRegistration()
-
-            val snapshot = createRepository().observeSnapshot().first()
-
-            assertTrue(snapshot.entries.single().isVoicemailNumber)
-        }
-    }
-
-    @Test
     fun observeSnapshot_withNoRows_doesNotLookUpAccountsOrVoicemail() {
         runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = emptyList())

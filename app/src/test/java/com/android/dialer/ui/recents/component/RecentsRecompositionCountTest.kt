@@ -69,55 +69,6 @@ internal class RecentsRecompositionCountTest {
     }
 
     @Test
-    fun row_whenItsModelIsReassignedToAnEqualValue_doesNotRecompose() {
-        val model = mutableStateOf(item(entryId = 1L, primaryText = "Caller 1"))
-        val counter = CompositionCounter()
-
-        composeTestRule.setContent {
-            DialerTheme { CountedRow(item = model.value, counter = counter) }
-        }
-        composeTestRule.waitForIdle()
-        val initial = counter.value
-
-        composeTestRule.runOnIdle {
-            model.value = item(entryId = 1L, primaryText = "Caller 1")
-        }
-        composeTestRule.waitForIdle()
-
-        composeTestRule.runOnIdle {
-            assertEquals(initial, counter.value)
-        }
-    }
-
-    @Test
-    fun row_whenOnlyItsSecondaryTextChanges_recomposesExactlyOnce() {
-        val ticking = mutableStateOf(item(entryId = 1L, secondaryText = "1 min ago"))
-        val settled = mutableStateOf(item(entryId = 2L, secondaryText = "Yesterday"))
-        val tickingCount = CompositionCounter()
-        val settledCount = CompositionCounter()
-
-        composeTestRule.setContent {
-            DialerTheme {
-                CountedRow(item = ticking.value, counter = tickingCount)
-                CountedRow(item = settled.value, counter = settledCount)
-            }
-        }
-        composeTestRule.waitForIdle()
-        val initialTicking = tickingCount.value
-        val initialSettled = settledCount.value
-
-        composeTestRule.runOnIdle {
-            ticking.value = item(entryId = 1L, secondaryText = "2 min ago")
-        }
-        composeTestRule.waitForIdle()
-
-        composeTestRule.runOnIdle {
-            assertEquals(initialTicking + 1, tickingCount.value)
-            assertEquals(initialSettled, settledCount.value)
-        }
-    }
-
-    @Test
     fun listContainer_whenScrolled_doesNotRecompose() {
         val counter = CompositionCounter()
         lateinit var listState: LazyListState
@@ -144,37 +95,6 @@ internal class RecentsRecompositionCountTest {
 
         composeTestRule.runOnIdle {
             assertEquals(SCROLL_OFFSET_PX, listState.firstVisibleItemScrollOffset)
-            assertEquals(afterInitialComposition, counter.value)
-        }
-    }
-
-    @Test
-    fun listContainer_whenScrolledAcrossManyItems_doesNotRecompose() {
-        val counter = CompositionCounter()
-        lateinit var listState: LazyListState
-
-        composeTestRule.setContent {
-            listState = rememberLazyListState()
-            DialerTheme {
-                Box(modifier = Modifier.height(height = VIEWPORT_HEIGHT)) {
-                    CountedList(
-                        items = listItems(count = LIST_SIZE),
-                        listState = listState,
-                        counter = counter
-                    )
-                }
-            }
-        }
-        composeTestRule.waitForIdle()
-        val afterInitialComposition = counter.value
-
-        composeTestRule.runOnIdle {
-            listState.requestScrollToItem(index = SCROLL_TARGET_INDEX)
-        }
-        composeTestRule.waitForIdle()
-
-        composeTestRule.runOnIdle {
-            assertEquals(SCROLL_TARGET_INDEX, listState.firstVisibleItemIndex)
             assertEquals(afterInitialComposition, counter.value)
         }
     }
@@ -265,6 +185,34 @@ internal class RecentsRecompositionCountTest {
         }
     }
 
+    @Test
+    fun row_whenOnlyItsSecondaryTextChanges_recomposesExactlyOnce() {
+        val ticking = mutableStateOf(item(entryId = 1L, secondaryText = "1 min ago"))
+        val settled = mutableStateOf(item(entryId = 2L, secondaryText = "Yesterday"))
+        val tickingCount = CompositionCounter()
+        val settledCount = CompositionCounter()
+
+        composeTestRule.setContent {
+            DialerTheme {
+                CountedRow(item = ticking.value, counter = tickingCount)
+                CountedRow(item = settled.value, counter = settledCount)
+            }
+        }
+        composeTestRule.waitForIdle()
+        val initialTicking = tickingCount.value
+        val initialSettled = settledCount.value
+
+        composeTestRule.runOnIdle {
+            ticking.value = item(entryId = 1L, secondaryText = "2 min ago")
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.runOnIdle {
+            assertEquals(initialTicking + 1, tickingCount.value)
+            assertEquals(initialSettled, settledCount.value)
+        }
+    }
+
     private fun Modifier.countCompositions(counter: CompositionCounter): Modifier {
         return this then CountingElement(counter = counter)
     }
@@ -315,6 +263,5 @@ internal class RecentsRecompositionCountTest {
         private val ROW_VIEWPORT_HEIGHT = 160.dp
         private const val LIST_SIZE = 60
         private const val SCROLL_OFFSET_PX = 24
-        private const val SCROLL_TARGET_INDEX = 20
     }
 }

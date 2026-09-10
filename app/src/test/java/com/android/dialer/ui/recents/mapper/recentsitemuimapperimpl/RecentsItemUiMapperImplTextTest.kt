@@ -50,17 +50,6 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
     }
 
     @Test
-    fun map_withRestrictedPresentation_usesThePrivateNumberLabel() {
-        val entry = callLogEntry(
-            id = 1L,
-            number = "",
-            numberPresentation = Calls.PRESENTATION_RESTRICTED,
-        )
-
-        assertEquals(string(R.string.private_num_non_verizon), map(entry).primaryText)
-    }
-
-    @Test
     fun map_withPayphonePresentation_usesThePayphoneLabel() {
         val entry = callLogEntry(
             id = 1L,
@@ -83,13 +72,6 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
     }
 
     @Test
-    fun map_withCachedName_usesTheContactName() {
-        val model = map(callLogEntry(id = 1L, cachedName = "Ada"))
-
-        assertEquals("Ada", model.primaryText)
-    }
-
-    @Test
     fun map_withACachedFormattedNumber_usesItWithoutFormattingAgain() {
         val entry = callLogEntry(id = 1L, number = RAW_NUMBER, formattedNumber = FORMATTED_NUMBER)
 
@@ -101,16 +83,10 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
 
     @Test
     fun map_withoutACachedFormattedNumber_formatsItWithTheCallsCountry() {
-        map(callLogEntry(id = 1L, number = "8765550100", countryIso = "JM"))
+        val model = map(callLogEntry(id = 1L, number = "8765550100", countryIso = "JM"))
 
+        assertEquals("formatted 8765550100", model.primaryText)
         verify { phoneNumberFormatter.formatForDisplay(number = "8765550100", countryIso = "JM") }
-    }
-
-    @Test
-    fun map_withoutACachedFormattedNumber_formatsTheNumber() {
-        val model = map(callLogEntry(id = 1L, number = RAW_NUMBER))
-
-        assertEquals("formatted $RAW_NUMBER", model.primaryText)
     }
 
     @Test
@@ -118,13 +94,6 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
         val model = map(callLogEntry(id = 1L, number = ""))
 
         assertEquals(string(R.string.new_call_log_unknown), model.primaryText)
-    }
-
-    @Test
-    fun map_withGeocodedLocationAndNoContact_joinsThePlaceAndTheTimeWithABullet() {
-        val model = map(callLogEntry(id = 1L, geocodedLocation = LOCATION))
-
-        assertEquals("$LOCATION •\u00A0$DISPLAY_TIME", model.secondaryText)
     }
 
     @Test

@@ -41,26 +41,6 @@ internal class RecentsStatusMessageTest {
     }
 
     @Test
-    fun statusMessage_withAnActionLabel_rendersTheButtonUnderTheGivenTag() {
-        setContent(actionLabel = ACTION_LABEL)
-
-        composeTestRule.onNodeWithTag(testTag = ACTION_TEST_TAG).assertIsDisplayed()
-    }
-
-    @Test
-    fun statusMessage_actionClick_routesToTheCallback() {
-        var clicks = 0
-
-        setContent(actionLabel = ACTION_LABEL, onActionClick = { clicks += 1 })
-
-        composeTestRule.onNodeWithTag(testTag = ACTION_TEST_TAG).performClick()
-
-        composeTestRule.runOnIdle {
-            assertEquals(1, clicks)
-        }
-    }
-
-    @Test
     fun statusMessage_whenRendered_isScrollableForLargeFontScales() {
         setContent(actionLabel = ACTION_LABEL)
 

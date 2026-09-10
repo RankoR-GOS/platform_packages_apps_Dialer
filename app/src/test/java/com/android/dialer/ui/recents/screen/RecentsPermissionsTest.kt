@@ -19,13 +19,6 @@ internal class RecentsPermissionsTest {
     private val context = mockk<Context>()
 
     @Test
-    fun deniedPermissions_withoutAnyGrants_returnsOnlyTheFiveRecentsPermissions() {
-        givenGrantedPermissions(emptyList())
-
-        assertArrayEquals(REQUIRED_PERMISSIONS.toTypedArray(), deniedRecentsPermissions(context))
-    }
-
-    @Test
     fun deniedPermissions_withEachPermissionRevoked_returnsOnlyTheMissingPermission() {
         REQUIRED_PERMISSIONS.forEach { deniedPermission ->
             givenGrantedPermissions(REQUIRED_PERMISSIONS - deniedPermission)

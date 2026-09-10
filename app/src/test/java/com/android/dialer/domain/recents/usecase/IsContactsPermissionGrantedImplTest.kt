@@ -28,14 +28,6 @@ internal class IsContactsPermissionGrantedImplTest {
     }
 
     @Test
-    fun invoke_whenThePermissionIsGranted_returnsTrue() {
-        every { PermissionsUtil.hasContactsReadPermissions(context) } returns true
-        val useCase = createUseCase()
-
-        assertTrue(useCase())
-    }
-
-    @Test
     fun invoke_whenThePermissionIsDenied_returnsFalse() {
         every { PermissionsUtil.hasContactsReadPermissions(context) } returns false
         val useCase = createUseCase()

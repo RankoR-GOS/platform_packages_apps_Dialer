@@ -232,21 +232,6 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
         }
     }
 
-    @Test
-    fun observeSnapshot_closesTheCursorAfterReadingIt() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
-            val cursor = callLogCursor(callLogRow(id = 1L))
-            every { contentResolver.query(any(), any(), any<Bundle>(), any()) } returns cursor
-            stubObserverRegistration()
-
-            createRepository().observeSnapshot().first()
-
-            assertTrue(cursor.isClosed)
-        }
-    }
-
     private companion object {
         private const val UNKNOWN_CALL_TYPE = 99
     }

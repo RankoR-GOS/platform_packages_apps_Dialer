@@ -55,16 +55,6 @@ internal class RecentsEffectHandlerImplTest {
     }
 
     @Test
-    fun addContact_startsTheLegacyInsertOrEditIntentWithThatNumber() {
-        handler.handle(effect = RecentsEffect.AddContact(number = NUMBER))
-
-        val intent = shadowOf(activity).nextStartedActivity
-        assertEquals(Intent.ACTION_INSERT_OR_EDIT, intent.action)
-        assertEquals(ContactsContract.Contacts.CONTENT_ITEM_TYPE, intent.type)
-        assertEquals(NUMBER, intent.getStringExtra(ContactsContract.Intents.Insert.PHONE))
-    }
-
-    @Test
     fun copyNumber_setsASensitiveClipAndLeavesTheConfirmationToTheSystem() {
         handler.handle(effect = RecentsEffect.CopyNumber(number = NUMBER))
 

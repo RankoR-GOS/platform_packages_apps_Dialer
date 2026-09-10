@@ -35,32 +35,6 @@ internal class ContactLookupImplTest {
     }
 
     @Test
-    fun invoke_withACustomLabel_returnsTheLabelWithTheCustomType() {
-        every {
-            contentResolver.query(
-                any(),
-                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                null,
-                null,
-                null
-            )
-        } returns
-            phoneLookupCursor(
-                contactId = 42L,
-                name = "Ada Lovelace",
-                photoUri = null,
-                key = "k42",
-                numberType = Phone.TYPE_CUSTOM,
-                numberLabel = "Studio",
-            )
-
-        val found = lookup(NUMBER) as ContactLookupResult.Found
-
-        assertEquals(Phone.TYPE_CUSTOM, found.numberType)
-        assertEquals("Studio", found.numberLabel)
-    }
-
-    @Test
     fun invoke_withAMatchingContact_returnsItsNamePhotoAndLookupUri() {
         val capturedUris = mutableListOf<Uri>()
         every {
@@ -235,6 +209,32 @@ internal class ContactLookupImplTest {
                 null
             )
         }
+    }
+
+    @Test
+    fun invoke_withACustomLabel_returnsTheLabelWithTheCustomType() {
+        every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } returns
+            phoneLookupCursor(
+                contactId = 42L,
+                name = "Ada Lovelace",
+                photoUri = null,
+                key = "k42",
+                numberType = Phone.TYPE_CUSTOM,
+                numberLabel = "Studio",
+            )
+
+        val found = lookup(NUMBER) as ContactLookupResult.Found
+
+        assertEquals(Phone.TYPE_CUSTOM, found.numberType)
+        assertEquals("Studio", found.numberLabel)
     }
 
     private fun phoneLookupCursor(

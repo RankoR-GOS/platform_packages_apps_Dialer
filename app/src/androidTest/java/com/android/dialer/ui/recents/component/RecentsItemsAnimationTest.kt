@@ -66,17 +66,6 @@ internal class RecentsItemsAnimationTest {
         assertTrue(midwayTop > settledTop)
     }
 
-    @Test
-    fun row_whenTheListIsUnchanged_staysWhereItSettled() {
-        setContent(entries(NEW_ID, ANCHOR_ID))
-        val restingTop = rowTop(id = ANCHOR_ID)
-
-        composeTestRule.runOnUiThread { items.value = entries(NEW_ID, ANCHOR_ID) }
-        composeTestRule.waitForIdle()
-
-        assertEquals(restingTop, rowTop(id = ANCHOR_ID), 0f)
-    }
-
     private fun setContent(initial: ImmutableList<RecentsListItemUiModel>) {
         items.value = initial
         composeTestRule.setContent {

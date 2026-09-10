@@ -19,18 +19,6 @@ import org.robolectric.annotation.Config
 internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperImplTest() {
 
     @Test
-    fun map_exposesTheFormattedNumberAsTheDisplayNumber() {
-        val model = map(callLogEntry(id = 1L, number = "6502530000", cachedName = "Ada"))
-
-        assertEquals("formatted 6502530000", model.displayNumber)
-    }
-
-    @Test
-    fun map_withACallableNumberAndTheSmsPermission_allowsMessaging() {
-        assertTrue(map(callLogEntry(id = 1L)).canMessage)
-    }
-
-    @Test
     fun map_withoutTheSmsPermission_allowsOpeningTheMessageEditor() {
         every { context.checkSelfPermission(Manifest.permission.SEND_SMS) } returns
             PackageManager.PERMISSION_DENIED
@@ -49,21 +37,13 @@ internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperIm
     }
 
     @Test
-    fun map_withAnEmergencyVideoCall_allowsTheCallBackButNotAsVideo() {
-        every { isEmergencyNumber("911") } returns true
-
-        val model = map(callLogEntry(id = 1L, number = "911", features = Calls.FEATURES_VIDEO))
-
-        assertTrue(model.canCallBack)
-        assertFalse(model.canVideoCall)
-    }
-
-    @Test
     fun map_whenTheNumberCannotBeCalled_allowsNeitherMessagingNorAddingAContact() {
         every { canPlaceCall(any(), any()) } returns false
 
         val model = map(callLogEntry(id = 1L))
 
+        assertFalse(model.canCallBack)
+        assertFalse(model.canVideoCall)
         assertFalse(model.canMessage)
         assertFalse(model.canAddContact)
         assertFalse(model.canEditNumberBeforeCall)
@@ -79,11 +59,6 @@ internal class RecentsItemUiMapperImplSheetFlagsTest : BaseRecentsItemUiMapperIm
         val model = map(callLogEntry(id = 1L, number = "sip:ada@example.com"))
 
         assertFalse(model.canEditNumberBeforeCall)
-    }
-
-    @Test
-    fun map_withAStrangerAndTheContactsWritePermission_allowsAddingAContact() {
-        assertTrue(map(callLogEntry(id = 1L)).canAddContact)
     }
 
     @Test

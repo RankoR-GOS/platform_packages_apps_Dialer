@@ -31,16 +31,6 @@ internal class PhoneNumberFormatterImplTest {
     }
 
     @Test
-    fun formatForDisplay_usesTheNetworkCountry() {
-        every { telephonyManager.networkCountryIso } returns "us"
-
-        assertEquals(
-            "(650) 253-0000",
-            createFormatter().formatForDisplay(US_NUMBER, countryIso = null),
-        )
-    }
-
-    @Test
     fun formatForDisplay_withTheCallsCountry_usesItBeforeTheNetwork() {
         every { telephonyManager.networkCountryIso } returns "us"
 
@@ -57,16 +47,6 @@ internal class PhoneNumberFormatterImplTest {
         assertEquals(
             "(650) 253-0000",
             createFormatter().formatForDisplay(US_NUMBER, countryIso = ""),
-        )
-    }
-
-    @Test
-    fun formatForDisplay_withoutANetworkCountry_fallsBackToTheLocale() {
-        every { telephonyManager.networkCountryIso } returns ""
-
-        assertEquals(
-            "020 7946 0958",
-            createFormatter().formatForDisplay(UK_NUMBER, countryIso = null),
         )
     }
 

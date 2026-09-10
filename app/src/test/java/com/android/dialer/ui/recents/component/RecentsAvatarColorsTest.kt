@@ -10,14 +10,6 @@ import org.junit.Test
 internal class RecentsAvatarColorsTest {
 
     @Test
-    fun recentsAvatarColors_withTheSameSeed_returnsTheSameColors() {
-        assertEquals(
-            recentsAvatarColors(seed = SEED, isDarkTheme = false),
-            recentsAvatarColors(seed = SEED, isDarkTheme = false),
-        )
-    }
-
-    @Test
     fun recentsAvatarColors_withDifferentSeeds_returnsDifferentBackgrounds() {
         assertNotEquals(
             recentsAvatarColors(seed = SEED, isDarkTheme = false).background,

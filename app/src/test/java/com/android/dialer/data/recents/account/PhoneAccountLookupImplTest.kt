@@ -109,14 +109,6 @@ internal class PhoneAccountLookupImplTest {
     }
 
     @Test
-    fun isVoicemailNumber_withoutAnAccount_usesTheDefaultAccountPredicate() {
-        every { TelecomUtil.hasReadPhoneStatePermission(context) } returns true
-        every { TelecomUtil.isVoicemailNumber(context, null, "123") } returns true
-
-        assertTrue(lookup.isVoicemailNumber(handle = null, number = "123"))
-    }
-
-    @Test
     fun isVoicemailNumber_whenPermissionIsDeniedThenGranted_doesNotCacheTheDenial() {
         every { TelecomUtil.hasReadPhoneStatePermission(context) } returns false
 

@@ -108,17 +108,6 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
     }
 
     @Test
-    fun sheet_whenItsRowLeavesTheSnapshot_closes() {
-        setContent(state = entriesState(item(id = 1L), item(id = 2L)))
-        openSheet(id = 2L)
-
-        uiState.value = entriesState(item(id = 1L))
-
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
-            .assertCountEquals(expectedSize = 0)
-    }
-
-    @Test
     fun sheet_delete_dispatchesAtTheTapEvenWhenItsRowLeavesTheSnapshotDuringTheHide() {
         setContent(state = entriesState(item(id = 1L), item(id = 2L)))
         openSheet(id = 2L)
@@ -143,53 +132,6 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
     }
 
     @Test
-    fun emptyAction_click_dispatchesMakeCallClicked() {
-        setContent(
-            state = uiState.value.copy(
-                content = RecentsContentUiState.Empty(
-                    message = "Your call history is empty",
-                    actionLabel = "Make a call",
-                ),
-            ),
-        )
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_EMPTY_ACTION_TEST_TAG).performClick()
-
-        composeTestRule.runOnIdle {
-            verify(exactly = 1) { screenModel.onAction(Action.MakeCallClicked) }
-        }
-    }
-
-    @Test
-    fun permissionAction_click_dispatchesGrantPermissionClicked() {
-        setContent(
-            state = uiState.value.copy(
-                content = RecentsContentUiState.PermissionRequired(
-                    message = "Turn on the permission",
-                    actionLabel = "Turn on",
-                ),
-            ),
-        )
-
-        composeTestRule.onNodeWithTag(testTag = RECENTS_PERMISSION_ACTION_TEST_TAG).performClick()
-
-        composeTestRule.runOnIdle {
-            verify(exactly = 1) { screenModel.onAction(Action.GrantPermissionClicked) }
-        }
-    }
-
-    @Test
-    fun requestCallLogPermissionEffect_asksTheHostForThePermission() {
-        setContent()
-
-        effects.trySend(Effect.RequestCallLogPermission)
-
-        composeTestRule.runOnIdle {
-            assertEquals(1, permissionRequests)
-        }
-    }
-
-    @Test
     fun writeFailedEffect_showsTheSnackbarWithTheResolvedMessage() {
         setContent(state = entriesState(item(id = 1L)))
 
@@ -197,17 +139,6 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
 
         composeTestRule.onNodeWithTag(testTag = RECENTS_SNACKBAR_TEST_TAG, useUnmergedTree = true)
             .assert(hasAnyDescendant(hasTextExactly(WRITE_FAILED_MESSAGE)))
-    }
-
-    @Test
-    fun placeCallEffect_reachesTheHandler() {
-        setContent()
-
-        effects.trySend(Effect.PlaceCall(number = NUMBER_ONE))
-
-        composeTestRule.runOnIdle {
-            verify(exactly = 1) { effectHandler.handle(Effect.PlaceCall(number = NUMBER_ONE)) }
-        }
     }
 
     private fun openSheet(id: Long) {

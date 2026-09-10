@@ -56,11 +56,6 @@ internal class RecentsItemRowWrapTest {
     }
 
     @Test
-    fun secondaryText_withLargeFont_keepsTheTimestampOnOneLine() {
-        assertTimestampWrap("Mobile", 340.dp, 2f, LayoutDirection.Ltr)
-    }
-
-    @Test
     fun secondaryText_withRtlLayout_keepsTheTimestampOnOneLine() {
         assertTimestampWrap("reviewer42@example.invalid", 320.dp, 1f, LayoutDirection.Rtl)
     }

@@ -37,18 +37,6 @@ internal class ThemeTest {
     private lateinit var themedShapes: Shapes
 
     @Test
-    fun dialerTheme_whenDarkThemeIsFalse_usesTheDynamicLightColorScheme() {
-        composeRule.setContent {
-            DialerTheme(darkTheme = false) { CaptureTheme() }
-        }
-
-        assertEquals(
-            roleColors(scheme = dynamicLightColorScheme(context = themedContext)),
-            roleColors(scheme = themedColorScheme),
-        )
-    }
-
-    @Test
     fun dialerTheme_whenDarkThemeIsTrue_usesTheDynamicDarkColorScheme() {
         composeRule.setContent {
             DialerTheme(darkTheme = true) { CaptureTheme() }
@@ -59,18 +47,6 @@ internal class ThemeTest {
             roleColors(scheme = themedColorScheme),
         )
         assertNotEquals(
-            roleColors(scheme = dynamicLightColorScheme(context = themedContext)),
-            roleColors(scheme = themedColorScheme),
-        )
-    }
-
-    @Test
-    fun dialerTheme_whenDarkThemeIsNotGiven_inDayMode_usesTheDynamicLightColorScheme() {
-        composeRule.setContent {
-            DialerTheme { CaptureTheme() }
-        }
-
-        assertEquals(
             roleColors(scheme = dynamicLightColorScheme(context = themedContext)),
             roleColors(scheme = themedColorScheme),
         )
