@@ -15,6 +15,7 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,9 +29,22 @@ internal class ContactLookupImplTest {
     private val contentResolver = mockk<ContentResolver>()
     private val lookup = ContactLookupImpl(contentResolver = contentResolver)
 
+    @Before
+    fun setUp() {
+        every { contentResolver.query(any(), any(), any<String>(), any(), null) } returns null
+    }
+
     @Test
     fun invoke_withACustomLabel_returnsTheLabelWithTheCustomType() {
-        every { contentResolver.query(any(), any(), null, null, null) } returns
+        every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } returns
             phoneLookupCursor(
                 contactId = 42L,
                 name = "Ada Lovelace",
@@ -49,7 +63,15 @@ internal class ContactLookupImplTest {
     @Test
     fun invoke_withAMatchingContact_returnsItsNamePhotoAndLookupUri() {
         val capturedUris = mutableListOf<Uri>()
-        every { contentResolver.query(capture(capturedUris), any(), null, null, null) } returns
+        every {
+            contentResolver.query(
+                capture(capturedUris),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } returns
             phoneLookupCursor(
                 contactId = 42L,
                 name = "Ada Lovelace",
@@ -71,14 +93,23 @@ internal class ContactLookupImplTest {
             result,
         )
         assertEquals(
-            Uri.withAppendedPath(PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI, Uri.encode(NUMBER)),
+            PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI.buildUpon().appendPath(NUMBER)
+                .appendQueryParameter(PhoneLookup.QUERY_PARAMETER_SIP_ADDRESS, "false").build(),
             capturedUris.single(),
         )
     }
 
     @Test
     fun invoke_whenTheDisplayNameIsOnlyTheNumber_returnsTheContactWithoutAName() {
-        every { contentResolver.query(any(), any(), null, null, null) } returns
+        every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } returns
             phoneLookupCursor(contactId = 7L, name = "+1 876-555-0201", photoUri = null, key = "k7")
 
         assertEquals(
@@ -95,7 +126,15 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_withNoMatchingContact_returnsNone() {
-        every { contentResolver.query(any(), any(), null, null, null) } returns
+        every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } returns
             MatrixCursor(ContactLookupImpl.PHONE_LOOKUP_PROJECTION)
 
         assertEquals(ContactLookupResult.None, lookup(NUMBER))
@@ -103,7 +142,15 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_whenTheProviderRefusesTheLookup_returnsUnavailable() {
-        every { contentResolver.query(any(), any(), null, null, null) } throws
+        every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } throws
             SecurityException("no contacts permission")
 
         assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
@@ -111,7 +158,15 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_whenTheProviderReturnsNoCursor_returnsUnavailable() {
-        every { contentResolver.query(any(), any(), null, null, null) } returns null
+        every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null
+            )
+        } returns null
 
         assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
     }
@@ -123,7 +178,15 @@ internal class ContactLookupImplTest {
             SQLiteFullException(),
             SQLiteDatabaseCorruptException(),
         ).forEach { failure ->
-            every { contentResolver.query(any(), any(), null, null, null) } throws failure
+            every {
+                contentResolver.query(
+                    any(),
+                    eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                    null,
+                    null,
+                    null
+                )
+            } throws failure
 
             assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
         }
@@ -136,7 +199,15 @@ internal class ContactLookupImplTest {
             IllegalArgumentException("Invalid URI $LOOKUP_URI"),
         ).forEach { failure ->
             ShadowLog.clear()
-            every { contentResolver.query(any(), any(), null, null, null) } throws failure
+            every {
+                contentResolver.query(
+                    any(),
+                    eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                    null,
+                    null,
+                    null
+                )
+            } throws failure
 
             lookup(NUMBER)
 
@@ -152,7 +223,18 @@ internal class ContactLookupImplTest {
     fun invoke_withABlankNumber_answersNoContactWithoutQuerying() {
         assertEquals(ContactLookupResult.None, lookup(" "))
 
-        verify(exactly = 0) { contentResolver.query(any(), any(), null, null, null) }
+        verify(exactly = 0) {
+            contentResolver.query(
+                match {
+                    it.path?.startsWith("/phone_lookup") ==
+                        true
+                },
+                any(),
+                null,
+                null,
+                null
+            )
+        }
     }
 
     private fun phoneLookupCursor(

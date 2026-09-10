@@ -215,6 +215,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
                 lookupUri = contact.lookupUri,
                 numberType = contact.numberType,
                 numberLabel = contact.numberLabel,
+                alternativeName = contact.alternativeName,
+                carrierPresence = contact.carrierPresence,
             )
             ContactLookupResult.None -> entry.copy(
                 cachedName = null,

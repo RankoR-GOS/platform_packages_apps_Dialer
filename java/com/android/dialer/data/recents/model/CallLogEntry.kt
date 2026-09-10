@@ -25,6 +25,8 @@ internal data class CallLogEntry(
     val accountId: String? = null,
     val postDialDigits: String = "",
     val viaNumber: String = "",
+    val alternativeName: String? = null,
+    val carrierPresence: Int = 0,
     val groupedEntryIds: ImmutableList<CallLogEntryId> = persistentListOf(entryId),
 ) {
 
