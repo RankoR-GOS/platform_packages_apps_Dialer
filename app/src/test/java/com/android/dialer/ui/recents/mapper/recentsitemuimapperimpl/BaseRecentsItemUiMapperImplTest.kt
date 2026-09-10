@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.R
+import com.android.dialer.contacts.displaypreference.ContactDisplayPreferences
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.domain.recents.usecase.CanPlaceCall
@@ -25,6 +26,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
     protected val relativeTimestampFormatter = mockk<RelativeTimestampFormatter>()
     protected val canPlaceCall = mockk<CanPlaceCall>()
     protected val isEmergencyNumber = mockk<IsEmergencyNumber>()
+    protected val contactDisplayPreferences = mockk<ContactDisplayPreferences>()
 
     @Before
     fun setUp() {
@@ -45,6 +47,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
         every { relativeTimestampFormatter(any(), NOW_MILLIS, false) } returns LONG_TIME
         every { canPlaceCall(any(), any()) } returns true
         every { isEmergencyNumber(any()) } returns false
+        every { contactDisplayPreferences.getDisplayName(any(), any()) } answers { firstArg() }
     }
 
     protected fun map(entry: CallLogEntry): RecentsItemUiModel {
@@ -62,6 +65,7 @@ internal abstract class BaseRecentsItemUiMapperImplTest {
             relativeTimestampFormatter = relativeTimestampFormatter,
             canPlaceCall = canPlaceCall,
             isEmergencyNumber = isEmergencyNumber,
+            contactDisplayPreferences = contactDisplayPreferences,
         )
     }
 

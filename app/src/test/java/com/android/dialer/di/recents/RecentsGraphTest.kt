@@ -1,6 +1,7 @@
 package com.android.dialer.di.recents
 
 import android.os.Build
+import com.android.dialer.contacts.ContactsComponent
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatterImpl
 import com.android.dialer.data.recents.contact.ContactLookup
@@ -30,6 +31,11 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.components.SingletonComponent
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import org.junit.After
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -83,11 +89,20 @@ internal class RecentsGraphTest {
 
     @Before
     fun setUp() {
+        mockkStatic(ContactsComponent::class)
+        every { ContactsComponent.get(any()) } returns mockk {
+            every { contactDisplayPreferences() } returns mockk()
+        }
         hiltRule.inject()
         entryPoint = EntryPointAccessors.fromApplication(
             RuntimeEnvironment.getApplication(),
             RecentsTestEntryPoint::class.java,
         )
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(ContactsComponent::class)
     }
 
     @Test

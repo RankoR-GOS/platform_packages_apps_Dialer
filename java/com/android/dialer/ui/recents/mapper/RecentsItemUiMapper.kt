@@ -5,6 +5,7 @@ import android.provider.CallLog
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.text.TextUtils
 import com.android.dialer.R
+import com.android.dialer.contacts.displaypreference.ContactDisplayPreferences
 import com.android.dialer.data.phone.formatter.PhoneNumberFormatter
 import com.android.dialer.data.recents.model.CallLogEntry
 import com.android.dialer.data.recents.model.CallType
@@ -29,9 +30,22 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     private val relativeTimestampFormatter: RelativeTimestampFormatter,
     private val canPlaceCall: CanPlaceCall,
     private val isEmergencyNumber: IsEmergencyNumber,
+    private val contactDisplayPreferences: ContactDisplayPreferences,
 ) : RecentsItemUiMapper {
 
     override fun map(entry: CallLogEntry, nowMillis: Long): RecentsItemUiModel {
+        return mapWithPreferredName(
+            entry = entry.copy(
+                cachedName = contactDisplayPreferences.getDisplayName(
+                    entry.cachedName,
+                    entry.alternativeName,
+                ),
+            ),
+            nowMillis = nowMillis,
+        )
+    }
+
+    private fun mapWithPreferredName(entry: CallLogEntry, nowMillis: Long): RecentsItemUiModel {
         val isEmergency = isEmergencyNumber(entry.number)
         val displayNumber = entry.displayNumber()
         val primaryText = entry.primaryText(
