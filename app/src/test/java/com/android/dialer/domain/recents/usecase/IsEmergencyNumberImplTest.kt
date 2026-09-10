@@ -11,6 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.BAKLAVA])
@@ -42,6 +43,20 @@ internal class IsEmergencyNumberImplTest {
     @Test
     fun invoke_withoutTelephony_returnsFalse() {
         assertFalse(IsEmergencyNumberImpl(telephonyManager = null)(EMERGENCY_NUMBER))
+    }
+
+    @Test
+    fun invoke_whenTelephonyErrorContainsPrivateData_logsOnlyTheFailureCategory() {
+        val privateData = "reviewer42@example.invalid +15550101999"
+        every { telephonyManager.isEmergencyNumber(any()) } throws
+            IllegalStateException(privateData, IllegalArgumentException(privateData))
+        ShadowLog.clear()
+
+        assertFalse(createUseCase()(EMERGENCY_NUMBER))
+
+        val logs = ShadowLog.getLogs().map { it.msg }
+        assertTrue(logs.any { it.contains("telephony unavailable") })
+        assertFalse(logs.any { it.contains(privateData) })
     }
 
     private fun createUseCase(): IsEmergencyNumberImpl {

@@ -156,20 +156,20 @@ internal class RecentsRepositoryImpl @Inject constructor(
         return try {
             write()
             RecentsWriteResult.Completed
-        } catch (e: SecurityException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: permission revoked", e)
+        } catch (_: SecurityException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: permission revoked")
             RecentsWriteResult.Failed(cause = RecentsWriteFailure.PermissionRevoked)
-        } catch (e: SQLiteDiskIOException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: disk write failed", e)
+        } catch (_: SQLiteDiskIOException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: disk write failed")
             RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage)
-        } catch (e: SQLiteFullException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: disk full", e)
+        } catch (_: SQLiteFullException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: disk full")
             RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage)
-        } catch (e: SQLiteDatabaseCorruptException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: call log corrupt", e)
+        } catch (_: SQLiteDatabaseCorruptException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: call log corrupt")
             RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage)
-        } catch (e: IllegalArgumentException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: provider rejected the write", e)
+        } catch (_: IllegalArgumentException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.$operation: provider rejected the write")
             RecentsWriteResult.Failed(cause = RecentsWriteFailure.ProviderAbsent)
         }
     }
@@ -289,8 +289,8 @@ internal class RecentsRepositoryImpl @Inject constructor(
             queryEntries()?.let { entries ->
                 CallLogSnapshot(entries = entries, isPermissionGranted = true)
             }
-        } catch (e: SecurityException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.querySnapshot: permission revoked mid-query", e)
+        } catch (_: SecurityException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.querySnapshot: permission revoked mid-query")
             permissionDeniedSnapshot()
         }
     }
@@ -309,17 +309,17 @@ internal class RecentsRepositoryImpl @Inject constructor(
             ) ?: return persistentListOf()
 
             cursor.use(::mapEntries).toImmutableList()
-        } catch (e: SQLiteDiskIOException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: disk read failed", e)
+        } catch (_: SQLiteDiskIOException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: disk read failed")
             null
-        } catch (e: SQLiteFullException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: disk full", e)
+        } catch (_: SQLiteFullException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: disk full")
             null
-        } catch (e: SQLiteDatabaseCorruptException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: call log corrupt", e)
+        } catch (_: SQLiteDatabaseCorruptException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: call log corrupt")
             null
-        } catch (e: IllegalArgumentException) {
-            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: provider rejected the query", e)
+        } catch (_: IllegalArgumentException) {
+            LogUtil.e(TAG, "RecentsRepositoryImpl.queryEntries: provider rejected the query")
             null
         }
     }

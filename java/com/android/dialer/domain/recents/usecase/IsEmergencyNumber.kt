@@ -19,8 +19,8 @@ internal class IsEmergencyNumberImpl @Inject constructor(
 
         return try {
             telephonyManager.isEmergencyNumber(number)
-        } catch (e: IllegalStateException) {
-            LogUtil.e(TAG, "IsEmergencyNumberImpl: telephony unavailable", e)
+        } catch (_: IllegalStateException) {
+            LogUtil.e(TAG, "IsEmergencyNumberImpl: telephony unavailable")
             false
         }
     }
