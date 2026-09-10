@@ -239,6 +239,34 @@ internal class RecentsItemUiMapperImplTextTest : BaseRecentsItemUiMapperImplTest
         )
     }
 
+    @Test
+    fun map_withDigitsInASipUser_speaksTheWholeAddress() {
+        val address = "review42@example.com"
+        val entry = callLogEntry(id = 1L, number = address, formattedNumber = address)
+
+        val model = map(entry)
+
+        assertEquals(address, model.spokenDisplayNumber)
+        assertEquals(
+            "plurals-${R.plurals.a11y_new_call_log_entry_answered_call}-1-$address; $LONG_TIME",
+            model.contentDescription,
+        )
+    }
+
+    @Test
+    fun map_withDigitsInASipHost_speaksTheWholeAddress() {
+        val address = "sip:ada@office42.example.com"
+        val entry = callLogEntry(id = 1L, number = address, formattedNumber = address)
+
+        val model = map(entry)
+
+        assertEquals(address, model.spokenDisplayNumber)
+        assertEquals(
+            "plurals-${R.plurals.a11y_new_call_log_entry_answered_call}-1-$address; $LONG_TIME",
+            model.contentDescription,
+        )
+    }
+
     private companion object {
         private const val SIP_ADDRESS = "sip:ada@example.com"
         private const val RAW_NUMBER = "6502530000"

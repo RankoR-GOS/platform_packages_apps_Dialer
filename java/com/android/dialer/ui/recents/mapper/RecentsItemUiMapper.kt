@@ -194,6 +194,10 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
     }
 
     private fun spokenDigits(number: String): String {
+        if (PhoneNumberHelper.isUriNumber(number)) {
+            return number
+        }
+
         val digits = number.filter { it.isDigit() || it == '+' }
 
         return when {
