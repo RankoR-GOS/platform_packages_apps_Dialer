@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.CompositionTracer
+import androidx.compose.runtime.InternalComposeTracingApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
@@ -20,6 +23,7 @@ import com.android.dialer.ui.recents.model.RecentsListItemUiModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -175,35 +179,56 @@ internal class RecentsRecompositionCountTest {
         }
     }
 
+    @OptIn(InternalComposeTracingApi::class)
     @Test
-    fun rowOnScreen_whenTheListScrollsBeneathIt_doesNotRecompose() {
-        val items = listItems(count = LIST_SIZE)
-        val rowCounter = CompositionCounter()
+    fun listRows_whenScrolledWithinTheSameVisibleRows_doNotRecompose() {
+        val items = listItems(count = 2)
+        val rowCounter = RowCompositionCounter()
         lateinit var listState: LazyListState
 
-        composeTestRule.setContent {
-            listState = rememberLazyListState()
-            DialerTheme {
-                CountedRow(
-                    item = (items.first() as RecentsListItemUiModel.Entry).item,
-                    counter = rowCounter
-                )
-                Box(modifier = Modifier.height(height = VIEWPORT_HEIGHT)) {
-                    RecentsItems(items = items, listState = listState, onItemEvent = {})
+        Composer.setTracer(rowCounter)
+        try {
+            composeTestRule.setContent {
+                listState = rememberLazyListState()
+                DialerTheme {
+                    Box(modifier = Modifier.height(height = ROW_VIEWPORT_HEIGHT)) {
+                        RecentsItems(items = items, listState = listState, onItemEvent = {})
+                    }
                 }
             }
-        }
-        composeTestRule.waitForIdle()
-        val afterInitialComposition = rowCounter.value
+            val afterInitialComposition = composeTestRule.runOnIdle {
+                assertEquals(listOf(1L, 2L), listState.layoutInfo.visibleItemsInfo.map { it.key })
+                assertTrue("expected production row compositions", rowCounter.value > 0)
+                rowCounter.value
+            }
 
-        composeTestRule.runOnIdle {
-            listState.requestScrollToItem(index = 0, scrollOffset = SCROLL_OFFSET_PX)
+            composeTestRule.runOnIdle {
+                listState.requestScrollToItem(index = 0, scrollOffset = SCROLL_OFFSET_PX)
+            }
+            composeTestRule.runOnIdle {
+                assertEquals(SCROLL_OFFSET_PX, listState.firstVisibleItemScrollOffset)
+                assertEquals(listOf(1L, 2L), listState.layoutInfo.visibleItemsInfo.map { it.key })
+                assertEquals(afterInitialComposition, rowCounter.value)
+            }
+        } finally {
+            Composer.setTracer(null)
         }
-        composeTestRule.waitForIdle()
+    }
 
-        composeTestRule.runOnIdle {
-            assertEquals(afterInitialComposition, rowCounter.value)
+    @OptIn(InternalComposeTracingApi::class)
+    private class RowCompositionCounter : CompositionTracer {
+        var value: Int = 0
+            private set
+
+        override fun traceEventStart(key: Int, dirty1: Int, dirty2: Int, info: String) {
+            if (info.startsWith("com.android.dialer.ui.recents.component.RecentsItemRow (")) {
+                value += 1
+            }
         }
+
+        override fun traceEventEnd() = Unit
+
+        override fun isTraceInProgress(): Boolean = true
     }
 
     private class CompositionCounter {
@@ -287,6 +312,7 @@ internal class RecentsRecompositionCountTest {
 
     private companion object {
         private val VIEWPORT_HEIGHT = 96.dp
+        private val ROW_VIEWPORT_HEIGHT = 160.dp
         private const val LIST_SIZE = 60
         private const val SCROLL_OFFSET_PX = 24
         private const val SCROLL_TARGET_INDEX = 20

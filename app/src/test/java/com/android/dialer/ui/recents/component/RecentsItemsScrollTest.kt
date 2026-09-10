@@ -59,7 +59,9 @@ internal class RecentsItemsScrollTest {
             listState.layoutInfo.visibleItemsInfo.size
         }
 
+        assertTrue("expected rows in the viewport", visibleCount > 0)
         assertTrue("expected a viewport, not the whole list", visibleCount < ENTRY_COUNT)
+        composeTestRule.onNodeWithTag(testTag = tagOf(id = 1L)).assertIsDisplayed()
         composeTestRule.onNodeWithTag(testTag = RECENTS_LIST_TEST_TAG)
             .onChildren()
             .assertCountEquals(expectedSize = visibleCount)
