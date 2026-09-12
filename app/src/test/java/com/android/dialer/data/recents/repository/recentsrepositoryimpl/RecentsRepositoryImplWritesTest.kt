@@ -42,9 +42,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun delete_deletesTheGivenIdsThroughTheCallLogUri() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             every { contentResolver.delete(any(), any(), any()) } returns 2
 
             val result = createRepository().delete(
@@ -64,9 +62,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun delete_withEmptyInput_doesNotTouchTheProvider() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val result = createRepository().delete(entryIds = emptyList())
 
             assertEquals(RecentsWriteResult.Completed, result)
@@ -76,9 +72,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun delete_runsOnTheInjectedDispatcher() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             var writeThreadName: String? = null
             every { contentResolver.delete(any(), any(), any()) } answers {
                 writeThreadName = Thread.currentThread().name
@@ -97,9 +91,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun delete_whenTheResolverThrowsSecurityException_returnsFailedPermissionRevoked() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             every { contentResolver.delete(any(), any(), any()) } throws SecurityException("no")
 
             val result = createRepository().delete(entryIds = listOf(CallLogEntryId(value = 1L)))
@@ -113,9 +105,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun delete_whenTheResolverThrowsSqliteFull_returnsFailedStorage() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             every {
                 contentResolver.delete(any(), any(), any())
             } throws SQLiteFullException("disk full")
@@ -128,9 +118,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun delete_whenTheResolverThrowsIllegalState_propagates() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             every {
                 contentResolver.delete(any(), any(), any())
             } throws IllegalStateException(PROGRAMMING_ERROR)
@@ -146,9 +134,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun markRead_setsIsReadOnTheGivenIdsAndNothingElse() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val values = slot<ContentValues>()
             every { contentResolver.update(any(), capture(values), any(), any()) } returns 1
 
@@ -173,9 +159,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun markRead_whenTheCallLogIsCorrupt_returnsFailedStorage() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             every {
                 contentResolver.update(any(), any(), any(), any())
             } throws SQLiteDatabaseCorruptException("corrupt")
@@ -190,9 +174,7 @@ internal class RecentsRepositoryImplWritesTest : BaseRecentsRepositoryImplTest()
 
     @Test
     fun markRead_withEmptyInput_doesNotTouchTheProvider() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val result = createRepository().markRead(entryIds = emptyList())
 
             assertEquals(RecentsWriteResult.Completed, result)

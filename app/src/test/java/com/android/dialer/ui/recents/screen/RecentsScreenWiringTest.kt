@@ -98,20 +98,29 @@ internal class RecentsScreenWiringTest {
             accountComponentName = "example/.Service",
             accountId = "sim2",
         )
-        val expected = Action.VideoCallClicked(NUMBER, "example/.Service", "sim2")
+        val expected = Action.VideoCallClicked(
+            number = NUMBER,
+            accountComponentName = "example/.Service",
+            accountId = "sim2",
+        )
         val actions = mutableListOf<Action>()
 
         assertEquals(expected, RecentsSheetAction.VideoCall.toAction(item))
         handleItemEvent(
-            RecentsItemEvent.VideoCallClicked(ENTRY_ID, NUMBER, "example/.Service", "sim2"),
-            entries(item),
-            actions::add,
-            {},
+            event = RecentsItemEvent.VideoCallClicked(
+                entryId = ENTRY_ID,
+                number = NUMBER,
+                accountComponentName = "example/.Service",
+                accountId = "sim2",
+            ),
+            content = entries(item),
+            onAction = actions::add,
+            onOpenSheet = {},
         )
 
         assertEquals(listOf(expected), actions)
         assertEquals(
-            Action.VideoCallClicked(NUMBER),
+            Action.VideoCallClicked(number = NUMBER),
             RecentsSheetAction.VideoCall.toAction(item.copy(isVideoCall = false)),
         )
     }
@@ -152,17 +161,29 @@ internal class RecentsScreenWiringTest {
             .copy(postDialDigits = ",12;34")
 
         assertEquals(
-            Action.CallBackClicked(NUMBER + ",12;34"),
-            RecentsSheetAction.Call.toAction(item)
+            Action.CallBackClicked(number = NUMBER + ",12;34"),
+            RecentsSheetAction.Call.toAction(item),
         )
-        assertEquals(Action.VideoCallClicked(NUMBER), RecentsSheetAction.VideoCall.toAction(item))
-        assertEquals(Action.MessageClicked(NUMBER), RecentsSheetAction.Message.toAction(item))
-        assertEquals(Action.CopyNumberClicked(NUMBER), RecentsSheetAction.CopyNumber.toAction(item))
         assertEquals(
-            Action.CreateContactClicked(NUMBER),
-            RecentsSheetAction.CreateContact.toAction(item)
+            Action.VideoCallClicked(number = NUMBER),
+            RecentsSheetAction.VideoCall.toAction(item),
         )
-        assertEquals(Action.AddContactClicked(NUMBER), RecentsSheetAction.AddContact.toAction(item))
+        assertEquals(
+            Action.MessageClicked(number = NUMBER),
+            RecentsSheetAction.Message.toAction(item),
+        )
+        assertEquals(
+            Action.CopyNumberClicked(number = NUMBER),
+            RecentsSheetAction.CopyNumber.toAction(item),
+        )
+        assertEquals(
+            Action.CreateContactClicked(number = NUMBER),
+            RecentsSheetAction.CreateContact.toAction(item),
+        )
+        assertEquals(
+            Action.AddContactClicked(number = NUMBER),
+            RecentsSheetAction.AddContact.toAction(item),
+        )
     }
 
     @Test

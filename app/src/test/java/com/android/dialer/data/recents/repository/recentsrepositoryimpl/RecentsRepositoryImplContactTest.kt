@@ -27,9 +27,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withoutACachedName_paintsTheRowThenFillsItFromTheLookup() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ADA
@@ -52,9 +50,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheLookupDisagreesWithTheCachedName_prefersTheLookup() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(callLogRow(id = 1L, number = NUMBER, cachedName = "Old")),
             )
@@ -73,9 +69,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_looksEachNumberUpOnceAcrossSnapshots() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L)))
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ADA
@@ -97,9 +91,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenAContactChangesWhileUnobserved_looksItUpOnResubscription() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ADA
@@ -126,9 +118,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenAContactIsAddedWhileUnobserved_forgetsTheCachedMiss() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ContactLookupResult.None
@@ -154,9 +144,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenEveryNumberIsCached_emitsOnlyTheEnrichedSnapshot() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L, number = OTHER)),
             )
@@ -181,9 +169,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenACachedSnapshotGainsNoNames_stillEmitsItOnce() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L)))
             stubObserverRegistration()
             every { contactLookup(NUMBER) } returns ContactLookupResult.None
@@ -205,9 +191,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenARowLeavesTheSnapshot_forgetsItsContactAndAsksAgainWhenItReturns() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(unnamedRow(id = 2L), unnamedRow(id = 1L, number = OTHER)),
             )
@@ -240,9 +224,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenAContactChanges_dropsTheCacheAndLooksUpAgain() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
             val observers = stubObserverRegistrations()
             every { contactLookup(NUMBER) } returns ADA
@@ -266,9 +248,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withoutTheContactsPermission_neitherLooksUpNorObservesContacts() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(unnamedRow(id = 1L)))
             stubObserverRegistration()
 
@@ -297,9 +277,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheContactIsGone_dropsTheCachedColumns() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(
                     callLogRow(
@@ -332,9 +310,7 @@ internal class RecentsRepositoryImplContactTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheLookupIsUnavailable_keepsTheCachedColumnsAndAsksAgain() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(callLogRow(id = 1L, number = NUMBER, cachedName = "Old")),
             )

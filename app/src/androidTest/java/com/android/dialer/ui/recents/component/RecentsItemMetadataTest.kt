@@ -39,7 +39,11 @@ internal class RecentsItemMetadataTest {
         setContent(fontScale = 2f)
         val layouts = mutableListOf<TextLayoutResult>()
 
-        composeTestRule.onNodeWithTag(recentsItemAccountTestTag(ENTRY_ID), useUnmergedTree = true)
+        composeTestRule
+            .onNodeWithTag(
+                testTag = recentsItemAccountTestTag(entryId = ENTRY_ID),
+                useUnmergedTree = true,
+            )
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
 
         assertEquals(1, layouts.single().lineCount)
@@ -47,9 +51,9 @@ internal class RecentsItemMetadataTest {
         listOf(
             RECENTS_HD_TEST_TAG,
             RECENTS_RTT_TEST_TAG,
-            RECENTS_ASSISTED_TEST_TAG
+            RECENTS_ASSISTED_TEST_TAG,
         ).forEach { tag ->
-            composeTestRule.onNodeWithTag(tag, useUnmergedTree = true).assertIsDisplayed()
+            composeTestRule.onNodeWithTag(testTag = tag, useUnmergedTree = true).assertIsDisplayed()
         }
     }
 
@@ -62,7 +66,7 @@ internal class RecentsItemMetadataTest {
                         RecentsItemRow(
                             item = previewRecentsItem(
                                 entryId = ENTRY_ID,
-                                primaryText = "Test caller"
+                                primaryText = "Test caller",
                             ).copy(
                                 accountLabel = LONG_ACCOUNT_LABEL,
                                 isHdCall = true,
@@ -79,7 +83,7 @@ internal class RecentsItemMetadataTest {
     }
 
     private companion object {
-        val ENTRY_ID = CallLogEntryId(7L)
+        val ENTRY_ID = CallLogEntryId(value = 7L)
         const val LONG_ACCOUNT_LABEL = "Work subscription with a long name via +12025550186"
     }
 }

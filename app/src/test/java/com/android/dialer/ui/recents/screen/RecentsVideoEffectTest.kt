@@ -44,7 +44,13 @@ internal class RecentsVideoEffectTest {
 
     @Test
     fun handle_withARecordedVideoAccount_passesItToPreCall() {
-        handler.handle(RecentsEffect.PlaceVideoCall("123", "example/.Service", "sim2"))
+        handler.handle(
+            RecentsEffect.PlaceVideoCall(
+                number = "123",
+                accountComponentName = "example/.Service",
+                accountId = "sim2",
+            ),
+        )
 
         assertTrue(builder.captured.isVideoCall)
         assertEquals("sim2", builder.captured.phoneAccountHandle?.id)
@@ -57,7 +63,13 @@ internal class RecentsVideoEffectTest {
 
     @Test
     fun handle_withAMalformedVideoAccount_leavesAccountSelectionToPreCall() {
-        handler.handle(RecentsEffect.PlaceVideoCall("123", "not-a-component", "sim2"))
+        handler.handle(
+            RecentsEffect.PlaceVideoCall(
+                number = "123",
+                accountComponentName = "not-a-component",
+                accountId = "sim2",
+            ),
+        )
 
         assertTrue(builder.captured.isVideoCall)
         assertNull(builder.captured.phoneAccountHandle)
@@ -65,7 +77,7 @@ internal class RecentsVideoEffectTest {
 
     @Test
     fun handle_withAVoiceCallback_preservesExtensionsAndDoesNotPinAnAccount() {
-        handler.handle(RecentsEffect.PlaceCall("123,45;67"))
+        handler.handle(RecentsEffect.PlaceCall(number = "123,45;67"))
 
         assertFalse(builder.captured.isVideoCall)
         assertEquals("123,45;67", builder.captured.uri.schemeSpecificPart)

@@ -150,7 +150,8 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
     private fun item(
         id: Long,
         canVideoCall: Boolean = false,
-        groupedEntryIds: ImmutableList<CallLogEntryId> = persistentListOf(CallLogEntryId(id)),
+        groupedEntryIds: ImmutableList<CallLogEntryId> =
+            persistentListOf(CallLogEntryId(value = id)),
     ): RecentsItemUiModel {
         return previewRecentsItem(
             entryId = CallLogEntryId(value = id),

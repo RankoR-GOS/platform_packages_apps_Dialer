@@ -2,6 +2,7 @@ package com.android.dialer.data.recents.repository.recentsrepositoryimpl
 
 import android.os.Build
 import android.provider.CallLog.Calls
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import app.cash.turbine.test
 import com.android.dialer.data.recents.account.PhoneAccountSnapshot
 import com.android.dialer.data.recents.contact.ContactLookupResult
@@ -85,14 +86,16 @@ internal class RecentsRepositoryImplMetadataTest : BaseRecentsRepositoryImplTest
             stubObserverRegistration()
             val handle =
                 requireNotNull(TelecomUtil.composePhoneAccountHandle("example/.Service", "sim2"))
-            every { phoneAccountLookup() } returns
-                PhoneAccountSnapshot(mapOf(handle to "Work"), true)
+            every { phoneAccountLookup() } returns PhoneAccountSnapshot(
+                labels = mapOf(handle to "Work"),
+                supportsVideoPresence = true,
+            )
             every { contactLookup(any()) } returns ContactLookupResult.Found(
-                "Ada Lovelace",
-                null,
-                "content://contacts/lookup/42",
-                2,
-                null,
+                name = "Ada Lovelace",
+                photoUri = null,
+                lookupUri = "content://contacts/lookup/42",
+                numberType = Phone.TYPE_MOBILE,
+                numberLabel = null,
                 alternativeName = "Lovelace, Ada",
                 carrierPresence = 1,
             )

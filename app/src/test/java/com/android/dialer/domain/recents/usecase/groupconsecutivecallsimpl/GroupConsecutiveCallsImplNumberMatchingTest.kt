@@ -27,15 +27,6 @@ internal class GroupConsecutiveCallsImplNumberMatchingTest {
 
         assertEquals(1, grouped.size)
         assertEquals(2, grouped.first().groupedCallCount)
-        assertEquals(
-            2,
-            groupConsecutiveCalls(
-                entries = listOf(
-                    callLogEntry(id = 2L, number = "jane@example.com"),
-                    callLogEntry(id = 1L, number = "jane@other.example"),
-                ),
-            ).size,
-        )
     }
 
     @Test

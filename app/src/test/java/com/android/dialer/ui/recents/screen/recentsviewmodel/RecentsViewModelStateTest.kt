@@ -22,9 +22,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
 
     @Test
     fun uiState_afterAMinute_mapsAgainWithTheNewTime() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val laterState = RecentsUiState(
                 content = RecentsContentUiState.Empty(
                     message = "a minute later",
@@ -57,9 +55,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
 
     @Test
     fun uiState_whenACollectorReturnsWithinTheTimeout_keepsTheRepositoryFlow() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             var isClosed = false
             every { repository.observeSnapshot() } returns callbackFlow {
                 trySend(SNAPSHOT)
@@ -82,9 +78,7 @@ internal class RecentsViewModelStateTest : BaseRecentsViewModelTest() {
 
     @Test
     fun uiState_whenTheLastCollectorLeaves_stopsTheRepositoryFlowAfterTheTimeout() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             var isClosed = false
             every { repository.observeSnapshot() } returns callbackFlow {
                 trySend(SNAPSHOT)

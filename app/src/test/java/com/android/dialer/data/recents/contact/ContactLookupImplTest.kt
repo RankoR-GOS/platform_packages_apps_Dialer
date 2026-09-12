@@ -1,6 +1,7 @@
 package com.android.dialer.data.recents.contact
 
 import android.content.ContentResolver
+import android.database.Cursor
 import android.database.MatrixCursor
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import android.database.sqlite.SQLiteDiskIOException
@@ -9,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.PhoneLookup
+import io.mockk.MockKStubScope
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -75,15 +77,7 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_whenTheDisplayNameIsOnlyTheNumber_returnsTheContactWithoutAName() {
-        every {
-            contentResolver.query(
-                any(),
-                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                null,
-                null,
-                null
-            )
-        } returns
+        phoneLookupQuery() returns
             phoneLookupCursor(contactId = 7L, name = "+1 876-555-0201", photoUri = null, key = "k7")
 
         assertEquals(
@@ -100,15 +94,7 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_withNoMatchingContact_returnsNone() {
-        every {
-            contentResolver.query(
-                any(),
-                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                null,
-                null,
-                null
-            )
-        } returns
+        phoneLookupQuery() returns
             MatrixCursor(ContactLookupImpl.PHONE_LOOKUP_PROJECTION)
 
         assertEquals(ContactLookupResult.None, lookup(NUMBER))
@@ -116,15 +102,7 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_whenTheProviderRefusesTheLookup_returnsUnavailable() {
-        every {
-            contentResolver.query(
-                any(),
-                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                null,
-                null,
-                null
-            )
-        } throws
+        phoneLookupQuery() throws
             SecurityException("no contacts permission")
 
         assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
@@ -132,15 +110,7 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_whenTheProviderReturnsNoCursor_returnsUnavailable() {
-        every {
-            contentResolver.query(
-                any(),
-                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                null,
-                null,
-                null
-            )
-        } returns null
+        phoneLookupQuery() returns null
 
         assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
     }
@@ -152,15 +122,7 @@ internal class ContactLookupImplTest {
             SQLiteFullException(),
             SQLiteDatabaseCorruptException(),
         ).forEach { failure ->
-            every {
-                contentResolver.query(
-                    any(),
-                    eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                    null,
-                    null,
-                    null
-                )
-            } throws failure
+            phoneLookupQuery() throws failure
 
             assertEquals(ContactLookupResult.Unavailable, lookup(NUMBER))
         }
@@ -173,15 +135,7 @@ internal class ContactLookupImplTest {
             IllegalArgumentException("Invalid URI $LOOKUP_URI"),
         ).forEach { failure ->
             ShadowLog.clear()
-            every {
-                contentResolver.query(
-                    any(),
-                    eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                    null,
-                    null,
-                    null
-                )
-            } throws failure
+            phoneLookupQuery() throws failure
 
             lookup(NUMBER)
 
@@ -213,15 +167,7 @@ internal class ContactLookupImplTest {
 
     @Test
     fun invoke_withACustomLabel_returnsTheLabelWithTheCustomType() {
-        every {
-            contentResolver.query(
-                any(),
-                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
-                null,
-                null,
-                null
-            )
-        } returns
+        phoneLookupQuery() returns
             phoneLookupCursor(
                 contactId = 42L,
                 name = "Ada Lovelace",
@@ -235,6 +181,18 @@ internal class ContactLookupImplTest {
 
         assertEquals(Phone.TYPE_CUSTOM, found.numberType)
         assertEquals("Studio", found.numberLabel)
+    }
+
+    private fun phoneLookupQuery(): MockKStubScope<Cursor?, Cursor?> {
+        return every {
+            contentResolver.query(
+                any(),
+                eq(ContactLookupImpl.PHONE_LOOKUP_PROJECTION),
+                null,
+                null,
+                null,
+            )
+        }
     }
 
     private fun phoneLookupCursor(

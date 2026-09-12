@@ -49,9 +49,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenALaterReadFails_keepsTheRows() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             val observerSlot = stubObserverRegistration()
 
@@ -70,9 +68,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheFirstReadFailsThenRecovers_replacesTheEmptyState() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubQueryThrows(error = SQLiteDiskIOException("disk io"))
             val observerSlot = stubObserverRegistration()
 
@@ -90,9 +86,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheFirstReadAfterAGrantFails_showsTheEmptyState() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubQueryThrows(error = SQLiteDiskIOException())
             stubObserverRegistration()
             val repository = createRepository(isCallLogGranted = false)
@@ -114,9 +108,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheProviderThrowsSecurityException_reportsThePermissionAsRevoked() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubQueryThrows(error = SecurityException("revoked mid-query"))
             stubObserverRegistration()
 
@@ -129,9 +121,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_whenTheProviderThrowsIllegalState_propagates() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubQueryThrows(error = IllegalStateException(PROGRAMMING_ERROR))
             stubObserverRegistration()
 
@@ -146,9 +136,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withoutTheCallLogPermission_reportsItWithoutQuerying() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubObserverRegistration()
 
             val snapshot = createRepository(isCallLogGranted = false)
@@ -162,9 +150,7 @@ internal class RecentsRepositoryImplFailureTest : BaseRecentsRepositoryImplTest(
     }
 
     private fun assertFailureShowsTheEmptyState(error: Throwable) {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubQueryThrows(error = error)
             val observerSlot = stubObserverRegistration()
 

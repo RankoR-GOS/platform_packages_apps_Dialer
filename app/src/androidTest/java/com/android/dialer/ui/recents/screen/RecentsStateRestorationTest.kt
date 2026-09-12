@@ -62,9 +62,13 @@ internal class RecentsStateRestorationTest {
 
         restorationTester.emulateSavedInstanceStateRestore()
 
-        composeTestRule.onNodeWithTag(testTag = recentsItemTestTag(CallLogEntryId(ANCHOR_ID)))
+        composeTestRule
+            .onNodeWithTag(
+                testTag = recentsItemTestTag(entryId = CallLogEntryId(value = ANCHOR_ID)),
+            )
             .assertIsDisplayed()
-        composeTestRule.onAllNodesWithTag(testTag = recentsItemTestTag(CallLogEntryId(1L)))
+        composeTestRule
+            .onAllNodesWithTag(testTag = recentsItemTestTag(entryId = CallLogEntryId(value = 1L)))
             .assertCountEquals(expectedSize = 0)
     }
 

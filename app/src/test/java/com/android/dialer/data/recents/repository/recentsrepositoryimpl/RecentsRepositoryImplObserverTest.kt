@@ -39,9 +39,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun observeSnapshot_whenCollected_registersAContentObserverForDescendants() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = emptyList())
             stubObserverRegistration()
 
@@ -55,9 +53,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun observeSnapshot_withoutTheCallLogPermission_registersNoObserver() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubObserverRegistration()
 
             val snapshot = createRepository(isCallLogGranted = false)
@@ -71,9 +67,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun observeSnapshot_whenThePermissionArrivesWithARefresh_registersTheObserverAndQueries() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
             val repository = createRepository(isCallLogGranted = false)
@@ -96,9 +90,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun observeSnapshot_onContentChange_requeriesAndEmitsAgain() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             val observerSlot = stubObserverRegistration()
 
@@ -117,9 +109,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun observeSnapshot_onCancellation_unregistersTheContentObserverItRegistered() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = emptyList())
             val observerSlot = stubObserverRegistration()
 
@@ -134,9 +124,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun observeSnapshot_runsTheQueryOnTheInjectedDispatcher() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             var queryThreadName: String? = null
             every { contentResolver.query(any(), any(), any<Bundle>(), any()) } answers {
                 queryThreadName = Thread.currentThread().name
@@ -157,9 +145,7 @@ internal class RecentsRepositoryImplObserverTest : BaseRecentsRepositoryImplTest
 
     @Test
     fun refresh_beforeAnyCollection_isDroppedRatherThanReplayed() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
             val repository = createRepository()

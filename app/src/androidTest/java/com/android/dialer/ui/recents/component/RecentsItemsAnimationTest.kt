@@ -81,7 +81,8 @@ internal class RecentsItemsAnimationTest {
     }
 
     private fun rowTop(id: Long): Float {
-        return composeTestRule.onNodeWithTag(testTag = recentsItemTestTag(CallLogEntryId(id)))
+        return composeTestRule
+            .onNodeWithTag(testTag = recentsItemTestTag(entryId = CallLogEntryId(value = id)))
             .fetchSemanticsNode()
             .positionInRoot
             .y

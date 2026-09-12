@@ -118,10 +118,6 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
         assertEquals("content://photo/1", model.avatar.photoUri)
     }
 
-    private companion object {
-        private const val UNKNOWN_RAW_TYPE = 42
-    }
-
     @Test
     fun map_carriesEveryGroupedEntryIdForDelete() {
         val groupIds = persistentListOf(
@@ -133,5 +129,9 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
         val model = map(callLogEntry(id = 3L).copy(groupedEntryIds = groupIds))
 
         assertEquals(groupIds, model.groupedEntryIds)
+    }
+
+    private companion object {
+        private const val UNKNOWN_RAW_TYPE = 42
     }
 }

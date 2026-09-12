@@ -29,9 +29,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withRows_mapsEveryColumnFromTheProjection() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(
                     callLogRow(
@@ -85,9 +83,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_queriesExactlyTheProductionProjection() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
@@ -102,9 +98,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_mapsEveryPlatformCallType() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(
                     callLogRow(id = 1L, callType = CallLog.Calls.INCOMING_TYPE),
@@ -137,9 +131,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withAnUnknownCallType_keepsTheRawTypeOnTheEntry() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L, callType = UNKNOWN_CALL_TYPE)))
             stubObserverRegistration()
 
@@ -154,9 +146,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withBlankOrNullOptionalColumns_normalisesThemToEmptyAndNull() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(
                     callLogRow(
@@ -188,9 +178,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withRowsWhoseIdIsNotPositive_dropsThemAndKeepsTheRest() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(
                 rows = listOf(callLogRow(id = 0L), callLogRow(id = -5L), callLogRow(id = 2L)),
             )
@@ -204,9 +192,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withNullCursor_emitsAnEmptyGrantedSnapshot() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             every { contentResolver.query(any(), any(), any<Bundle>(), any()) } returns null
             stubObserverRegistration()
 
@@ -219,9 +205,7 @@ internal class RecentsRepositoryImplMappingTest : BaseRecentsRepositoryImplTest(
 
     @Test
     fun observeSnapshot_withAnEmptyCursor_emitsAnEmptyGrantedSnapshot() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = emptyList())
             stubObserverRegistration()
 

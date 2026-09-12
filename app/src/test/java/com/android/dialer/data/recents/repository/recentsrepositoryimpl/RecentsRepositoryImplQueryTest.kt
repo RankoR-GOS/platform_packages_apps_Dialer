@@ -21,9 +21,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
 
     @Test
     fun observeSnapshot_selectsEveryCallButBlockedAndVoicemail() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
@@ -42,9 +40,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
 
     @Test
     fun observeSnapshot_bindsEveryComparedValueAsASelectionArgument() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
@@ -61,9 +57,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
 
     @Test
     fun observeSnapshot_capsTheRowCountThroughTheUriParameter() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 
@@ -78,9 +72,7 @@ internal class RecentsRepositoryImplQueryTest : BaseRecentsRepositoryImplTest() 
 
     @Test
     fun observeSnapshot_sortsByDateDescending() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val queryArgs = stubCallLogQuery(rows = listOf(callLogRow(id = 1L)))
             stubObserverRegistration()
 

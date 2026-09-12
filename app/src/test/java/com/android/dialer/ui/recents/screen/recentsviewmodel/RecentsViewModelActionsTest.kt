@@ -49,8 +49,16 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     @Test
     fun videoCallClicked_withAnAccount_preservesItInTheEffect() {
         assertEffect(
-            Action.VideoCallClicked(NUMBER, "example/.Service", "sim2"),
-            Effect.PlaceVideoCall(NUMBER, "example/.Service", "sim2"),
+            Action.VideoCallClicked(
+                number = NUMBER,
+                accountComponentName = "example/.Service",
+                accountId = "sim2",
+            ),
+            Effect.PlaceVideoCall(
+                number = NUMBER,
+                accountComponentName = "example/.Service",
+                accountId = "sim2",
+            ),
         )
     }
 
@@ -69,9 +77,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
 
     @Test
     fun entryViewed_marksEveryCallOfTheGroupReadAndRaisesNothing() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             coEvery { repository.markRead(GROUP_IDS) } returns RecentsWriteResult.Completed
             val viewModel = createViewModel()
 
@@ -89,9 +95,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
 
     @Test
     fun entryViewed_whenTheWriteFails_raisesNothing() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             coEvery { repository.markRead(any()) } returns
                 RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage)
             val viewModel = createViewModel()
@@ -107,9 +111,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
 
     @Test
     fun deleteConfirmed_deletesEveryEntryInTheGroupAndRaisesNothing() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             coEvery { repository.delete(GROUP_IDS) } returns RecentsWriteResult.Completed
             val viewModel = createViewModel()
 
@@ -127,9 +129,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
 
     @Test
     fun deleteConfirmed_whenTheDeleteFails_emitsWriteFailed() {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             coEvery { repository.delete(any()) } returns
                 RecentsWriteResult.Failed(cause = RecentsWriteFailure.Storage)
             val viewModel = createViewModel()
@@ -145,9 +145,7 @@ internal class RecentsViewModelActionsTest : BaseRecentsViewModelTest() {
     }
 
     private fun assertEffect(action: Action, expected: Effect) {
-        runTest(
-            context = mainDispatcherRule.testDispatcher,
-        ) {
+        runTest(context = mainDispatcherRule.testDispatcher) {
             val viewModel = createViewModel()
 
             viewModel.effects.test {

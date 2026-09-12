@@ -216,14 +216,22 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
             ).copy(canBlockNumber = false),
         )
 
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_CALL_TEST_TAG).assertExists()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_COPY_NUMBER_TEST_TAG).assertExists()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_DELETE_TEST_TAG).assertExists()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_VIDEO_CALL_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_MESSAGE_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_ADD_CONTACT_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_CREATE_CONTACT_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_EDIT_NUMBER_TEST_TAG).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(RECENTS_SHEET_BLOCK_TEST_TAG).assertDoesNotExist()
+        listOf(
+            RECENTS_SHEET_CALL_TEST_TAG,
+            RECENTS_SHEET_COPY_NUMBER_TEST_TAG,
+            RECENTS_SHEET_DELETE_TEST_TAG,
+        ).forEach { tag ->
+            composeTestRule.onNodeWithTag(testTag = tag).assertExists()
+        }
+        listOf(
+            RECENTS_SHEET_VIDEO_CALL_TEST_TAG,
+            RECENTS_SHEET_MESSAGE_TEST_TAG,
+            RECENTS_SHEET_ADD_CONTACT_TEST_TAG,
+            RECENTS_SHEET_CREATE_CONTACT_TEST_TAG,
+            RECENTS_SHEET_EDIT_NUMBER_TEST_TAG,
+            RECENTS_SHEET_BLOCK_TEST_TAG,
+        ).forEach { tag ->
+            composeTestRule.onAllNodesWithTag(testTag = tag).assertCountEquals(expectedSize = 0)
+        }
     }
 }
