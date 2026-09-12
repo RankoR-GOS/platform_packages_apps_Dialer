@@ -11,8 +11,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
@@ -30,6 +32,7 @@ import com.android.dialer.ui.recents.common.RECENTS_SHEET_COPY_NUMBER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CREATE_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_DELETE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_EDIT_NUMBER_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_HEADER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_MESSAGE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_SUBTITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_TITLE_TEST_TAG
@@ -48,27 +51,42 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     fun header_showsThePrimaryTextAndTheNumber() {
         setContent(item = item())
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertTextEquals(PRIMARY_TEXT)
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG, useUnmergedTree = true)
             .assertTextEquals(DISPLAY_NUMBER)
+    }
+
+    @Test
+    fun header_isOneHeadingThatSpeaksTheNameThenTheNumber() {
+        setContent(item = item())
+
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_HEADER_TEST_TAG)
+            .assert(matcher = isHeading())
+            .assert(matcher = hasText(text = PRIMARY_TEXT))
+            .assert(matcher = hasContentDescription(value = SPOKEN_NUMBER))
     }
 
     @Test
     fun header_avatar_isPresentAndSilent() {
         setContent(item = item())
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_AVATAR_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_AVATAR_TEST_TAG, useUnmergedTree = true)
             .assertIsDisplayed()
             .assert(matcher = hasNoText())
-            .assert(matcher = hasAnyDescendant(matcher = hasNoText().not()).not())
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_HEADER_TEST_TAG)
+            .assert(matcher = hasText(text = AVATAR_LETTER).not())
     }
 
     @Test
     fun header_whenThePrimaryTextIsTheNumber_showsNoSubtitle() {
         setContent(item = item(primaryText = DISPLAY_NUMBER))
 
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
+        composeTestRule
+            .onAllNodesWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG, useUnmergedTree = true)
             .assertCountEquals(expectedSize = 0)
     }
 
@@ -76,7 +94,8 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     fun header_speaksTheSubtitleNumberDigitByDigit() {
         setContent(item = item())
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_SUBTITLE_TEST_TAG, useUnmergedTree = true)
             .assertContentDescriptionEquals(SPOKEN_NUMBER)
     }
 
@@ -84,7 +103,8 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     fun header_whenThePrimaryTextIsTheNumber_speaksTheTitleDigitByDigit() {
         setContent(item = item(primaryText = DISPLAY_NUMBER))
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertContentDescriptionEquals(SPOKEN_NUMBER)
     }
 
@@ -93,7 +113,8 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
         val noDescription = SemanticsMatcher.keyNotDefined(SemanticsProperties.ContentDescription)
         setContent(item = item())
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assert(matcher = noDescription)
     }
 
@@ -114,7 +135,7 @@ internal class RecentsActionsSheetVisibilityTest : BaseRecentsActionsSheetTest()
     private fun textDirection(tag: String): TextDirection {
         val layouts = mutableListOf<TextLayoutResult>()
 
-        composeTestRule.onNodeWithTag(testTag = tag)
+        composeTestRule.onNodeWithTag(testTag = tag, useUnmergedTree = true)
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { fetch ->
                 fetch(layouts)
             }

@@ -51,7 +51,9 @@ internal class RecentsActionsSheetHideTest {
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.mainClock.advanceTimeByFrame()
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
+            .assertIsDisplayed()
     }
 
     @Test
@@ -60,7 +62,8 @@ internal class RecentsActionsSheetHideTest {
 
         target.value = null
 
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertCountEquals(expectedSize = 0)
     }
 

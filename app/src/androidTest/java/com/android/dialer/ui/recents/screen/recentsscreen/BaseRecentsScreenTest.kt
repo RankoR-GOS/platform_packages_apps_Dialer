@@ -2,6 +2,9 @@ package com.android.dialer.ui.recents.screen.recentsscreen
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import com.android.dialer.ui.core.DialerTheme
 import com.android.dialer.ui.recents.common.previewActionLabels
 import com.android.dialer.ui.recents.model.RecentsContentUiState
@@ -56,6 +59,13 @@ internal abstract class BaseRecentsScreenTest {
                 )
             }
         }
+    }
+
+    protected fun scrollToAndClick(tag: String) {
+        val node = composeTestRule.onNodeWithTag(testTag = tag)
+        node.performScrollTo()
+        composeTestRule.waitForIdle()
+        node.performClick()
     }
 
     protected fun entriesState(vararg items: RecentsItemUiModel): RecentsUiState {

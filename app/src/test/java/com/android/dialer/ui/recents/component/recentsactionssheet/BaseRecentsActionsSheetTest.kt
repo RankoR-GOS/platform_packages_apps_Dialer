@@ -68,5 +68,6 @@ internal abstract class BaseRecentsActionsSheetTest {
         const val PRIMARY_TEXT = "Caller 7"
         const val DISPLAY_NUMBER = "+1 555-0007"
         const val SPOKEN_NUMBER = "+ 1 5 5 5 0 0 0 7"
+        const val AVATAR_LETTER = "C"
     }
 }

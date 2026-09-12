@@ -79,7 +79,8 @@ internal class RecentsStateRestorationTest {
 
         restorationTester.emulateSavedInstanceStateRestore()
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertTextEquals("Caller 3")
     }
 
@@ -91,7 +92,8 @@ internal class RecentsStateRestorationTest {
         uiState.value = entriesState(count = 2)
         restorationTester.emulateSavedInstanceStateRestore()
 
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertCountEquals(expectedSize = 0)
         assertEquals(2, (uiState.value.content as RecentsContentUiState.Entries).items.size)
     }
@@ -101,12 +103,13 @@ internal class RecentsStateRestorationTest {
         setContent()
         openSheet(id = 3L)
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG)
-            .performScrollTo()
-            .performClick()
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG).performScrollTo()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG).performClick()
         restorationTester.emulateSavedInstanceStateRestore()
 
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertCountEquals(expectedSize = 0)
     }
 

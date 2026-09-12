@@ -54,7 +54,8 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
 
         composeTestRule.onNodeWithTag(testTag = recentsItemTestTag(ENTRY_TWO)).performClick()
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onNodeWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertTextEquals("Caller 2")
     }
 
@@ -64,16 +65,15 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
         setContent(state = entriesState(item(id = 2L, groupedEntryIds = groupIds)))
         openSheet(id = 2L)
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG)
-            .performScrollTo()
-            .performClick()
+        scrollToAndClick(tag = RECENTS_SHEET_DELETE_TEST_TAG)
 
         composeTestRule.runOnIdle {
             verify(exactly = 1) {
                 screenModel.onAction(Action.DeleteConfirmed(entryIds = groupIds))
             }
         }
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertCountEquals(expectedSize = 0)
     }
 
@@ -90,7 +90,7 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
         ).forEach { (tag, expected) ->
             openSheet(id = 1L)
 
-            composeTestRule.onNodeWithTag(testTag = tag).performScrollTo().performClick()
+            scrollToAndClick(tag = tag)
 
             composeTestRule.runOnIdle {
                 verify(exactly = 1) { screenModel.onAction(expected) }
@@ -111,11 +111,11 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
     fun sheet_delete_dispatchesAtTheTapEvenWhenItsRowLeavesTheSnapshotDuringTheHide() {
         setContent(state = entriesState(item(id = 1L), item(id = 2L)))
         openSheet(id = 2L)
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG).performScrollTo()
+        composeTestRule.waitForIdle()
         composeTestRule.mainClock.autoAdvance = false
 
-        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG)
-            .performScrollTo()
-            .performClick()
+        composeTestRule.onNodeWithTag(testTag = RECENTS_SHEET_DELETE_TEST_TAG).performClick()
         composeTestRule.mainClock.advanceTimeByFrame()
         uiState.value = entriesState(item(id = 1L))
         composeTestRule.mainClock.autoAdvance = true
@@ -127,7 +127,8 @@ internal class RecentsScreenTest : BaseRecentsScreenTest() {
                 )
             }
         }
-        composeTestRule.onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG)
+        composeTestRule
+            .onAllNodesWithTag(testTag = RECENTS_SHEET_TITLE_TEST_TAG, useUnmergedTree = true)
             .assertCountEquals(expectedSize = 0)
     }
 

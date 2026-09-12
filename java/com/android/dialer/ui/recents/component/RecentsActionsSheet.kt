@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextDirection
@@ -66,6 +67,7 @@ import com.android.dialer.ui.recents.common.RECENTS_SHEET_COPY_NUMBER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_CREATE_CONTACT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_DELETE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_EDIT_NUMBER_TEST_TAG
+import com.android.dialer.ui.recents.common.RECENTS_SHEET_HEADER_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_MESSAGE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_SUBTITLE_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_SHEET_TEST_TAG
@@ -281,7 +283,9 @@ private fun RecentsActionsSheetHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = SheetHorizontalPadding, vertical = SheetHeaderVerticalPadding),
+            .padding(horizontal = SheetHorizontalPadding, vertical = SheetHeaderVerticalPadding)
+            .testTag(tag = RECENTS_SHEET_HEADER_TEST_TAG)
+            .semantics(mergeDescendants = true) { heading() },
         horizontalArrangement = Arrangement.spacedBy(space = SheetHeaderSpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
