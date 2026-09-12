@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMade
 import androidx.compose.material.icons.automirrored.filled.CallMissed
@@ -40,6 +43,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,6 +77,7 @@ private val ItemCallButtonSize = 48.dp
 private val ItemCallButtonIconSize = 24.dp
 private val PreviewRowSpacing = 2.dp
 private const val SECONDARY_TEXT_MAX_LINES = 2
+private const val CALL_TYPE_ICON_INLINE_CONTENT_ID = "call_type_icon"
 
 @Composable
 internal fun RecentsItemRow(
@@ -188,24 +195,39 @@ private fun RecentsItemText(
             overflow = TextOverflow.Ellipsis,
         )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(space = ItemSecondarySpacing),
-            verticalAlignment = Alignment.Top,
-        ) {
-            RecentsItemCallTypeIcon(item.callTypeIcon, secondaryColor)
-
-            Text(
-                text = item.secondaryText,
-                modifier = Modifier
-                    .weight(weight = 1f, fill = false)
-                    .testTag(tag = recentsItemSecondaryTextTestTag(entryId = item.entryId)),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = fontWeight,
-                color = secondaryColor,
-                maxLines = SECONDARY_TEXT_MAX_LINES,
-                overflow = TextOverflow.Ellipsis,
+        val iconPlaceholder = with(LocalDensity.current) {
+            Placeholder(
+                width = (ItemCallTypeIconSize + ItemSecondarySpacing).toSp(),
+                height = ItemCallTypeIconSize.toSp(),
+                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
             )
         }
+        val secondaryText = buildAnnotatedString {
+            appendInlineContent(id = CALL_TYPE_ICON_INLINE_CONTENT_ID)
+            append(item.secondaryText)
+        }
+        val inlineContent = mapOf(
+            CALL_TYPE_ICON_INLINE_CONTENT_ID to InlineTextContent(
+                placeholder = iconPlaceholder,
+            ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+                    RecentsItemCallTypeIcon(icon = item.callTypeIcon, color = secondaryColor)
+                }
+            },
+        )
+
+        Text(
+            text = secondaryText,
+            modifier = Modifier.testTag(
+                tag = recentsItemSecondaryTextTestTag(entryId = item.entryId),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = fontWeight,
+            color = secondaryColor,
+            maxLines = SECONDARY_TEXT_MAX_LINES,
+            overflow = TextOverflow.Ellipsis,
+            inlineContent = inlineContent,
+        )
 
         RecentsItemAccount(item = item)
 
@@ -215,22 +237,12 @@ private fun RecentsItemText(
 
 @Composable
 private fun RecentsItemCallTypeIcon(icon: RecentsCallTypeIcon, color: Color) {
-    val style = MaterialTheme.typography.bodyMedium
-    val lineHeight = with(LocalDensity.current) {
-        style.fontSize.toDp() * (style.lineHeight.value / style.fontSize.value)
-    }
-
-    Box(
-        modifier = Modifier.size(width = ItemCallTypeIconSize, height = lineHeight),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon.toImageVector(),
-            contentDescription = null,
-            modifier = Modifier.size(ItemCallTypeIconSize).testTag(RECENTS_CALL_TYPE_ICON_TEST_TAG),
-            tint = color,
-        )
-    }
+    Icon(
+        imageVector = icon.toImageVector(),
+        contentDescription = null,
+        modifier = Modifier.size(ItemCallTypeIconSize).testTag(RECENTS_CALL_TYPE_ICON_TEST_TAG),
+        tint = color,
+    )
 }
 
 @Composable

@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.component
 
 import android.os.Build
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertCountEquals
@@ -19,9 +20,11 @@ import com.android.dialer.testutil.hasCustomActionCount
 import com.android.dialer.ui.recents.common.previewRecentsItem
 import com.android.dialer.ui.recents.common.recentsItemAvatarTestTag
 import com.android.dialer.ui.recents.common.recentsItemCallButtonTestTag
+import com.android.dialer.ui.recents.common.recentsItemSecondaryTextTestTag
 import com.android.dialer.ui.recents.common.recentsItemTestTag
 import com.android.dialer.ui.recents.model.RecentsItemUiModel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -121,6 +124,20 @@ internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
     }
 
     @Test
+    fun secondaryText_startsWithTheInlineIconBoundToTheFirstWord() {
+        val item = item()
+        setContent(item = item)
+
+        val text = composeTestRule.onNodeWithTag(testTag = SECONDARY_TAG, useUnmergedTree = true)
+            .fetchSemanticsNode()
+            .config[SemanticsProperties.Text]
+            .single()
+            .text
+
+        assertTrue(text.startsWith(prefix = "\uFFFD" + item.secondaryText))
+    }
+
+    @Test
     fun recentsItemFontWeight_withAnUnreadMissedCall_isMedium() {
         assertEquals(FontWeight.Medium, recentsItemFontWeight(isUnreadMissedCall = true))
     }
@@ -155,6 +172,7 @@ internal class RecentsItemRowTest : BaseRecentsItemRowTest() {
         private val ROW_TAG = recentsItemTestTag(entryId = ENTRY_ID)
         private val CALL_BUTTON_TAG = recentsItemCallButtonTestTag(entryId = ENTRY_ID)
         private val AVATAR_TAG = recentsItemAvatarTestTag(entryId = ENTRY_ID)
+        private val SECONDARY_TAG = recentsItemSecondaryTextTestTag(entryId = ENTRY_ID)
         private const val ROW_DESCRIPTION = "1 answered call from Caller 7; 10:24"
         private const val CLICK_LABEL = "expand menu"
         private const val CALL_LABEL = "Call Caller 7"

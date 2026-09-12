@@ -8,17 +8,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.width
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.core.DialerTheme
+import com.android.dialer.ui.recents.common.RECENTS_CALL_TYPE_ICON_TEST_TAG
 import com.android.dialer.ui.recents.common.previewRecentsItem
 import com.android.dialer.ui.recents.common.recentsItemSecondaryTextTestTag
 import org.junit.Assert.assertEquals
@@ -61,16 +65,31 @@ internal class RecentsItemRowWrapTest {
     }
 
     @Test
-    fun secondaryText_withAGroupCountAtFontScaleTwo_startsTheSecondLineUnderTheCount() {
-        val text = "(2)\u00A0Mobile •\u00A02\u00A0min\u00A0ago"
-        setContent(secondaryText = text, width = 320.dp, fontScale = 2f)
+    fun secondaryText_withAGroupCountAtFontScaleTwo_startsTheSecondLineUnderTheIcon() {
+        setContent(
+            secondaryText = "(2)\u00A0Mobile •\u00A02\u00A0min\u00A0ago",
+            width = 320.dp,
+            fontScale = 2f,
+        )
 
         val layout = secondaryTextLayout()
+        val laidOut = layout.layoutInput.text.text
 
         assertEquals(2, layout.lineCount)
-        assertEquals(0, layout.getLineForOffset(text.indexOf("Mobile")))
-        assertEquals(1, layout.getLineForOffset(text.indexOf('•')))
+        assertEquals(0, layout.getLineForOffset(laidOut.indexOf("Mobile")))
+        assertEquals(1, layout.getLineForOffset(laidOut.indexOf('•')))
         assertEquals(layout.getLineLeft(lineIndex = 0), layout.getLineLeft(lineIndex = 1), 0f)
+        assertEquals(iconBounds().left.value, secondaryTextBounds().left.value, 0.5f)
+    }
+
+    @Test
+    fun callTypeIcon_isInlineAtTheStartOfTheSecondaryText() {
+        setContent(secondaryText = SHORT_SECONDARY_TEXT)
+
+        val icon = iconBounds()
+
+        assertEquals(secondaryTextBounds().left.value, icon.left.value, 0.5f)
+        assertEquals(ICON_SIZE.value, icon.width.value, 0.5f)
     }
 
     private fun assertTimestampWrap(
@@ -102,11 +121,12 @@ internal class RecentsItemRowWrapTest {
         }
 
         val layout = secondaryTextLayout()
-        val start = text.indexOf(timestamp)
+        val laidOut = layout.layoutInput.text.text
+        val start = laidOut.indexOf(timestamp)
         assertEquals(2, layout.lineCount)
         assertEquals(1, layout.getLineForOffset(start))
-        assertEquals(1, layout.getLineForOffset(text.lastIndex))
-        assertEquals(1, layout.getLineForOffset(text.indexOf('•')))
+        assertEquals(1, layout.getLineForOffset(laidOut.lastIndex))
+        assertEquals(1, layout.getLineForOffset(laidOut.indexOf('•')))
         assertTrue(!layout.isLineEllipsized(lineIndex = 1))
     }
 
@@ -135,6 +155,17 @@ internal class RecentsItemRowWrapTest {
         }
     }
 
+    private fun iconBounds(): DpRect {
+        return composeTestRule
+            .onNodeWithTag(testTag = RECENTS_CALL_TYPE_ICON_TEST_TAG, useUnmergedTree = true)
+            .getUnclippedBoundsInRoot()
+    }
+
+    private fun secondaryTextBounds(): DpRect {
+        return composeTestRule.onNodeWithTag(testTag = SECONDARY_TEXT_TAG, useUnmergedTree = true)
+            .getUnclippedBoundsInRoot()
+    }
+
     private fun secondaryTextLayout(): TextLayoutResult {
         val layouts = mutableListOf<TextLayoutResult>()
 
@@ -148,6 +179,7 @@ internal class RecentsItemRowWrapTest {
 
     private companion object {
         private val ENTRY_ID = CallLogEntryId(value = 7L)
+        private val ICON_SIZE = 18.dp
         private val SECONDARY_TEXT_TAG = recentsItemSecondaryTextTestTag(entryId = ENTRY_ID)
         private const val SHORT_SECONDARY_TEXT = "Kingston, Jamaica • 10:24"
         private val LONG_SECONDARY_TEXT = List(size = 12) { "Kingston, Jamaica" }
