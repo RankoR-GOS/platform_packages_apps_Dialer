@@ -26,7 +26,6 @@ internal fun previewRecentsItem(
         letter = primaryText.firstOrNull()?.takeIf { it.isLetter() }?.uppercaseChar(),
     ),
     callTypeIcon: RecentsCallTypeIcon = RecentsCallTypeIcon.Incoming,
-    groupedCallCountLabel: String? = null,
     groupedEntryIds: ImmutableList<CallLogEntryId> = persistentListOf(entryId),
     number: String = "+1555000${entryId.value}",
     isUnreadMissedCall: Boolean = false,
@@ -47,7 +46,6 @@ internal fun previewRecentsItem(
         callActionLabel = callActionLabel,
         avatar = avatar,
         callTypeIcon = callTypeIcon,
-        groupedCallCountLabel = groupedCallCountLabel,
         groupedEntryIds = groupedEntryIds,
         number = number,
         isUnreadMissedCall = isUnreadMissedCall,
@@ -65,10 +63,9 @@ internal fun previewRecentsItems(): ImmutableList<RecentsItemUiModel> {
         previewRecentsItem(
             entryId = CallLogEntryId(value = 1L),
             primaryText = "Ada Lovelace",
-            secondaryText = "2 min ago",
+            secondaryText = "(3)\u00A02 min ago",
             contentDescription = "3 missed calls from Ada Lovelace; 2 minutes ago",
             callTypeIcon = RecentsCallTypeIcon.Missed,
-            groupedCallCountLabel = "(3)",
             isUnreadMissedCall = true,
         ),
         previewRecentsItem(

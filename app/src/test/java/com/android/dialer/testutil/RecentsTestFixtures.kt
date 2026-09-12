@@ -80,7 +80,6 @@ internal fun recentsItemUiModel(
         callActionLabel = "Call $primaryText",
         avatar = RecentsAvatarUiModel(photoUri = null, letter = 'C'),
         callTypeIcon = RecentsCallTypeIcon.Incoming,
-        groupedCallCountLabel = null,
         groupedEntryIds = persistentListOf(CallLogEntryId(value = id)),
         number = number,
         isUnreadMissedCall = false,

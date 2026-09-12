@@ -50,7 +50,6 @@ import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.ui.core.DialerPreviewTheme
 import com.android.dialer.ui.recents.common.RECENTS_ASSISTED_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_CALL_TYPE_ICON_TEST_TAG
-import com.android.dialer.ui.recents.common.RECENTS_GROUP_COUNT_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_HD_TEST_TAG
 import com.android.dialer.ui.recents.common.RECENTS_RTT_TEST_TAG
 import com.android.dialer.ui.recents.common.previewRecentsItems
@@ -194,17 +193,6 @@ private fun RecentsItemText(
             verticalAlignment = Alignment.Top,
         ) {
             RecentsItemCallTypeIcon(item.callTypeIcon, secondaryColor)
-
-            item.groupedCallCountLabel?.let { label ->
-                Text(
-                    text = label,
-                    modifier = Modifier.testTag(RECENTS_GROUP_COUNT_TEST_TAG),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = fontWeight,
-                    color = secondaryColor,
-                    maxLines = 1,
-                )
-            }
 
             Text(
                 text = item.secondaryText,

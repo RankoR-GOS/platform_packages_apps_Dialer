@@ -51,7 +51,6 @@ internal fun recentsItemAccountTestTag(entryId: CallLogEntryId): String {
 }
 
 internal const val RECENTS_CALL_TYPE_ICON_TEST_TAG = "recents_call_type_icon"
-internal const val RECENTS_GROUP_COUNT_TEST_TAG = "recents_group_count"
 internal const val RECENTS_SHEET_ACTION_ICON_TEST_TAG = "recents_sheet_action_icon"
 
 internal fun recentsItemPrimaryTextTestTag(entryId: CallLogEntryId): String {

@@ -65,11 +65,10 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
         return RecentsItemUiModel(
             entryId = entry.entryId,
             primaryText = primaryText,
-            secondaryText = entry.secondaryText(
+            secondaryText = entry.displayedSecondaryText(
                 nowMillis = nowMillis,
                 isEmergency = isEmergency,
-                isAbbreviated = true,
-            ).joinToString(separator = SECONDARY_TEXT_SEPARATOR),
+            ),
             displayNumber = displayNumber,
             spokenDisplayNumber = spokenDisplayNumber,
             contentDescription = entry.contentDescription(
@@ -90,7 +89,6 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
             isRttCall = entry.features and CallLog.Calls.FEATURES_RTT != 0,
             isAssistedDialing =
                 entry.features and TelephonyManagerCompat.FEATURES_ASSISTED_DIALING != 0,
-            groupedCallCountLabel = entry.groupedCallCountLabel(),
             groupedEntryIds = entry.groupedEntryIds,
             number = entry.number,
             postDialDigits = entry.postDialDigits,
@@ -163,6 +161,19 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
         }
 
         return context.getString(resId)
+    }
+
+    private fun CallLogEntry.displayedSecondaryText(
+        nowMillis: Long,
+        isEmergency: Boolean,
+    ): String {
+        val descriptors = secondaryText(
+            nowMillis = nowMillis,
+            isEmergency = isEmergency,
+            isAbbreviated = true,
+        ).joinToString(separator = SECONDARY_TEXT_SEPARATOR)
+        return listOfNotNull(groupedCallCountLabel(), descriptors)
+            .joinToString(separator = GROUP_COUNT_SEPARATOR)
     }
 
     private fun CallLogEntry.secondaryText(
@@ -325,6 +336,7 @@ internal class RecentsItemUiMapperImpl @Inject constructor(
 
     private companion object {
         private const val SECONDARY_TEXT_SEPARATOR = " •\u00A0"
+        private const val GROUP_COUNT_SEPARATOR = "\u00A0"
         private const val DESCRIPTOR_SEPARATOR = ", "
     }
 }

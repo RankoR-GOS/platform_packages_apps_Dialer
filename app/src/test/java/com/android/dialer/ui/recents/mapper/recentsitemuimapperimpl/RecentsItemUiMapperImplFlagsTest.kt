@@ -2,6 +2,7 @@ package com.android.dialer.ui.recents.mapper.recentsitemuimapperimpl
 
 import android.os.Build
 import android.provider.CallLog.Calls
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import com.android.dialer.data.recents.model.CallLogEntryId
 import com.android.dialer.data.recents.model.CallType
 import com.android.dialer.testutil.callLogEntry
@@ -54,10 +55,10 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
     }
 
     @Test
-    fun map_withGroupedCalls_labelsTheCount() {
-        val model = map(callLogEntry(id = 1L, groupedCallCount = 3))
+    fun map_withGroupedCalls_prefixesTheSecondaryTextWithTheCount() {
+        val entry = callLogEntry(id = 1L, groupedCallCount = 3, numberType = Phone.TYPE_MOBILE)
 
-        assertEquals("(3)", model.groupedCallCountLabel)
+        assertEquals("(3)\u00A0$MOBILE_LABEL •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test
@@ -68,17 +69,17 @@ internal class RecentsItemUiMapperImplFlagsTest : BaseRecentsItemUiMapperImplTes
         try {
             val model = map(callLogEntry(id = 1L, groupedCallCount = 3))
 
-            assertEquals("(\u0663)", model.groupedCallCountLabel)
+            assertTrue(model.secondaryText.startsWith("(\u0663)\u00A0"))
         } finally {
             Locale.setDefault(defaultLocale)
         }
     }
 
     @Test
-    fun map_withASingleCall_omitsTheCountLabel() {
-        val model = map(callLogEntry(id = 1L, groupedCallCount = 1))
+    fun map_withASingleCall_omitsTheCount() {
+        val entry = callLogEntry(id = 1L, groupedCallCount = 1, numberType = Phone.TYPE_MOBILE)
 
-        assertNull(model.groupedCallCountLabel)
+        assertEquals("$MOBILE_LABEL •\u00A0$DISPLAY_TIME", map(entry).secondaryText)
     }
 
     @Test

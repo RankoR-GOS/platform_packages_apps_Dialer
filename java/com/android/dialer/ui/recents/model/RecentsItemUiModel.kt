@@ -16,7 +16,6 @@ internal data class RecentsItemUiModel(
     val callActionLabel: String?,
     val avatar: RecentsAvatarUiModel,
     val callTypeIcon: RecentsCallTypeIcon,
-    val groupedCallCountLabel: String?,
     val groupedEntryIds: ImmutableList<CallLogEntryId>,
     val number: String,
     val isUnreadMissedCall: Boolean,

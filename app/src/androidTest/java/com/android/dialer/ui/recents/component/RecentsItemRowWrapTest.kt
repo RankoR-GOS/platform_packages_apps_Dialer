@@ -60,6 +60,19 @@ internal class RecentsItemRowWrapTest {
         assertTimestampWrap("reviewer42@example.invalid", 320.dp, 1f, LayoutDirection.Rtl)
     }
 
+    @Test
+    fun secondaryText_withAGroupCountAtFontScaleTwo_startsTheSecondLineUnderTheCount() {
+        val text = "(2)\u00A0Mobile •\u00A02\u00A0min\u00A0ago"
+        setContent(secondaryText = text, width = 320.dp, fontScale = 2f)
+
+        val layout = secondaryTextLayout()
+
+        assertEquals(2, layout.lineCount)
+        assertEquals(0, layout.getLineForOffset(text.indexOf("Mobile")))
+        assertEquals(1, layout.getLineForOffset(text.indexOf('•')))
+        assertEquals(layout.getLineLeft(lineIndex = 0), layout.getLineLeft(lineIndex = 1), 0f)
+    }
+
     private fun assertTimestampWrap(
         descriptor: String,
         width: Dp,
@@ -97,17 +110,27 @@ internal class RecentsItemRowWrapTest {
         assertTrue(!layout.isLineEllipsized(lineIndex = 1))
     }
 
-    private fun setContent(secondaryText: String) {
+    private fun setContent(
+        secondaryText: String,
+        width: Dp? = null,
+        fontScale: Float = 1f,
+    ) {
         composeTestRule.setContent {
-            DialerTheme {
-                RecentsItemRow(
-                    item = previewRecentsItem(
-                        entryId = ENTRY_ID,
-                        primaryText = "Caller 7",
-                        secondaryText = secondaryText,
-                    ),
-                    onClick = {},
-                )
+            CompositionLocalProvider(
+                LocalDensity provides Density(LocalDensity.current.density, fontScale),
+            ) {
+                DialerTheme {
+                    Box(modifier = width?.let { Modifier.width(it) } ?: Modifier) {
+                        RecentsItemRow(
+                            item = previewRecentsItem(
+                                entryId = ENTRY_ID,
+                                primaryText = "Caller 7",
+                                secondaryText = secondaryText,
+                            ),
+                            onClick = {},
+                        )
+                    }
+                }
             }
         }
     }
