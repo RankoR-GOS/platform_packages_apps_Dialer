@@ -117,6 +117,7 @@ import com.android.dialer.storage.StorageComponent;
 import com.android.dialer.telecom.TelecomUtil;
 import com.android.dialer.theme.base.Theme;
 import com.android.dialer.theme.base.ThemeComponent;
+import com.android.dialer.ui.recents.RecentsHostFragment;
 import com.android.dialer.util.DialerUtils;
 import com.android.dialer.util.PermissionsUtil;
 import com.android.dialer.util.TransactionSafeActivity;
@@ -1302,6 +1303,7 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
 
     private static final String SPEED_DIAL_TAG = "speed_dial";
     private static final String CALL_LOG_TAG = "call_log";
+    private static final String RECENTS_TAG = "recents";
     private static final String CONTACTS_TAG = "contacts";
     private static final String VOICEMAIL_TAG = "voicemail";
 
@@ -1365,8 +1367,9 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
         showSupportFragment(
             supportFragment == null ? new NewCallLogFragment() : supportFragment, CALL_LOG_TAG);
       } else {
-        Fragment fragment = fragmentManager.findFragmentByTag(CALL_LOG_TAG);
-        showFragment(fragment == null ? new CallLogFragment() : fragment, CALL_LOG_TAG);
+        androidx.fragment.app.Fragment recents =
+            supportFragmentManager.findFragmentByTag(RECENTS_TAG);
+        showSupportFragment(recents == null ? new RecentsHostFragment() : recents, RECENTS_TAG);
       }
       fab.show();
       showPromotionBottomSheet(activity, bottomSheet);
@@ -1562,6 +1565,8 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
           supportFragmentManager.findFragmentByTag(SPEED_DIAL_TAG);
       androidx.fragment.app.Fragment newCallLog =
           supportFragmentManager.findFragmentByTag(CALL_LOG_TAG);
+      androidx.fragment.app.Fragment recents =
+          supportFragmentManager.findFragmentByTag(RECENTS_TAG);
       androidx.fragment.app.Fragment newVoicemail =
           supportFragmentManager.findFragmentByTag(VOICEMAIL_TAG);
 
@@ -1571,6 +1576,8 @@ public class OldMainActivityPeer implements MainActivityPeer, FragmentUtilListen
           showIfEqualElseHideSupport(supportTransaction, supportFragment, speedDial);
       supportFragmentShown |=
           showIfEqualElseHideSupport(supportTransaction, supportFragment, newCallLog);
+      supportFragmentShown |=
+          showIfEqualElseHideSupport(supportTransaction, supportFragment, recents);
       supportFragmentShown |=
           showIfEqualElseHideSupport(supportTransaction, supportFragment, newVoicemail);
 

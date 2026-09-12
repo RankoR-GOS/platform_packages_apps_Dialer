@@ -56,7 +56,13 @@ public final class NotificationChannelManager {
     Assert.isNotNull(context);
 
     NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-    Set<String> desiredChannelIds = getAllDesiredChannelIds(context);
+    Set<String> desiredChannelIds;
+    try {
+      desiredChannelIds = getAllDesiredChannelIds(context);
+    } catch (SecurityException e) {
+      LogUtil.w("NotificationChannelManager.initChannels", "account permission unavailable");
+      return;
+    }
     Set<String> existingChannelIds = getAllExistingChannelIds(context);
 
     if (desiredChannelIds.equals(existingChannelIds)) {
@@ -65,10 +71,6 @@ public final class NotificationChannelManager {
     LogUtil.i(
         "NotificationChannelManager.initChannels",
         "doing an expensive initialization of all notification channels");
-    LogUtil.i(
-        "NotificationChannelManager.initChannels", "desired channel IDs: " + desiredChannelIds);
-    LogUtil.i(
-        "NotificationChannelManager.initChannels", "existing channel IDs: " + existingChannelIds);
 
     // Delete any old channels that we don't use any more. This is safe because if we're recreate
     // this later then any user settings will be restored. An example is SIM specific voicemail
