@@ -1,0 +1,60 @@
+package com.android.dialer.keypad.ui
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.res.stringResource
+import com.android.dialer.R
+
+/**
+ * Passed in rather than resolved by the composables: unit tests run without app resources, where
+ * `stringResource` would throw.
+ */
+@Immutable
+internal data class KeypadStrings(
+    val voicemailKeyAction: String,
+    val plusKeyAction: String,
+    val deleteButton: String,
+    val overflowButton: String,
+    val call: String,
+    val emergencyCallWarning: String,
+    val addPause: String,
+    val addWait: String,
+    val callWithNote: String,
+    val voicemailAirplaneModeError: String,
+    val voicemailNotReadyError: String,
+    val prohibitedNumberError: String,
+    val voicemailUnavailableTitle: String,
+    val airplaneModeSettings: String,
+    val voicemailSettings: String,
+    val ok: String,
+    val cancel: String,
+    val keyLabels: KeypadKeyLabels = KeypadKeyLabels(),
+)
+
+@Composable
+internal fun keypadStrings(): KeypadStrings {
+    return KeypadStrings(
+        voicemailKeyAction = stringResource(R.string.description_voicemail_button),
+        plusKeyAction = stringResource(R.string.description_image_button_plus),
+        deleteButton = stringResource(R.string.description_delete_button),
+        overflowButton = stringResource(R.string.description_dialpad_overflow),
+        call = stringResource(R.string.call),
+        emergencyCallWarning = stringResource(
+            R.string.dialpad_hint_emergency_calling_not_available,
+        ),
+        addPause = stringResource(R.string.add_2sec_pause),
+        addWait = stringResource(R.string.add_wait),
+        callWithNote = stringResource(R.string.call_with_a_note),
+        voicemailAirplaneModeError = stringResource(
+            R.string.dialog_voicemail_airplane_mode_message,
+        ),
+        voicemailNotReadyError = stringResource(R.string.dialog_voicemail_not_ready_message),
+        prohibitedNumberError = stringResource(R.string.dialog_phone_call_prohibited_message),
+        voicemailUnavailableTitle = stringResource(R.string.keypad_voicemail_unavailable_title),
+        airplaneModeSettings = stringResource(R.string.voicemail_action_turn_off_airplane_mode),
+        voicemailSettings = stringResource(R.string.dialer_settings_label),
+        ok = stringResource(android.R.string.ok),
+        cancel = stringResource(android.R.string.cancel),
+        keyLabels = keypadKeyLabels(),
+    )
+}
