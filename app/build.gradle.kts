@@ -65,10 +65,17 @@ android {
         resValues = true
     }
 
-    // No testOptions { unitTests { isIncludeAndroidResources = true } } here, unlike the sibling
-    // apps. With binary resources on, Robolectric parses the packaged unit-test manifest and
-    // rejects minSdkVersion 37 while it emulates API 36, and @Config(manifest = Config.NONE) does
-    // not exempt a test from that parse. Revisit once Robolectric supports API 37.
+    // Robolectric 4.17 emulates API 37, so unit tests can use the packaged manifest and resources.
+    // Its sandbox reads FileDescriptor internals through jdk.internal.access, which java.base does
+    // not export by default.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all { unitTest ->
+                unitTest.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+            }
+        }
+    }
 
     defaultConfig {
         minSdk = 37
@@ -231,6 +238,9 @@ dependencies {
 
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
+    // Overrides the espresso-core 3.5.0 that ui-test pulls in, which calls the
+    // InputManager.getInstance() API 37 removed.
+    testImplementation(libs.androidx.test.espresso.core)
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)

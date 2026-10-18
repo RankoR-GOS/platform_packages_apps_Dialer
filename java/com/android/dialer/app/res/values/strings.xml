@@ -481,10 +481,6 @@
     <item>Normal</item>
     <item>Long</item>
   </string-array>
-  <string-array name="dtmf_tone_length_entry_values" translatable="false">
-    <item>0</item>
-    <item>1</item>
-  </string-array>
 
   <!-- Title of settings screen for managing the "Respond via SMS" feature. [CHAR LIMIT=30] -->
   <string name="respond_via_sms_setting_title">Quick responses</string>
@@ -562,15 +558,6 @@
 
   <!-- Label for the phone account settings [CHAR LIMIT=30] -->
   <string name="phone_account_settings_label">Calling accounts</string>
-
-  <!-- Internal key for ringtone preference. -->
-  <string name="ringtone_preference_key" translatable="false">button_ringtone_key</string>
-  <!-- Internal key for vibrate when ringing preference. -->
-  <string name="vibrate_on_preference_key" translatable="false">button_vibrate_on_ring</string>
-  <!-- Internal key for vibrate when ringing preference. -->
-  <string name="play_dtmf_preference_key" translatable="false">button_play_dtmf_tone</string>
-  <!-- Internal key for DTMF tone length preference. -->
-  <string name="dtmf_tone_length_preference_key" translatable="false">button_dtmf_settings</string>
 
   <!-- Shown as a prompt to turn on the contacts permission to enable speed dial [CHAR LIMIT=NONE]-->
   <string name="permission_no_speeddial">To enable speed dial, turn on the Contacts permission.</string>

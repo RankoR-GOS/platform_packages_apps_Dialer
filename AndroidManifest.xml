@@ -277,13 +277,7 @@
             android:exported="false"
             android:label="@string/dialer_settings_label"
             android:parentActivityName="com.android.dialer.main.impl.MainActivity"
-            android:theme="@style/SettingsStyle">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="header" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar" />
 
 
         <!-- java/com/android/dialer/assisteddialing/ui/AndroidManifest.xml -->

@@ -1,7 +1,6 @@
 package com.android.dialer
 
 import android.content.Context
-import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -17,11 +16,7 @@ import org.robolectric.annotation.Config
 
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
-@Config(
-    application = HiltTestApplication::class,
-    manifest = Config.NONE,
-    sdk = [Build.VERSION_CODES.BAKLAVA],
-)
+@Config(application = HiltTestApplication::class)
 class HiltInjectionTest {
 
     @get:Rule
